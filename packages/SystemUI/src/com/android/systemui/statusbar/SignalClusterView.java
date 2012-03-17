@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.NetworkController;
@@ -40,26 +39,21 @@ public class SignalClusterView
     static final boolean DEBUG = false;
     static final String TAG = "SignalClusterView";
     
-    private static final int EVENT_SIGNAL_STRENGTH_CHANGED = 200;
-    
     NetworkController mNC;
-    
+
     private boolean mWifiVisible = false;
     private int mWifiStrengthId = 0, mWifiActivityId = 0;
     private boolean mMobileVisible = false;
     private int mMobileStrengthId = 0, mMobileActivityId = 0, mMobileTypeId = 0;
     private boolean mIsAirplaneMode = false;
     private String mWifiDescription, mMobileDescription, mMobileTypeDescription;
-   
-    private boolean showingSignalText = false;
-    
+
     ViewGroup mWifiGroup, mMobileGroup;
     ImageView mWifi, mMobile, mWifiActivity, mMobileActivity, mMobileType;
-    TextView mMobileText;
     View mSpacer;
     
-    Handler mHandler;
-        
+    private boolean showingSignalText;
+
     public SignalClusterView(Context context) {
         this(context, null);
     }
@@ -88,12 +82,9 @@ public class SignalClusterView
         mMobile         = (ImageView) findViewById(R.id.mobile_signal);
         mMobileActivity = (ImageView) findViewById(R.id.mobile_inout);
         mMobileType     = (ImageView) findViewById(R.id.mobile_type);
-        mMobileText		= (TextView)  findViewById(R.id.signal_text);
         mSpacer         =             findViewById(R.id.spacer);
-        
-        mHandler = new Handler();
-        
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+
+        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
         
         apply();
@@ -108,7 +99,6 @@ public class SignalClusterView
         mMobile         = null;
         mMobileActivity = null;
         mMobileType     = null;
-        mMobileText		= null;
 
         super.onDetachedFromWindow();
     }
@@ -163,16 +153,10 @@ public class SignalClusterView
             mMobileActivity.setImageResource(mMobileActivityId);
             mMobileType.setImageResource(mMobileTypeId);
             mMobileGroup.setContentDescription(mMobileTypeDescription + " " + mMobileDescription);
-            if (showingSignalText && !mIsAirplaneMode) {
-            	mMobile.setVisibility(View.GONE);
-            	mMobileText.setVisibility(View.VISIBLE);
-            } else{
-            	mMobile.setVisibility(View.VISIBLE);
-            	mMobileText.setVisibility(View.GONE);
-            }
         } else {
             mMobileGroup.setVisibility(View.GONE);
         }
+
         if (mMobileVisible && mWifiVisible && mIsAirplaneMode) {
             mSpacer.setVisibility(View.INVISIBLE);
         } else {
@@ -186,6 +170,7 @@ public class SignalClusterView
 
         mMobileType.setVisibility(
                 !mWifiVisible ? View.VISIBLE : View.GONE);
+        updateSettings();
     }
     
     class SettingsObserver extends ContentObserver {
@@ -212,7 +197,9 @@ public class SignalClusterView
 
         showingSignalText = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_SIGNAL_TEXT, 0) != 0;
-        apply();
+        
+        if(mMobile != null)
+            mMobile.setVisibility(showingSignalText ? View.GONE : View.VISIBLE);
     }
- 
 }
+

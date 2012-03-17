@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+    
     <com.android.systemui.statusbar.policy.WeatherPanel
     	android:layout_width="match_parent"
     	android:layout_height="match_parent">
@@ -10,37 +11,44 @@
     <TextView
         android:id="@+id/high_temp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+	android:textColor="#33B5E5" />
 
     <TextView
         android:id="@+id/low_temp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+	android:textColor="#33B5E5" />
 
     <TextView
         android:id="@+id/current_temp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+	android:textColor="#33B5E5" />
 
     <TextView
         android:id="@+id/city"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+	android:textColor="#33B5E5" />
 
     <TextView
         android:id="@+id/humidity"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+	android:textColor="#33B5E5" />
 
     <TextView
         android:id="@+id/winds"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+	android:textColor="#33B5E5" />
 
     <TextView
         android:id="@+id/condition"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+	android:textColor="#33B5E5" />
 
     <ImageView
         android:id="@+id/condition_image"

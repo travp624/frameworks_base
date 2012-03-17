@@ -2,18 +2,18 @@ LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
-    Layer.cpp 								\
-    LayerBase.cpp 							\
-    LayerDim.cpp 							\
-    LayerScreenshot.cpp						\
-    DdmConnection.cpp						\
-    DisplayHardware/DisplayHardware.cpp 	\
+    Layer.cpp \
+    LayerBase.cpp \
+    LayerDim.cpp \
+    LayerScreenshot.cpp	\
+    DdmConnection.cpp \
+    DisplayHardware/DisplayHardware.cpp \
     DisplayHardware/DisplayHardwareBase.cpp \
-    DisplayHardware/HWComposer.cpp 			\
-    GLExtensions.cpp 						\
-    MessageQueue.cpp 						\
-    SurfaceFlinger.cpp 						\
-    SurfaceTextureLayer.cpp 				\
+    DisplayHardware/HWComposer.cpp \
+    GLExtensions.cpp \
+    MessageQueue.cpp \
+    SurfaceFlinger.cpp \
+    SurfaceTextureLayer.cpp \
     Transform.cpp
 
 LOCAL_CFLAGS:= -DLOG_TAG=\"SurfaceFlinger\"
@@ -26,7 +26,7 @@ ifeq ($(TARGET_BOARD_PLATFORM), omap4)
 	LOCAL_CFLAGS += -DHAS_CONTEXT_PRIORITY
 endif
 ifeq ($(TARGET_BOARD_PLATFORM), s5pc110)
-	LOCAL_CFLAGS += -DHAS_CONTEXT_PRIORITY -DNEVER_DEFAULT_TO_ASYNC_MODE
+	LOCAL_CFLAGS += -DHAS_CONTEXT_PRIORITY -DNEVER_DEFAULT_TO_ASYNC_MODE -DSURFACEFLINGER_FORCE_SCREEN_RELEASE
 	LOCAL_CFLAGS += -DREFRESH_RATE=56
 endif
 
