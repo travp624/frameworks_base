@@ -96,7 +96,6 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="5.0dip"
             android:layout_centerInParent="true">
 
 
@@ -105,6 +104,7 @@
                 android:textAppearance="@style/TextAppearance.StatusBar.Date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="4dp"
                 android:singleLine="true"
                 android:gravity="center" />
 
@@ -112,6 +112,7 @@
                 android:id="@+id/wp2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="2dp"
                 android:gravity="center"
                 android:visibility="gone">
 	
@@ -177,8 +178,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:paddingLeft="8dp"
-            android:paddingTop="4dp"
             android:paddingRight="8dp"
+            android:paddingTop="4dp"
             android:src="@drawable/ic_notify_quicksettings"
             android:contentDescription="@string/accessibility_settings_button" />
 
@@ -200,7 +201,7 @@
         android:id="@+id/drawer_header_hr"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@drawable/status_bar_hr2" />
+        android:background="@drawable/status_bar_hr" />
 
     <include
         layout="@layout/quick_toggles"
