@@ -19,8 +19,8 @@
 	<View
        	android:id="@+id/drawer_header_hr2"
        	android:layout_width="match_parent"
-       	android:layout_height="1dp"
-       	android:background="@drawable/status_bar_hr2" />
+       	android:layout_height="2dp"
+       	android:background="@drawable/status_bar_hr" />
 
    	<RelativeLayout
        	android:id="@+id/drawer_header"
@@ -85,6 +85,7 @@
            	            android:layout_height="wrap_content" />
 
                 </LinearLayout>
+
 
             </LinearLayout>
 
