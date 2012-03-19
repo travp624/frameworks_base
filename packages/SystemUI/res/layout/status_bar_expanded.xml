@@ -19,8 +19,8 @@
 	<View
        	android:id="@+id/drawer_header_hr2"
        	android:layout_width="match_parent"
-       	android:layout_height="0dp"
-       	android:background="@drawable/status_bar_hr" />
+       	android:layout_height="1dp"
+       	android:background="@drawable/status_bar_hr2" />
 
    	<RelativeLayout
        	android:id="@+id/drawer_header"
@@ -198,8 +198,8 @@
     <View
         android:id="@+id/drawer_header_hr"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@drawable/status_bar_hr" />
+        android:layout_height="1dp"
+        android:background="@drawable/status_bar_hr2" />
 
     <include
         layout="@layout/quick_toggles"
