@@ -22,14 +22,21 @@ import java.util.Date;
 import libcore.util.MutableInt;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ContentUris;
+import android.database.Cursor;
+import android.net.Uri;
 import android.provider.Settings;
+import android.provider.CalendarContract;
+import android.provider.CalendarContract.Calendars;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 import android.content.Intent;
 
 import com.android.internal.R;
@@ -230,7 +237,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         refreshDate();
         updateOwnerInfo();
         updateWeatherInfo();
-	updateColors();
+		updateColors();
 
         // Required to get Marquee to work.
         final View scrollableViews[] = {
@@ -356,6 +363,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateOwnerInfo();
         updateStatus1();
         updateCarrierText();
+        updateColors();
     }
 
     private void updateAlarmInfo() {
