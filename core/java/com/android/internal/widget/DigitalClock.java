@@ -237,13 +237,13 @@ public class DigitalClock extends RelativeLayout {
         mTimeDisplayBackground.setText(newTime);
         mTimeDisplayForeground.setText(newTime);
         mAmPm.setIsMorning(mCalendar.get(Calendar.AM_PM) == 0);
-
-	ContentResolver resolver = mContext.getContentResolver();
-	// applying custom lockscreen colors here
-	int mLockscreenColor = Settings.System.getInt(resolver,
-	    	Settings.System.LOCKSCREEN_TEXT_COLOR, COLOR_WHITE);
-	mTimeDisplayBackground.setTextColor(mLockscreenColor);
-	mTimeDisplayForeground.setTextColor(mLockscreenColor);
+        
+        ContentResolver resolver = mContext.getContentResolver();
+        // our custom lockscreen colors need to be applied here
+        int mLockscreenColor = Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_TEXT_COLOR, COLOR_WHITE);
+        mTimeDisplayBackground.setTextColor(mLockscreenColor);
+        mTimeDisplayForeground.setTextColor(mLockscreenColor);
     }
 
     private void setDateFormat() {
