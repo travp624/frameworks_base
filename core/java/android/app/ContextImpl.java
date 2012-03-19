@@ -61,8 +61,6 @@ import android.net.wifi.IWifiManager;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.IWifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wimax.WimaxHelper;
-import android.net.wimax.WimaxManagerConstants;
 import android.nfc.NfcManager;
 import android.os.Binder;
 import android.os.Bundle;
@@ -154,7 +152,6 @@ class ContextImpl extends Context {
     private int mThemeResource = 0;
     private Resources.Theme mTheme = null;
     private PackageManager mPackageManager;
-    private ProfileManager mProfileManager = null;
     private Context mReceiverRestrictedContext = null;
     private boolean mRestricted;
 
@@ -455,17 +452,6 @@ class ContextImpl extends Context {
                 public Object getService(ContextImpl ctx) {
                     return WindowManagerImpl.getDefault(ctx.mPackageInfo.mCompatibilityInfo);
                 }});
-
-	   registerService(WimaxManagerConstants.WIMAX_SERVICE, new ServiceFetcher() {
-			 public Object createService(ContextImpl ctx) {
-				return WimaxHelper.createWimaxService(ctx, ctx.mMainThread.getHandler());
-			 }});
-
-	   registerService(PROFILE_SERVICE, new ServiceFetcher() {
-			 public Object createService(ContextImpl ctx) {
-			 final Context outerContext = ctx.getOuterContext();
-				return new ProfileManager (outerContext, ctx.mMainThread.getHandler());
-			 }});
     }
 
     static ContextImpl getImpl(Context context) {

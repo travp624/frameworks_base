@@ -53,14 +53,6 @@ public final class Settings {
 
     // Intent actions for Settings
 
-
-    /**
-     * Intent actions for Settings
-     *
-     * @hide
-     */
-    public static final String SETTINGS_CHANGED = "android.settings.SETTINGS_CHANGED_ACTION";
-
     /**
      * Activity Action: Show system settings.
      * <p>
@@ -1396,7 +1388,7 @@ public final class Settings {
          */
         public static final int SCREEN_BRIGHTNESS_MODE_AUTOMATIC = 1;
 
-	/**
+        /**
          * Indicates that custom light sensor settings has changed.
          * The value is random and changes reloads light settings.
          *
@@ -1527,6 +1519,7 @@ public final class Settings {
         public static final String LIGHT_FILTER_INTERVAL = "light_filter_interval";
 
         /**
+
          * Control whether the process CPU usage meter should be shown.
          */
         public static final String SHOW_PROCESSES = "show_processes";
@@ -2032,135 +2025,6 @@ public final class Settings {
          */
         public static final String POINTER_SPEED = "pointer_speed";
 
-        /*
-         * Whether to enable quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_ENABLED = "quiet_hours_enabled";
-
-        /**
-         * Sets when quiet hours starts. This is stored in minutes from the start of the day.
-         * @hide
-         */
-        public static final String QUIET_HOURS_START = "quiet_hours_start";
-
-        /**
-         * Sets when quiet hours end. This is stored in minutes from the start of the day.
-         * @hide
-         */
-        public static final String QUIET_HOURS_END = "quiet_hours_end";
-
-        /**
-         * Whether to remove the sound from outgoing notifications during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_MUTE = "quiet_hours_mute";
-
-        /**
-         * Whether to disable haptic feedback during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_HAPTIC = "quiet_hours_haptic";
-
-        /**
-         * Whether to remove the vibration from outgoing notifications during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_STILL = "quiet_hours_still";
-
-        /**
-         * Whether to attempt to dim the LED color during quiet hours.
-         * @hide
-         */
-        public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
-
-        /**
-         * Use the Notification Power Widget? (Who wouldn't!)
-         *
-         * @hide
-         */
-        public static final String EXPANDED_VIEW_WIDGET = "expanded_view_widget";
-
-        /**
-         * Whether to hide the notification screen after clicking on a widget
-         * button
-         *
-         * @hide
-         */
-        public static final String EXPANDED_HIDE_ONCHANGE = "expanded_hide_onchange";
-
-        /**
-         * Hide scroll bar in power widget
-         *
-         * @hide
-         */
-        public static final String EXPANDED_HIDE_SCROLLBAR = "expanded_hide_scrollbar";
-
-        /**
-         * Hide indicator in status bar widget
-         *
-         * @hide
-         */
-        public static final String EXPANDED_HIDE_INDICATOR = "expanded_hide_indicator";
-
-        /**
-         * Haptic feedback in power widget
-         *
-         * @hide
-         */
-        public static final String EXPANDED_HAPTIC_FEEDBACK = "expanded_haptic_feedback";
-
-        /**
-         * Notification Indicator Color
-         *
-         * @hide
-         */
-        public static final String EXPANDED_VIEW_WIDGET_COLOR = "expanded_widget_color";
-
-        /**
-         * Widget Buttons to Use
-         *
-         * @hide
-         */
-        public static final String WIDGET_BUTTONS = "expanded_widget_buttons";
-
-        /**
-        * Notification Power Widget - Custom Brightness Mode
-        * @hide
-        */
-        public static final String EXPANDED_BRIGHTNESS_MODE = "expanded_brightness_mode";
-
-        /**
-        * Notification Power Widget - Custom Network Mode
-        * @hide
-        */
-        public static final String EXPANDED_NETWORK_MODE = "expanded_network_mode";
-
-        /**
-         * Notification Power Widget - Custom LTE Toggle
-         * 1 - lte on, 0 - lte off
-         * @hide
-         */
-         public static final String LTE_MODE = "lte_mode";
-
-        /**
-        * Notification Power Widget - Custom Screen Timeout
-        * @hide
-        */
-        public static final String EXPANDED_SCREENTIMEOUT_MODE = "expanded_screentimeout_mode";
-
-        /**
-        * Notification Power Widget - Custom Ring Mode
-        * @hide
-        */
-        public static final String EXPANDED_RING_MODE = "expanded_ring_mode";
-
-        /**
-        * Notification Power Widget - Custom Torch Mode
-        * @hide
-        */
-        public static final String EXPANDED_FLASH_MODE = "expanded_flash_mode";
-
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
@@ -2230,12 +2094,6 @@ public final class Settings {
             SIP_CALL_OPTIONS,
             SIP_RECEIVE_CALLS,
             POINTER_SPEED,
-            QUIET_HOURS_ENABLED,
-            QUIET_HOURS_START,
-            QUIET_HOURS_END,
-            QUIET_HOURS_MUTE,
-            QUIET_HOURS_STILL,
-            QUIET_HOURS_DIM,
         };
 
         // Settings moved to Settings.Secure
@@ -2469,20 +2327,6 @@ public final class Settings {
             Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
 
         /**
-         * dynamic date display options, int value
-         *
-         * 0 = default, Febuary 14, 2012
-         * 1 = Tuesday Febuary 14, 2012
-         * 2 = Tuesday, 14th
-         * 3 = Tuesday
-         * 4 = 45 day of 2012
-         * 5 = Tues Feb 14
-         *
-         * @hide
-         */
-        public static final String STATUSBAR_DATE_FORMAT = "statusbar_date_format";
-
-        /**
          * where to show the legacy menu key
          * 0 = right (default)
          * 1 = left
@@ -2610,8 +2454,8 @@ public final class Settings {
          * @hide
          */
 		public static final String STATUSBAR_CLOCK_WEEKDAY = "statubar_clock_weekday";
-	
-		/**
+
+	    /**
 		 * @hide
 		 */
 		public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
@@ -2620,7 +2464,7 @@ public final class Settings {
 		 * @hide
 		 */
 		public static final String STATUS_BAR_LAYOUT = "status_bar_layout";
-	
+
 		/**
 		 * @hide
 		 */
@@ -2645,11 +2489,6 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_AIRPLANE_TOGGLE = "power_dialog_show_airplane_toggle";
-
-        /**
-         * @hide
-         */
-        public static final String POWER_DIALOG_SHOW_PROFILES = "power_dialog_show_profiles";
 
         /**
          * @hide
@@ -2820,9 +2659,8 @@ public final class Settings {
 		 * @hide
 		 */
 		public static final String SHOW_LOCK_BEFORE_UNLOCK = "show_lock_before_unlock";
-	
-		/**
-		 * custom lockscreen text color
+
+	    /**
 		 * @hide
 		 */
 		public static final String LOCKSCREEN_TEXT_COLOR = "lockscreen_text_color";
@@ -2847,18 +2685,6 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
-
-		/**
-		 * colorpicker for the battery text while charging
-		 * @hide
-		 */
-		public static final String STATUSBAR_BATTERY_CHARGE_TEXT_COLOR = "statusbar_battery_charge_text_color";
-
-		/**
-		 * colorpicker for the battery text
-		 * @hide
-		 */
-		public static final String STATUSBAR_BATTERY_TEXT_COLOR = "statusbar_battery_text_color";
 
         /**
          * @hide
@@ -2908,6 +2734,18 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_bar_style";
+
+		/**
+		 * colorpicker for the battery text while charging
+		 * @hide
+		 */
+		public static final String STATUSBAR_BATTERY_CHARGE_TEXT_COLOR = "statusbar_battery_charge_text_color";
+
+		/**
+		 * colorpicker for the battery text
+		 * @hide
+		 */
+		public static final String STATUSBAR_BATTERY_TEXT_COLOR = "statusbar_battery_text_color";
 
         /**
          * whether to show charging animation
@@ -2979,11 +2817,6 @@ public final class Settings {
 		 */
 		public static final String WEATHER_STATUSBAR_STYLE = "weather_statusbar_style";
 
-		/**
-		 * @hide
-		 */
-		public static final String HIDE_ON_PULLDOWN = "hide_on_pulldown";
-
         /**
          * Whether to enable torch by long pressing power from a screen-off state
          * 
@@ -3012,45 +2845,24 @@ public final class Settings {
          */
         public static final String STATUSBAR_HIDE_SIGNAL_BARS = "statusbar_hide_signal_bars";
 
-        /**
-         * Whether to show statusbar wifi text
-         * 
-         * @hide
-         */
-        public static final String STATUSBAR_WIFI_TEXT = "statusbar_wifi_text";
-
-        /**
-         * statusbar wifi text color
-         * 
-         * @hide
-         */
-        public static final String STATUSBAR_WIFI_TEXT_COLOR = "statusbar_wifi_text_color";
-
-        /**
-         * whether to hide the wifi bars
-         * 
-         * @hide
-         */
-        public static final String STATUSBAR_HIDE_WIFI_BARS = "statusbar_hide_wifi_bars";
-
 		/**
 		 * @hide
 		 */
-		public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
-	
+	    public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
+
 		/**
 		 * @hide
 		 */
 		public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
-    	}
+	}
 
-    	/**
-    	 * Secure system settings, containing system preferences that applications
-    	 * can read but are not allowed to write.  These are for preferences that
-    	 * the user must explicitly modify through the system UI or specialized
-    	 * APIs for those values, not modified directly by applications.
-    	 */
-    	public static final class Secure extends NameValueTable {
+    /**
+     * Secure system settings, containing system preferences that applications
+     * can read but are not allowed to write.  These are for preferences that
+     * the user must explicitly modify through the system UI or specialized
+     * APIs for those values, not modified directly by applications.
+     */
+	public static final class Secure extends NameValueTable {
         public static final String SYS_PROP_SETTING_VERSION = "sys.settings_secure_version";
 
         // Populated lazily, guarded by class object:
@@ -3324,12 +3136,6 @@ public final class Settings {
 		 * @hide
 		 */
 		public static final String LED_SCREEN_ON = "led_screen_on";
-
-		/**
-         * The TCP/IP port to run ADB on, or -1 for USB
-         * @hide
-         */
-        public static final String ADB_PORT = "adb_port";
 
         /**
          * Setting to allow mock locations and location provider status to be injected into the
@@ -4046,12 +3852,6 @@ public final class Settings {
          */
         public static final String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS =
             "wifi_mobile_data_transition_wakelock_timeout_ms";
-
-		/**
-		 * Whether the wimax should be on. Only the WiMAX service should touch this.
-		 * @hide
-		 */
-		public static final String WIMAX_ON = "wimax_on";
 
         /**
          * Whether background data usage is allowed by the user. See

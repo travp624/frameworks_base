@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
- * Copyright (C) 2010-2012 CyanogenMod Project
+ * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 David van Tonder
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,8 @@
 package com.android.internal.policy.impl;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.Profile;
-import android.app.ProfileManager;
-import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -62,16 +57,6 @@ import com.android.internal.R;
 import com.android.internal.app.ShutdownThread;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
-import com.google.android.collect.Lists;
-
-/**
- * Needed for takeScreenshot
- */
-import android.content.ServiceConnection;
-import android.content.ComponentName;
-import android.os.IBinder;
-import android.os.Messenger;
-import android.os.RemoteException;
 
 /**
  * Helper to show the global actions dialog.  Each item is an {@link Action} that
@@ -106,14 +91,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mEnableScreenshotToggle = false;
     private boolean mEnableTorchToggle = true;
     private boolean mEnableAirplaneToggle = true;
-    private boolean mEnableProfiles = true;
     private boolean mReceiverRegistered = false;    
     private boolean mEnableNavBarHideToggle = false;;
 
     public static final String INTENT_TORCH_ON = "com.android.systemui.INTENT_TORCH_ON";
     public static final String INTENT_TORCH_OFF = "com.android.systemui.INTENT_TORCH_OFF";
-
-    private Profile mChosenProfile;
 
     /**
      * @param context everything needs a context :(
@@ -164,9 +146,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private AlertDialog createDialog() {
         mEnablePowerSaverToggle = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
-
-        mEnableProfiles = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_PROFILES, 1) == 1;
         
         mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;  
@@ -336,35 +315,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
             //  them reading any warnings that could be presented by enabling the power saver through ROM Control
         }
-
-        // next: profiles
-        if (mEnableProfiles) {
-            Log.d(TAG, "Adding Profiles Menu");
-            mItems.add(
-                new ProfileChooseAction() {
-                public void onPress() {
-                    createProfileDialog();
-                }
-
-                public boolean showDuringKeyguard() {
-                    return false;
-                }
-
-                public boolean showBeforeProvisioning() {
-                    return false;
-                }
-            });
-        } else {
-            Log.d(TAG, "Not Adding Profiles");
-        }       
-
+       
+        
         // next: screenshot
         if (mEnableScreenshotToggle) {
-            Log.d(TAG, "Adding Screenshot Menu");
-            mItems.add(
-                new SinglePressAction(
-                        com.android.internal.R.drawable.ic_lock_screenshot,
-                        R.string.global_action_screenshot) {
+            Slog.e(TAG, "Adding screenshot");
+            mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
+                    R.string.global_action_screenshot) {
                 public void onPress() {
                     takeScreenshot();
                 }
@@ -378,7 +335,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 }
             });
         } else {
-            Log.d(TAG, "Not Adding Screenshot");
+            Slog.e(TAG, "Not adding screenshot");
         }
        
         // Next Torch
@@ -417,134 +374,88 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         return dialog;
     }
-
-	private void createProfileDialog(){
-        final ProfileManager profileManager = (ProfileManager)mContext.getSystemService(Context.PROFILE_SERVICE);
-
-        final Profile[] profiles = profileManager.getProfiles();
-        UUID activeProfile = profileManager.getActiveProfile().getUuid();
-        final CharSequence[] names = new CharSequence[profiles.length];
-
-        int i=0;
-        int checkedItem = 0;
-
-        for(Profile profile : profiles) {
-            if(profile.getUuid().equals(activeProfile)) {
-                checkedItem = i;
-                mChosenProfile = profile;
-            }
-            names[i++] = profile.getName();
-        }
-
-        final AlertDialog.Builder ab = new AlertDialog.Builder(mContext);
-
-        AlertDialog dialog = ab
-                .setTitle(R.string.global_action_choose_profile)
-                .setSingleChoiceItems(names, checkedItem, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which < 0)
-                            return;
-                        mChosenProfile = profiles[which];
-                    }
-                })
-                .setPositiveButton(com.android.internal.R.string.yes,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                profileManager.setActiveProfile(mChosenProfile.getUuid());
-                            }
-                        })
-                .setNegativeButton(com.android.internal.R.string.no,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                }).create();
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
-        dialog.show();
-    }
-	
     
     /**
-     * functions needed for taking screenhots.  
-     * This leverages the built in ICS screenshot functionality 
-     */
-    final Object mScreenshotLock = new Object();
-    ServiceConnection mScreenshotConnection = null;
+    * functions needed for taking screenhots.  
+    * This leverages the built in ICS screenshot functionality 
+    */
+   final Object mScreenshotLock = new Object();
+   ServiceConnection mScreenshotConnection = null;
 
-    final Runnable mScreenshotTimeout = new Runnable() {
-        @Override public void run() {
-            synchronized (mScreenshotLock) {
-                if (mScreenshotConnection != null) {
-                    mContext.unbindService(mScreenshotConnection);
-                    mScreenshotConnection = null;
-                }
-            }
-        }
-    };
+   final Runnable mScreenshotTimeout = new Runnable() {
+       @Override public void run() {
+           synchronized (mScreenshotLock) {
+               if (mScreenshotConnection != null) {
+                   mContext.unbindService(mScreenshotConnection);
+                   mScreenshotConnection = null;
+               }
+           }
+       }
+   };
 
-    private void takeScreenshot() {
-        synchronized (mScreenshotLock) {
-            if (mScreenshotConnection != null) {
-                return;
-            }
-            ComponentName cn = new ComponentName("com.android.systemui",
-                    "com.android.systemui.screenshot.TakeScreenshotService");
-            Intent intent = new Intent();
-            intent.setComponent(cn);
-            ServiceConnection conn = new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName name, IBinder service) {
-                    synchronized (mScreenshotLock) {
-                        if (mScreenshotConnection != this) {
-                            return;
-                        }
-                        Messenger messenger = new Messenger(service);
-                        Message msg = Message.obtain(null, 1);
-                        final ServiceConnection myConn = this;
-                        Handler h = new Handler(mHandler.getLooper()) {
-                            @Override
-                            public void handleMessage(Message msg) {
-                                synchronized (mScreenshotLock) {
-                                    if (mScreenshotConnection == myConn) {
-                                        mContext.unbindService(mScreenshotConnection);
-                                        mScreenshotConnection = null;
-                                        mHandler.removeCallbacks(mScreenshotTimeout);
-                                    }
-                                }
-                            }
-                        };
-                        msg.replyTo = new Messenger(h);
-                        msg.arg1 = msg.arg2 = 0;
+   private void takeScreenshot() {
+       synchronized (mScreenshotLock) {
+           if (mScreenshotConnection != null) {
+               return;
+           }
+           ComponentName cn = new ComponentName("com.android.systemui",
+                   "com.android.systemui.screenshot.TakeScreenshotService");
+           Intent intent = new Intent();
+           intent.setComponent(cn);
+           ServiceConnection conn = new ServiceConnection() {
+               @Override
+               public void onServiceConnected(ComponentName name, IBinder service) {
+                   synchronized (mScreenshotLock) {
+                       if (mScreenshotConnection != this) {
+                           return;
+                       }
+                       Messenger messenger = new Messenger(service);
+                       Message msg = Message.obtain(null, 1);
+                       final ServiceConnection myConn = this;
+                       Handler h = new Handler(mHandler.getLooper()) {
+                           @Override
+                           public void handleMessage(Message msg) {
+                               synchronized (mScreenshotLock) {
+                                   if (mScreenshotConnection == myConn) {
+                                       mContext.unbindService(mScreenshotConnection);
+                                       mScreenshotConnection = null;
+                                       mHandler.removeCallbacks(mScreenshotTimeout);
+                                   }
+                               }
+                           }
+                       };
+                       msg.replyTo = new Messenger(h);
+                       msg.arg1 = msg.arg2 = 0;
 
-                        /*  remove for the time being
-                        if (mStatusBar != null && mStatusBar.isVisibleLw())
-                            msg.arg1 = 1;
-                        if (mNavigationBar != null && mNavigationBar.isVisibleLw())
-                            msg.arg2 = 1;
-                         */                        
+                       /*  remove for the time being
+                       if (mStatusBar != null && mStatusBar.isVisibleLw())
+                           msg.arg1 = 1;
+                       if (mNavigationBar != null && mNavigationBar.isVisibleLw())
+                           msg.arg2 = 1;
+                        */                        
 
-                        /* wait for the dialog box to close */
-                        try {
-                            Thread.sleep(1000); 
-                        } catch (InterruptedException ie) {
-                        }
-                        
-                        /* take the screenshot */
-                        try {
-                            messenger.send(msg);
-                        } catch (RemoteException e) {
-                        }
-                    }
-                }
-                @Override
-                public void onServiceDisconnected(ComponentName name) {}
-            };
-            if (mContext.bindService(intent, conn, Context.BIND_AUTO_CREATE)) {
-                mScreenshotConnection = conn;
-                mHandler.postDelayed(mScreenshotTimeout, 10000);
-            }
-        }
-    }
+                       /* wait for the dislog box to close */
+                       try {
+                           Thread.sleep(1000); 
+                       } catch (InterruptedException ie) {
+                       }
+                       
+                       /* take the screenshot */
+                       try {
+                           messenger.send(msg);
+                       } catch (RemoteException e) {
+                       }
+                   }
+               }
+               @Override
+               public void onServiceDisconnected(ComponentName name) {}
+           };
+           if (mContext.bindService(intent, conn, Context.BIND_AUTO_CREATE)) {
+               mScreenshotConnection = conn;
+               mHandler.postDelayed(mScreenshotTimeout, 10000);
+           }
+       }
+   }
 
     private void prepareDialog() {
         final boolean silentModeOn =
@@ -715,42 +626,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
             icon.setImageDrawable(context.getResources().getDrawable(mIconResId));
             messageView.setText(mMessageResId);
-
-            return v;
-        }
-    }
-
-	/**
-     * A single press action maintains no state, just responds to a press
-     * and takes an action.
-     */
-    private abstract class ProfileChooseAction implements Action {
-        private ProfileManager mProfileManager;
-
-        protected ProfileChooseAction() {
-            mProfileManager = (ProfileManager)mContext.getSystemService(Context.PROFILE_SERVICE);
-        }
-
-        public boolean isEnabled() {
-            return true;
-        }
-
-        abstract public void onPress();
-
-        public View create(
-                Context context, View convertView, ViewGroup parent, LayoutInflater inflater) {
-            View v = (convertView != null) ?
-                    convertView :
-                    inflater.inflate(R.layout.global_actions_item, parent, false);
-
-            ImageView icon = (ImageView) v.findViewById(R.id.icon);
-            TextView messageView = (TextView) v.findViewById(R.id.message);
-            TextView statusView = (TextView) v.findViewById(R.id.status);
-            statusView.setVisibility(View.VISIBLE);
-            statusView.setText(mProfileManager.getActiveProfile().getName());
-
-            icon.setImageDrawable(context.getResources().getDrawable(com.android.internal.R.drawable.ic_lock_profile));
-            messageView.setText(R.string.global_action_choose_profile);
 
             return v;
         }
