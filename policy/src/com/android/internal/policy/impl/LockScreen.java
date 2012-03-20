@@ -595,7 +595,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mSilentMode = isSilentMode();
 
         mCarrier = (TextView) findViewById(R.id.carrier);
-	mDigitalClock = (DigitalClock) findViewById(R.id.time);
+		mDigitalClock = (DigitalClock) findViewById(R.id.time);
 
         mUnlockWidget = findViewById(R.id.unlock_widget);
         if (mUnlockWidget instanceof SlidingTab) {
