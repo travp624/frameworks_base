@@ -1388,7 +1388,7 @@ public final class Settings {
          */
         public static final int SCREEN_BRIGHTNESS_MODE_AUTOMATIC = 1;
 
-	/**
+        /**
          * Indicates that custom light sensor settings has changed.
          * The value is random and changes reloads light settings.
          *
@@ -1519,6 +1519,7 @@ public final class Settings {
         public static final String LIGHT_FILTER_INTERVAL = "light_filter_interval";
 
         /**
+
          * Control whether the process CPU usage meter should be shown.
          */
         public static final String SHOW_PROCESSES = "show_processes";
@@ -2363,14 +2364,14 @@ public final class Settings {
          * @hide
          */
         public static final String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
-
+        
         /**
          * Setting to enable volume options.
          * 
          * @hide
          */
         public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
-
+        
         /**
          * Which layout to use to display the navigation menu at the bottom.
          * 0 = default
@@ -2459,21 +2460,21 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final String STATUSBAR_CLOCK_WEEKDAY = "statusbar_clock_weekday";
+		public static final String STATUSBAR_CLOCK_WEEKDAY = "statubar_clock_weekday";
 
-        /**
-         * @hide
-         */
-        public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
+	    /**
+		 * @hide
+		 */
+		public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
 
-        /**
-         * @hide
-         */
-        public static final String STATUS_BAR_LAYOUT = "status_bar_layout";
+		/**
+		 * @hide
+		 */
+		public static final String STATUS_BAR_LAYOUT = "status_bar_layout";
 
-        /**
-         * @hide
-         */
+		/**
+		 * @hide
+		 */
         public static final String POWER_DIALOG_SHOW_POWER_SAVER = "power_dialog_show_power_saver";
 
         /**
@@ -2481,12 +2482,12 @@ public final class Settings {
          */
         public static final String POWER_DIALOG_SHOW_TORCH_TOGGLE = "power_dialog_show_torch_toggle";
         
-        /**
+		/**
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_NAVBAR_HIDE = "power_dialog_show_navbar_hide";
-
-        /**
+        
+		/**
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
@@ -2600,24 +2601,6 @@ public final class Settings {
         };
 
         /**
-         * Drawable URIs, each index needs to be matched up to LOCKSCREEN_CUSTOM_APP_ACTIVITIES
-         *
-         * OR ELSE
-         *
-         * @hide
-         */
-        public static final String[] LOCKSCREEN_CUSTOM_APP_ICONS = new String[] {
-                "lockscreen_custom_app_icon_0",
-                "lockscreen_custom_app_icon_1",
-                "lockscreen_custom_app_icon_2",
-                "lockscreen_custom_app_icon_3",
-                "lockscreen_custom_app_icon_4",
-                "lockscreen_custom_app_icon_5",
-                "lockscreen_custom_app_icon_6",
-                "lockscreen_custom_app_icon_7",
-        };
-
-        /**
          * Whether volume up/down can be long pressed to skip tracks
          * @hide
          */
@@ -2628,42 +2611,17 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
-        
-        /**
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CALENDAR = "lockscreen_calendar";
-        
-        /**
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CALENDAR_FLIP = "lockscreen_calendar_flip";
-        
-        /**
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CALENDAR_SOURCES = "lockscreen_calendar_sources";
-        
-        /**
-         * 
-         * @hide
-         */
-        public static final String LOCKSCREEN_CALENDAR_INTERVAL = "lockscreen_calendar_interval";
-        
-        /**
-         * Setting to use lockscreen alongside secure lock
-         * @hide
-         */
-        public static final String SHOW_LOCK_BEFORE_UNLOCK = "show_lock_before_unlock";
-        
-        /**
-         * lockscreen text color
-         * @hide
-         */
-        public static final String LOCKSCREEN_TEXT_COLOR = "lockscreen_text_color";
+
+		/**
+		 * Setting to use lockscreen alongside secure lock
+		 * @hide
+		 */
+		public static final String SHOW_LOCK_BEFORE_UNLOCK = "show_lock_before_unlock";
+
+	    /**
+		 * @hide
+		 */
+		public static final String LOCKSCREEN_TEXT_COLOR = "lockscreen_text_color";
 
         /**
          * The action to take when long pressing home
@@ -2685,18 +2643,6 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BATTERY_ICON = "statusbar_battery_icon";
-
-		/**
-		 * colorpicker for the battery text while charging
-		 * @hide
-		 */
-		public static final String STATUSBAR_BATTERY_CHARGE_TEXT_COLOR = "statusbar_battery_charge_text_color";
-
-		/**
-		 * colorpicker for the battery text
-		 * @hide
-		 */
-		public static final String STATUSBAR_BATTERY_TEXT_COLOR = "statusbar_battery_text_color";
 
         /**
          * @hide
@@ -2749,6 +2695,18 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_bar_style";
+
+		/**
+		 * colorpicker for the battery text while charging
+		 * @hide
+		 */
+		public static final String STATUSBAR_BATTERY_CHARGE_TEXT_COLOR = "statusbar_battery_charge_text_color";
+
+		/**
+		 * colorpicker for the battery text
+		 * @hide
+		 */
+		public static final String STATUSBAR_BATTERY_TEXT_COLOR = "statusbar_battery_text_color";
 
         /**
          * whether to show charging animation
@@ -2814,11 +2772,11 @@ public final class Settings {
          * @hide
          */
         public static final String WEATHER_SHOW_LOCATION = "weather_show_location";
-        
-        /**
-         * @hide
-         */
-        public static final String WEATHER_STATUSBAR_STYLE = "weather_statusbar_style";
+
+		/**
+		 * @hide
+		 */
+		public static final String WEATHER_STATUSBAR_STYLE = "weather_statusbar_style";
 
         /**
          * Whether to enable torch by long pressing power from a screen-off state
@@ -2842,22 +2800,22 @@ public final class Settings {
         public static final String STATUSBAR_SIGNAL_TEXT_COLOR = "statusbar_signal_text_color";
 
         /**
-         * whether to hide the signal barss
+         * whether to hide the signal bars
          * 
          * @hide
          */
         public static final String STATUSBAR_HIDE_SIGNAL_BARS = "statusbar_hide_signal_bars";
 
-        /**
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
+		/**
+		 * @hide
+		 */
+	    public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
 
-        /**
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
-    }
+		/**
+		 * @hide
+		 */
+		public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
+	}
 
     /**
      * Secure system settings, containing system preferences that applications
@@ -2865,7 +2823,7 @@ public final class Settings {
      * the user must explicitly modify through the system UI or specialized
      * APIs for those values, not modified directly by applications.
      */
-    public static final class Secure extends NameValueTable {
+	public static final class Secure extends NameValueTable {
         public static final String SYS_PROP_SETTING_VERSION = "sys.settings_secure_version";
 
         // Populated lazily, guarded by class object:
@@ -3133,12 +3091,12 @@ public final class Settings {
          */
         public static final String ADB_ICON = "adb_icon";
 
-				/**
-				 * Whether to blink the LED when screen is on
-				 *
-				 * @hide
-				 */
-				public static final String LED_SCREEN_ON = "led_screen_on";
+		/**
+		 * Whether to blink the LED when screen is on
+		 *
+		 * @hide
+		 */
+		public static final String LED_SCREEN_ON = "led_screen_on";
 
         /**
          * Setting to allow mock locations and location provider status to be injected into the
@@ -4541,12 +4499,13 @@ public final class Settings {
         public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
         /**
-         * The {@link ComponentName} string of the service to be used as the
-         * voice recognition service.
-         * 
+         * The {@link ComponentName} string of the service to be used as the voice recognition
+         * service.
+         *
          * @hide
          */
         public static final String VOICE_RECOGNITION_SERVICE = "voice_recognition_service";
+
 
         /**
          * The {@link ComponentName} string of the selected spell checker service which is
