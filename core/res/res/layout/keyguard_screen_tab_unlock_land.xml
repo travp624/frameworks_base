@@ -99,7 +99,7 @@
 			android:id="@+id/weather"
 			android:layout_width="0dip"
 			android:layout_gravity="fill_horizontal"
-			android:gravity="right"
+			android:gravity="center"
 			android:layout_marginTop="4dip"
 			android:singleLine="true"
 			android:ellipsize="marquee"
