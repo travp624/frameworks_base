@@ -148,7 +148,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="202dip">
+        android:layout_height="402dip">
 
         <com.android.internal.widget.SlidingTab
             android:id="@+id/unlock_widget"
