@@ -241,7 +241,6 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateWeatherInfo();
 		updateCalendar();
 		updateColors();
-		Log.d(TAG, "running in constructor");
 
         // Required to get Marquee to work.
         final View scrollableViews[] = {
@@ -322,7 +321,26 @@ class KeyguardStatusViewManager implements OnClickListener {
                         Log.w(TAG, "Not showing message id " + what + ", str=" + string);
             }
         } else {
-            updateStatusLines(mShowingStatus);
+            // dont update everything 7 times, filter based on "what"
+            switch (what) {
+                case INSTRUCTION_TEXT:
+                case CARRIER_HELP_TEXT:
+                case HELP_MESSAGE_TEXT:
+                case BATTERY_INFO:
+                    updateStatus1();
+                    break;
+                case OWNER_INFO:
+                    updateOwnerInfo();
+                    break;
+                case CARRIER_TEXT:
+                    updateCarrierText();
+                    break;
+                case WEATHER_INFO:
+                    updateWeatherInfo();
+                    break;
+                default:
+                    ;
+            }
         }
     }
 
@@ -439,7 +457,7 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (calendarEventsEnabled) {
 				ArrayList<EventBundle> events = getCalendarEvents(resolver, calendarSources, multipleEventsEnabled);
                 mCalendarView.removeAllViews();
-                Log.d(TAG, "we have " + String.valueOf(events.size()) + " events");
+                Log.d(TAG, "we have " + String.valueOf(events.size()) + " event(s)");
                 
                 for (EventBundle e : events) {
 					Log.d(TAG, "eventloop, adding title: " + e.title);
@@ -467,7 +485,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     mCalendarView.startFlipping();
                 }
             } else {
-				Log.d(TAG, "we dont need this shit");
+				Log.d(TAG, "hide calendar");
                 mCalendarView.setVisibility(View.GONE);
             }
         } catch (Exception e) {
@@ -779,7 +797,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         public void onRefreshWeatherInfo(Intent weatherIntent) {
             mWeatherInfo = weatherIntent;
-            updateWeatherInfo();
+            update(WEATHER_INFO, null);
         }
 
         public void onTimeChanged() {
@@ -951,6 +969,7 @@ class KeyguardStatusViewManager implements OnClickListener {
             }
         }
         
+        eventCur.close();
         return events;
     }
     
@@ -961,12 +980,12 @@ class KeyguardStatusViewManager implements OnClickListener {
         public boolean isTomorrow;
         public boolean allDay;
         
-        EventBundle(String s, long b, String l, Date now, boolean t) {
+        EventBundle(String s, long b, String l, Date now, boolean a) {
             title = s;
             begin = new Date(b);
-            location = l;
+            location = (1 == null) ? "" : 1;
             isTomorrow = (begin.getDay() > now.getDay() ? true : false);
-            allDay = t;
+            allDay = a;
         }
     } 	
 }
