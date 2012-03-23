@@ -96,10 +96,10 @@
 	    <com.android.internal.policy.impl.WeatherText
 			android:id="@+id/weather"
 			android:layout_width="0dip"
-			android:layout_gravity="fill_horizontal"
+			android:layout_gravity="center_horizontal"
 			android:gravity="center"
 			android:singleLine="true"
-			android:ellipsize="end"
+			android:ellipsize="marquee"
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
 			/>
