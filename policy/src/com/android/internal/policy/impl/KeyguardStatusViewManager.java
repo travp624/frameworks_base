@@ -96,6 +96,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private TextView mOwnerInfoView;
     private TextView mAlarmStatusView;
     private TransportControlView mTransportView;
+    private ViewFlipper mCalendarView;
 
     // Top-level container view for above views
     private View mContainer;
@@ -210,6 +211,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         mCarrierView = (TextView) findViewById(R.id.carrier);
         mDateView = (TextView) findViewById(R.id.date);
         mWeatherView = (WeatherText) findViewById(R.id.weather);
+        mCalendarView = (ViewFlipper) findViewById(R.id.calendar);
         mStatus1View = (TextView) findViewById(R.id.status1);
         mAlarmStatusView = (TextView) findViewById(R.id.alarm_status);
         mOwnerInfoView = (TextView) findViewById(R.id.propertyOf);
@@ -237,6 +239,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         refreshDate();
         updateOwnerInfo();
         updateWeatherInfo();
+		updateCalendar();
 		updateColors();
 
         // Required to get Marquee to work.
@@ -363,6 +366,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateOwnerInfo();
         updateStatus1();
         updateCarrierText();
+        updateCalendar();
         updateColors();
     }
 
@@ -408,10 +412,56 @@ class KeyguardStatusViewManager implements OnClickListener {
                         .getCharSequenceExtra(EXTRA_TEMP) + ", "
                         + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
                     mWeatherView.setText(wText);
+                    mWeatherView.setWidth((int)(findViewById(R.id.time).getWidth()*1.2));
                 }
             }
             mWeatherView.setVisibility((weatherInfoEnabled && !wText.isEmpty()) ? View.VISIBLE
                     : View.GONE);
+        }
+    }
+    
+    private void updateCalendar() {
+        ContentResolver resolver = getContext().getContentResolver();
+        boolean enabled = (Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR, 0) == 1);
+        String sources = Settings.System.getString(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR_SOURCES);
+        boolean multipleEvents = (Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR_FLIP, 0) == 1);
+        int interval = Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR_INTERVAL, 2500);
+        
+        if (sources == null)
+			sources = "";
+        try {
+            if (enabled) {
+                ArrayList<EventBundle> events = getCalendarEvents(resolver, sources, multipleEvents);
+                mCalendarView.removeAllViews();
+                
+                for (EventBundle e : events) {
+                    TextView tv = new TextView(getContext());
+                    tv.setText(e.title + (e.isTomorrow ? ", Tomorrow " : " ")
+                            + ((e.allDay) ? "all-day" + DateFormat.format("kk:mm", e.begin).toString()
+                            + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
+                    tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
+                    tv.setWidth((int)(findViewById(R.id.time).getWidth()*1.2)); 
+                    tv.setSingleLine(true);
+                    tv.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+                    tv.setGravity(android.view.Gravity.RIGHT);
+                    mCalendarView.addView(tv);
+                }
+                mCalendarView.setFlipInterval(interval);
+                mCalendarView.setVisibility(View.VISIBLE);
+                if (!multipleEvents || events.size() <= 1) {
+                    mCalendarView.stopFlipping();
+                } else {
+                    mCalendarView.startFlipping();
+                }
+            } else {
+                mCalendarView.setVisibility(View.GONE);
+            }
+        } catch (Exception e ) {
+            Log.e(TAG, "NOOooooo");
         }
     }
 
@@ -791,60 +841,122 @@ class KeyguardStatusViewManager implements OnClickListener {
 	int color = Settings.System.getInt(resolver,
 	    Settings.System.LOCKSCREEN_TEXT_COLOR, COLOR_WHITE);
 
-	// carrier text color
-	try {
-	    mCarrierView.setTextColor(color);
-	    if (DEBUG) Log.d(TAG, String.format("Setting mCarrierview text color %d", color));
-	} catch (NullPointerException ne) {
-	    if (DEBUG) ne.printStackTrace();
-	}
+		// carrier text color
+		try {
+			mCarrierView.setTextColor(color);
+			if (DEBUG) Log.d(TAG, String.format("Setting mCarrierview text color %d", color));
+		} catch (NullPointerException ne) {
+			if (DEBUG) ne.printStackTrace();
+		}
 
-	// date text color
-	try {
-	    mDateView.setTextColor(color);
-	    if (DEBUG) Log.d(TAG, String.format("Setting mDateView DATE text color to %d", color));
-	} catch (NullPointerException ne) {
-	    if (DEBUG) ne.printStackTrace();
-	}
-	
-	// status text color
-	try {
-	    mStatus1View.setTextColor(color);
-	    if (DEBUG) Log.d(TAG, String.format("Settings mStatus1View DATE text color to %d", color));
-	} catch (NullPointerException ne) {
-	    if (DEBUG) ne.printStackTrace();
-	}
-	
-	// owner text color
-	try {
-	    mOwnerInfoView.setTextColor(color);
-	    if (DEBUG) Log.d(TAG, String.format("Setting mOwnerInfoView DATE text color to %d", color));
-	} catch (NullPointerException ne) {
-	    if (DEBUG) ne.printStackTrace();
-	}
+		// date text color
+		try {
+			mDateView.setTextColor(color);
+			if (DEBUG) Log.d(TAG, String.format("Setting mDateView DATE text color to %d", color));
+		} catch (NullPointerException ne) {
+			if (DEBUG) ne.printStackTrace();
+		}
+		
+		// status text color
+		try {
+			mStatus1View.setTextColor(color);
+			if (DEBUG) Log.d(TAG, String.format("Settings mStatus1View DATE text color to %d", color));
+		} catch (NullPointerException ne) {
+			if (DEBUG) ne.printStackTrace();
+		}
+		
+		// owner text color
+		try {
+			mOwnerInfoView.setTextColor(color);
+			if (DEBUG) Log.d(TAG, String.format("Setting mOwnerInfoView DATE text color to %d", color));
+		} catch (NullPointerException ne) {
+			if (DEBUG) ne.printStackTrace();
+		}
 
-	// alarm text color
-	try {
-	    mAlarmStatusView.setTextColor(color);
-	    if (DEBUG) Log.d(TAG, String.format("Settings mAlarmStatusView DATE text color to %d", color));
-	} catch (NullPointerException ne) {
-	    if (DEBUG) ne.printStackTrace();
-	}
-	
-	// weather text color
-	try {
-	    mWeatherView.setTextColor(color);
-	    if (DEBUG) Log.d(TAG, String.format("Settings mWeatherView DATE text color to %d", color));
-	} catch (NullPointerException ne) {
-	    if (DEBUG) ne.printStackTrace();
-	}
+		// alarm text color
+		try {
+			mAlarmStatusView.setTextColor(color);
+			if (DEBUG) Log.d(TAG, String.format("Settings mAlarmStatusView DATE text color to %d", color));
+		} catch (NullPointerException ne) {
+			if (DEBUG) ne.printStackTrace();
+		}
+		
+		// weather text color
+		try {
+			mWeatherView.setTextColor(color);
+			if (DEBUG) Log.d(TAG, String.format("Settings mWeatherView DATE text color to %d", color));
+		} catch (NullPointerException ne) {
+			if (DEBUG) ne.printStackTrace();
+		}
+        
+        // calendar view
+        try {
+            for (int i = 0; i < mCalendarView.getChildCount(); i++) {
+                ((TextView) mCalendarView.getChildAt(i)).setTextColor(color);
+            }
+            if (DEBUG) Log.d(TAG, String.format("Setting mWeatherView DATE text color to %d", color));
+        } catch (NullPointerException ne) {
+            if (DEBUG) ne.printStackTrace();
+        }
 
-	// emergency call button text color
-	try {
-	    mEmergencyCallButton.setTextColor(color);
-	    if (DEBUG) Log.d(TAG, String.format("Settings mEmergencyCallButton text color to %d", color));
-	} catch (NullPointerException ne) {
-	    if (DEBUG) ne.printStackTrace();
-	}
+		// emergency call button text color
+		try {
+			mEmergencyCallButton.setTextColor(color);
+			if (DEBUG) Log.d(TAG, String.format("Settings mEmergencyCallButton text color to %d", color));
+		} catch (NullPointerException ne) {
+			if (DEBUG) ne.printStackTrace();
+		}
+    }
+    
+    private ArrayList<EventBundle> getCalendarEvents(ContentResolver resolver, String sources, boolean multipleEvents) {
+        
+        ArrayList<EventBundle> events = new ArrayList<EventBundle>();
+                
+        Date now = new Date();
+        Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
+        ContentUris.appendId(builder, now.getTime());
+        ContentUris.appendId(builder, now.getTime() + DateUtils.DAY_IN_MILLIS);
+        String selection = "((" + CalendarContract.Instances.CALENDAR_ID
+				+ " IN ( " + sources + " )) AND ( " + CalendarContract.Instances.BEGIN
+				+ " > " + now.getTime() + " ))";
+        
+        Cursor eventCur = resolver.query(builder.build(), new String[] {
+            CalendarContract.Instances.TITLE,
+            CalendarContract.Instances.BEGIN,
+            CalendarContract.Instances.EVENT_LOCATION,
+            CalendarContract.Instances.ALL_DAY }, selection, null,
+            CalendarContract.Instances.START_DAY + " ASC, "
+                + CalendarContract.Instances.START_MINUTE + " ASC");
+        
+        if (!multipleEvents) {
+            eventCur.moveToFirst();
+            events.add(new EventBundle(eventCur.getString(0),
+                    eventCur.getLong(1), eventCur.getString(2),
+                    now, (eventCur.getInt(3) != 0)));
+        } else {
+            while (eventCur.moveToNext()) {
+                events.add(new EventBundle(eventCur.getString(0),
+                        eventCur.getLong(1), eventCur.getString(2),
+                        now, (eventCur.getInt(3) != 0)));
+            }
+        }
+        
+        return events;
+    }
+    
+    private class EventBundle {
+        public String title;
+        public Date begin;
+        public String location;
+        public boolean isTomorrow;
+        public boolean allDay;
+        
+        EventBundle(String s, long b, String l, Date now, boolean t) {
+            title = s;
+            begin = new Date(b);
+            location = l;
+            isTomorrow = (begin.getDay() > now.getDay() ? true : false);
+            allDay = t;
+        }
     } 	
 }
