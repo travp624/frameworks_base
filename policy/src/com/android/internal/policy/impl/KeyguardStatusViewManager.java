@@ -71,6 +71,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private static final int HELP_MESSAGE_TEXT = 13;
     private static final int OWNER_INFO = 14;
     private static final int BATTERY_INFO = 15;
+    private static final int WEATHER_INFO = 16;
     private static final int COLOR_WHITE = 0xFFFFFFFF;
 
     public static final String EXTRA_CITY = "city";
@@ -387,7 +388,6 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateCarrierText();
         updateCalendar();
         updateColors();
-		log.d(TAG, "running in updateStatusLines");
     }
 
     private void updateAlarmInfo() {
@@ -442,9 +442,9 @@ class KeyguardStatusViewManager implements OnClickListener {
     
     private void updateCalendar() {
         ContentResolver resolver = getContext().getContentResolver();
-        boolean CalendarEventsEnabled = (Settings.System.getInt(resolver,
+        boolean calendarEventsEnabled = (Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CALENDAR, 0) == 1);
-        String CalendarSources = Settings.System.getString(resolver,
+        String calendarSources = Settings.System.getString(resolver,
                 Settings.System.LOCKSCREEN_CALENDAR_SOURCES);
         boolean multipleEventsEnabled = (Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CALENDAR_FLIP, 0) == 1);
@@ -476,7 +476,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                 Log.d(TAG, "successfully added " + String.valueOf(mCalendarView.getChildCount()) + " textviews");
                 mCalendarView.setFlipInterval(interval);
                 mCalendarView.setVisibility(View.VISIBLE);
-                mCalendarView.bringChildToFront(mCalendarView.getChildAt(0))
+                mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
                 if (!multipleEventsEnabled || events.size() <= 1) {
 					Log.d(TAG, "single event");
                     mCalendarView.stopFlipping();
@@ -983,7 +983,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         EventBundle(String s, long b, String l, Date now, boolean a) {
             title = s;
             begin = new Date(b);
-            location = (1 == null) ? "" : 1;
+            location = (l == null) ? "" : l;
             isTomorrow = (begin.getDay() > now.getDay() ? true : false);
             allDay = a;
         }

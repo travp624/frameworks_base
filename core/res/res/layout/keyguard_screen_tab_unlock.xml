@@ -119,8 +119,8 @@
 			android:id="@+id/calendar"
 			android:inAnimation="@anim/calendar_fadein"
 			android:outAnimation="@anim/calendar_fadeout"
-			android:layout_gravity="center"
-			android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
+			android:layout_gravity="fill_horizontal"
+			android:gravity="center"
 			android:drawablePadding="4dip" />
 
 		<TextView
