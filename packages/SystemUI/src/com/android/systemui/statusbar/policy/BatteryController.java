@@ -179,14 +179,14 @@ public class BatteryController extends LinearLayout {
 					mBatteryChargeTextColor = 0xFF99CC00;
 				} 
 				mBatteryTextOnly.setTextColor(mBatteryChargeTextColor);
-			} else if (level < 16) {
-                mBatteryTextOnly.setTextColor(Color.RED);
-            } else {
-				mBatteryTextColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT_COLOR,
+				} else if (level < 16) {
+                	mBatteryTextOnly.setTextColor(Color.RED);
+            	} else {
+					mBatteryTextColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT_COLOR,
 						0xFF33B5E5);
-				if (mBatteryTextColor == Integer.MIN_VALUE) {
-					// flag to reset the color
-					mBatteryTextColor = 0xFF33B5E5;
+					if (mBatteryTextColor == Integer.MIN_VALUE) {
+						// flag to reset the color
+						mBatteryTextColor = 0xFF33B5E5;
 				}
                 mBatteryTextOnly.setTextColor(mBatteryTextColor);
             }
