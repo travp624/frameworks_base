@@ -78,16 +78,16 @@
 
         <!-- time and date -->
         <TextView android:id="@+id/time"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:gravity="center"
-                  android:textSize="34sp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="34sp"/>
 
         <TextView android:id="@+id/date"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:gravity="center"
-                  android:textSize="18sp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="18sp"/>
 
         <!-- spacer after time and date -->
         <View
@@ -96,13 +96,35 @@
             android:layout_marginBottom="8dip"
             android:background="@android:drawable/divider_horizontal_dark"
                 />
-		<!--  weather info -->
+                
+        <!--  weather info -->
         <com.android.internal.policy.impl.WeatherText
 			android:id="@+id/weather"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="18sp"/>
+            android:gravity="center"/>
+                  
+        <!-- spacer after weather -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="8dip"
+            android:background="@android:drawable/divider_horizontal_dark"
+                />
+                
+        <ViewFlipper
+	        android:id="@+id/calendar"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center" />
+
+	    <!-- spacer after calendar -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="8dip"
+            android:background="@android:drawable/divider_horizontal_dark"
+                />
 
         <!-- battery info -->
         <LinearLayout android:id="@+id/batteryInfo"
