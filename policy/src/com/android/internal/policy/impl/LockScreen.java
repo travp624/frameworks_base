@@ -196,24 +196,24 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void updateResources() {
         }
 
-			/** {@inheritDoc} */
-			public void onTrigger(View v, int whichHandle) {
-				if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
-					Intent callIntent = new Intent(Intent.ACTION_DIAL);
-					callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					getContext().startActivity(callIntent);
-					mCallback.goToUnlockScreen();
-				} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
-						if (mCustomAppActivity != null) {
-							runActivity(mCustomAppActivity);
-						}
+		/** {@inheritDoc} */
+		public void onTrigger(View v, int whichHandle) {
+			if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
+				Intent callIntent = new Intent(Intent.ACTION_DIAL);
+				callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				getContext().startActivity(callIntent);
+				mCallback.goToUnlockScreen();
+			} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
+				if (mCustomAppActivity != null) {
+					runActivity(mCustomAppActivity);
 				}
 			}
+		}
 
-			/** {@inheritDoc} */
-			public void onGrabbedStateChange(View v, int grabbedState) {
-				mCallback.pokeWakelock();
-			}
+		/** {@inheritDoc} */
+		public void onGrabbedStateChange(View v, int grabbedState) {
+			mCallback.pokeWakelock();
+		}
 
 		public View getView() {
 			return mSlidingTab2;
@@ -597,8 +597,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
      * @param callback Used to communicate back to the host keyguard view.
      */
     LockScreen(Context context, Configuration configuration, LockPatternUtils lockPatternUtils,
-            KeyguardUpdateMonitor updateMonitor,
-            KeyguardScreenCallback callback) {
+        KeyguardUpdateMonitor updateMonitor,
+        KeyguardScreenCallback callback) {
         super(context);
         mLockPatternUtils = lockPatternUtils;
         mUpdateMonitor = updateMonitor;
@@ -671,7 +671,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         mUnlockWidget = findViewById(R.id.unlock_widget);
         mUnlockWidget2 = findViewById(R.id.unlock_widget2);
-        if (mUnlockWidget2 == null) Log.e("HELP", "ERROR UNLOCKWIDGET2 IS NULL");
+        if(mUnlockWidget2 == null) Log.e("HELP", "ERROR UNLOCKWIDGET2 IS NULL");
         if (mUnlockWidget instanceof SlidingTab) {
             SlidingTab slidingTabView = (SlidingTab) mUnlockWidget;
             slidingTabView.setHoldAfterTrigger(true, false);
@@ -703,7 +703,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             mUnlockWidgetMethods2 = slidingTabMethods2;
             if (mLockscreen4Tab)
                 slidingTabView2.setVisibility(View.VISIBLE);
-            else  
+            else
                 slidingTabView2.setVisibility(View.GONE);
         } else if (mUnlockWidget instanceof WaveView) {
             WaveView waveView = (WaveView) mUnlockWidget;
@@ -727,7 +727,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         if (DBG)
             Log.v(TAG, "*** LockScreen accel is "
                     + (mUnlockWidget.isHardwareAccelerated() ? "on" : "off"));
-    }
+		}
 
     private boolean isSilentMode() {
         return mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
@@ -801,7 +801,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     + ", new config=" + getResources().getConfiguration());
         }
         updateConfiguration();
-	updateSettings();
+		updateSettings();
     }
 
     /** {@inheritDoc} */
@@ -837,9 +837,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public void onResume() {
         mStatusViewManager.onResume();
         postDelayed(mOnResumePing, ON_RESUME_PING_DELAY);
-	// update the settings when we resume
-	if (DEBUG) Log.d(TAG, "We are resuming and want to update settings");
-	updateSettings();
+		// update the settings when we resume
+		if (DEBUG) Log.d(TAG, "We are resuming and want to update settings");
+		updateSettings();
     }
 
     /** {@inheritDoc} */
@@ -903,7 +903,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 		int mLockscreenColor = Settings.System.getInt(resolver,
 				Settings.System.LOCKSCREEN_TEXT_COLOR, COLOR_WHITE);
 
-		// digital clock first (see @link com.android.internal.widget.DigitalClock.update())
+		// digital clock first (see @link com.android.internal.widget.DigitalClock.updateTime())
 		try {
 			mDigitalClock.updateTime();
 		} catch (NullPointerException npe) {
