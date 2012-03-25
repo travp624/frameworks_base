@@ -19,32 +19,33 @@
 
 <!-- This is the general lock screen which shows information about the
   state of the device, as well as instructions on how to get past it
-  depending on the state of the device.  It is the same for landscape
-  and portrait.-->
+  depending on the state of the device.-->
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="center_horizontal">
+	android:layout_height="match_parent">
 
 	<com.android.internal.policy.impl.LockscreenWallpaper
 		android:id="@+id/lockscreen_wallpaper"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent" />
 
-	<GridLayout
+	<GridLayout 
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:gravity="center_horizontal">
+		android:orientation="vertical"
+		android:rowCount="10"
+		android:id="@+id/root"
+		android:clipChildren="false">
 
+		<!-- Column 0 -->
 		<com.android.internal.widget.DigitalClock 
 			android:id="@+id/time"
-			android:layout_marginTop="@dimen/keyguard_lockscreen_status_line_clockfont_top_margin"
-			android:layout_marginBottom="12dip"
-			android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
-			android:layout_gravity="center">
+			android:layout_marginTop="80dip"
+			android:layout_marginBottom="8dip"
+			android:layout_gravity="center"
+			android:layout_rowSpan="2">
 
 			<!-- Because we can't have multi-tone fonts, we render two TextViews, one on
 			top of the other. Hence the redundant layout... -->
@@ -74,40 +75,34 @@
 
 		</com.android.internal.widget.DigitalClock>
 
-		<LinearLayout
-			android:orientation="horizontal"
-			android:layout_gravity="center"
-			android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin">
+		<TextView
+			android:id="@+id/date"
+			android:layout_width="0dip"
+			android:layout_gravity="fill_horizontal"
+			android:gravity="center"
+			android:layout_marginTop="6dip"
+			android:singleLine="true"
+			android:ellipsize="marquee"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
 
-			<TextView
-				android:id="@+id/date"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:singleLine="true"
-				android:ellipsize="marquee"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
-
-			<TextView
-				android:id="@+id/alarm_status"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="16dip"
-				android:singleLine="true"
-				android:gravity="center"
-				android:ellipsize="marquee"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-				android:drawablePadding="4dip" />
-
-		</LinearLayout>
+		<TextView
+			android:id="@+id/alarm_status"
+			android:singleLine="true"
+			android:ellipsize="marquee"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+			android:drawablePadding="4dip"
+			android:layout_marginTop="4dip"
+			android:layout_gravity="center" />
 
 		<com.android.internal.policy.impl.WeatherText
 			android:id="@+id/weather"
+			android:layout_width="0dip"
 			android:layout_gravity="center_horizontal"
-			android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
-			android:singleLine="true"
 			android:gravity="center"
+			android:layout_marginTop="4dip"
+			android:singleLine="true"
 			android:ellipsize="marquee"
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
@@ -118,13 +113,15 @@
 			android:inAnimation="@anim/calendar_fadein"
 			android:outAnimation="@anim/calendar_fadeout"
 			android:layout_gravity="center"
-			android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
 			android:drawablePadding="4dip" />
+		
 
 		<TextView
 			android:id="@+id/status1"
-			android:layout_gravity="center"
-			android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
+			android:layout_width="0dip"
+			android:layout_gravity="fill_horizontal"
+			android:gravity="center"
+			android:layout_marginTop="4dip"
 			android:singleLine="true"
 			android:ellipsize="marquee"
 			android:textAppearance="?android:attr/textAppearanceMedium"
@@ -133,87 +130,63 @@
 
 		<TextView
 			android:id="@+id/status2"
-			android:layout_gravity="center"
-			android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
+			android:layout_width="0dip"
+			android:layout_gravity="fill_horizontal"
+			android:gravity="center"
+			android:layout_marginTop="4dip"
 			android:singleLine="true"
 			android:ellipsize="marquee"
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
 			android:drawablePadding="4dip" />
 
-		<Space 
-			android:layout_gravity="fill" />
+		<Space android:layout_gravity="fill" />
 
-		<!-- emergency call button shown when sim is PUKd and tab_selector is hidden -->
+		<TextView
+			android:id="@+id/carrier"
+			android:layout_width="0dip"
+			android:layout_gravity="fill_horizontal"
+			android:layout_marginBottom="12dip"
+			android:gravity="center"
+			android:singleLine="true"
+			android:ellipsize="marquee"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+			android:textColor="?android:attr/textColorSecondary" />
+
 		<Button
 			android:id="@+id/emergencyCallButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="4dip"
-			android:layout_marginRight="16dip"
 			android:layout_gravity="center"
 			android:drawableLeft="@*android:drawable/lockscreen_emergency_button"
-			style="?android:attr/buttonBarButtonStyle"
-			android:drawablePadding="4dip"
 			android:text="@*android:string/lockscreen_emergency_call"
-			android:visibility="gone"
+			style="?android:attr/buttonBarButtonStyle"
+			android:drawablePadding="8dip"
+			android:visibility="gone" />
+
+		<!-- Column 1 -->
+		<Space android:layout_width="64dip" android:gravity="fill_vertical" android:layout_rowSpan="10" />
+
+		<!-- Column 2 -->
+		<com.android.internal.widget.SlidingTab
+			android:id="@+id/unlock_widget2"
+			android:orientation="vertical"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_alignParentBottom="true"
 			/>
 
-		<RelativeLayout
-			android:layout_width="match_parent"
-			android:layout_height="402dip">
-
-			<com.android.internal.widget.SlidingTab
-				android:id="@+id/unlock_widget"
-				android:orientation="horizontal"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_alignParentBottom="true"
-				android:layout_marginBottom="60dip"
-				/>
-
-			<TextView
-				android:id="@+id/carrier"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_alignParentBottom="true"
-				android:layout_marginBottom="12dip"
-				android:gravity="center_horizontal"
-				android:singleLine="true"
-				android:ellipsize="marquee"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-				android:textColor="?android:attr/textColorSecondary"
-				/>
-
-		</RelativeLayout>
-
-		<LinearLayout
-			android:orientation="horizontal"
-			android:layout_width="match_parent"
-			style="?android:attr/buttonBarStyle"
-			android:gravity="center"
-			android:weightSum="2">
-
-			<Button 
-				android:id="@+id/emergencyCallButton"
-				android:layout_gravity="center_horizontal"
-				android:layout_width="0dip"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				style="?android:attr/buttonBarButtonStyle"
-				android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-				android:text="@*android:string/lockscreen_emergency_call"
-				android:drawableLeft="@*android:drawable/lockscreen_emergency_button"
-				android:drawablePadding="0dip"
-				android:visibility="gone"
-			/>
-
-		</LinearLayout>
+		<com.android.internal.widget.SlidingTab
+			android:id="@+id/unlock_widget"
+			android:orientation="vertical"
+			android:layout_width="400dip"
+			android:layout_rowSpan="10"
+			android:layout_height="match_parent"
+			android:layout_alignParentBottom="true" />
 
 		<!-- Music transport control -->
-		<include 
-			android:id="@+id/transport"
+		<include android:id="@+id/transport"
 			layout="@layout/keyguard_transport_control"
 			android:layout_row="0"
 			android:layout_column="0"
@@ -221,16 +194,14 @@
 			android:layout_columnSpan="1"
 			android:layout_gravity="fill"
 			android:layout_width="0dip"
-			android:layout_height="0dip"
-			/>
+			android:layout_height="0dip" />
 		
 		<!-- Area to overlay FaceLock -->
-		<TextView 
-			android:id="@+id/faceLockAreaView"
+		<TextView android:id="@+id/faceLockAreaView"
 			android:visibility="invisible"
-			android:layout_row="8"
-			android:layout_column="0"
-			android:layout_rowSpan="2"
+			android:layout_row="0"
+			android:layout_column="2"
+			android:layout_rowSpan="10"
 			android:layout_columnSpan="1"
 			android:layout_gravity="fill"
 			android:layout_width="0dip"
@@ -238,5 +209,4 @@
 			android:background="@color/facelock_color_background" />
 
 	</GridLayout>
-
 </RelativeLayout>
