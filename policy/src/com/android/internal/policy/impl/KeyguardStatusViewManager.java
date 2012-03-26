@@ -487,7 +487,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                         tv.setWidth((int) (findViewById(R.id.time).getWidth() * 1.2));
                         tv.setSingleLine(true);
                         tv.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
-                        tv.setGravity(android.view.Gravity.RIGHT);
+                        tv.setGravity(android.view.Gravity.CENTER);
                         if (mCalendarUsingColors)
                             tv.setTextColor(e.color);
                         mCalendarView.addView(tv);
