@@ -69,12 +69,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final int WAIT_FOR_ANIMATION_TIMEOUT = 0;
     private static final int STAY_ON_WHILE_GRABBED_TIMEOUT = 30000;
-    
+
     public static final int LAYOUT_STOCK = 2;
     public static final int LAYOUT_QUAD = 6;
     public static final int LAYOUT_OCTO = 8;
-    public static final int LAYOUT_AOSP = 0;
-    
+    public static final int LAYOUT_HONEY = 0;
+    public static final int LAYOUT_AOSP = 1;
+
     private boolean mLockscreen4Tab = false || (Settings.System.getInt(
 		mContext.getContentResolver(),
 		Settings.System.LOCKSCREEN_4TAB, 0) == 1);
@@ -196,7 +197,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void updateResources() {
         }
 
-		/** {@inheritDoc} */
+        /** {@inheritDoc} */
 		public void onTrigger(View v, int whichHandle) {
 			if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
 				Intent callIntent = new Intent(Intent.ACTION_DIAL);
@@ -204,27 +205,34 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 				getContext().startActivity(callIntent);
 				mCallback.goToUnlockScreen();
 			} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
+				Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+                mContext.startActivity(intent);
+                mCallback.goToUnlockScreen();
 				if (mCustomAppActivity != null) {
 					runActivity(mCustomAppActivity);
 				}
 			}
 		}
 
-		/** {@inheritDoc} */
+        /** {@inheritDoc} */
 		public void onGrabbedStateChange(View v, int grabbedState) {
 			mCallback.pokeWakelock();
 		}
 
-		public View getView() {
-			return mSlidingTab2;
-		}
+        public View getView() {
+            return mSlidingTab2;
+        }
 
-		public void reset(boolean animate) {
-			mSlidingTab2.reset(animate);
-		}
+        public void reset(boolean animate) {
+            mSlidingTab2.reset(animate);
+        }
 
-		public void ping() {
-		}
+        public void ping() {
+        }
     }
 
     class WaveViewMethods implements WaveView.OnTriggerListener, UnlockWidgetCommonMethods {
@@ -646,6 +654,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
                             true);
                 break;
+			case LAYOUT_HONEY:
+				if (landscape)
+					inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this,
+						true);
+				else
+					inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
+						true);
+				break;
             case LAYOUT_AOSP:
 				if (landscape)
 					inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
