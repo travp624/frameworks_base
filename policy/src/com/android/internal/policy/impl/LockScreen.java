@@ -197,31 +197,31 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void updateResources() {
         }
 
-        /** {@inheritDoc} */
-		public void onTrigger(View v, int whichHandle) {
-			if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
-				Intent callIntent = new Intent(Intent.ACTION_DIAL);
-				callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				getContext().startActivity(callIntent);
-				mCallback.goToUnlockScreen();
-			} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
-				Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
-                mContext.startActivity(intent);
-                mCallback.goToUnlockScreen();
-				if (mCustomAppActivity != null) {
-					runActivity(mCustomAppActivity);
+		/** {@inheritDoc} */
+			public void onTrigger(View v, int whichHandle) {
+				if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
+						Intent callIntent = new Intent(Intent.ACTION_DIAL);
+						callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						getContext().startActivity(callIntent);
+						mCallback.goToUnlockScreen();
+				} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
+			Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+            mContext.startActivity(intent);
+            mCallback.goToUnlockScreen();
+						if (mCustomAppActivity != null) {
+							runActivity(mCustomAppActivity);
+						}
 				}
 			}
-		}
 
         /** {@inheritDoc} */
-		public void onGrabbedStateChange(View v, int grabbedState) {
-			mCallback.pokeWakelock();
-		}
+			public void onGrabbedStateChange(View v, int grabbedState) {
+					mCallback.pokeWakelock();
+			}
 
         public View getView() {
             return mSlidingTab2;
