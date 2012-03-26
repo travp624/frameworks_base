@@ -186,41 +186,41 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void ping() {
         }
     }
-
+    
     class SlidingTabMethods2 implements SlidingTab.OnTriggerListener, UnlockWidgetCommonMethods {
         private final SlidingTab mSlidingTab2;
 
-		SlidingTabMethods2(SlidingTab slidingTab) {
+        SlidingTabMethods2(SlidingTab slidingTab) {
             mSlidingTab2 = slidingTab;
         }
 
         public void updateResources() {
         }
 
-		/** {@inheritDoc} */
+			/** {@inheritDoc} */
 			public void onTrigger(View v, int whichHandle) {
 				if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
-						Intent callIntent = new Intent(Intent.ACTION_DIAL);
-						callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						getContext().startActivity(callIntent);
-						mCallback.goToUnlockScreen();
+					Intent callIntent = new Intent(Intent.ACTION_DIAL);
+					callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					getContext().startActivity(callIntent);
+					mCallback.goToUnlockScreen();
 				} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
-			Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
-            mContext.startActivity(intent);
-            mCallback.goToUnlockScreen();
-						if (mCustomAppActivity != null) {
-							runActivity(mCustomAppActivity);
-						}
+					Intent intent = new Intent(Intent.ACTION_MAIN);
+					intent.addCategory(Intent.CATEGORY_LAUNCHER);
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+							| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+					intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+					mContext.startActivity(intent);
+					mCallback.goToUnlockScreen();
+					if (mCustomAppActivity != null) {
+						runActivity(mCustomAppActivity);
+					}
 				}
 			}
 
-        /** {@inheritDoc} */
+			/** {@inheritDoc} */
 			public void onGrabbedStateChange(View v, int grabbedState) {
-					mCallback.pokeWakelock();
+				mCallback.pokeWakelock();
 			}
 
         public View getView() {
@@ -888,9 +888,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.LOCKSCREEN_LAYOUT), false,
                     this);
-	    resolver.registerContentObserver(
-		    Settings.System.getUriFor(Settings.System.LOCKSCREEN_TEXT_COLOR), false,
-		    this);
+			resolver.registerContentObserver(
+					Settings.System.getUriFor(Settings.System.LOCKSCREEN_TEXT_COLOR), false,
+					this);
             updateSettings();
         }
 
@@ -935,15 +935,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     }
   
-	private void runActivity(String uri) {
-		try {
-			Intent i = Intent.parseUri(uri, 0);
-			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-						| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-			mContext.startActivity(i);
-			mCallback.goToUnlockScreen();
-		} catch (URISyntaxException e) {
-		} catch (ActivityNotFoundException e) {
+		private void runActivity(String uri) {
+			try {
+				Intent i = Intent.parseUri(uri, 0);
+				i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+								| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+				mContext.startActivity(i);
+				mCallback.goToUnlockScreen();
+			} catch (URISyntaxException e) {
+			} catch (ActivityNotFoundException e) {
+			}
 		}
-	}
 }
