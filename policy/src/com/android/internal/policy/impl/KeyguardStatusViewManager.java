@@ -17,7 +17,9 @@
 package com.android.internal.policy.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import libcore.util.MutableInt;
 import android.content.ContentResolver;
@@ -72,6 +74,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private static final int OWNER_INFO = 14;
     private static final int BATTERY_INFO = 15;
     private static final int WEATHER_INFO = 16;
+    private static final int CALENDAR_INFO = 17;
     private static final int COLOR_WHITE = 0xFFFFFFFF;
 
     public static final String EXTRA_CITY = "city";
@@ -106,6 +109,8 @@ class KeyguardStatusViewManager implements OnClickListener {
     private boolean mShowingBatteryInfo = false;
 
     private Intent mWeatherInfo = null; // being tricky
+    private boolean mCalendarUsingColors = true;
+    private ArrayList<EventBundle> mCalendarEvents = null;
 
     private boolean mLockAlwaysBattery;
 
@@ -238,15 +243,11 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         resetStatusInfo();
         refreshDate();
-        updateOwnerInfo();
-        updateWeatherInfo();
-		updateCalendar();
-		updateColors();
 
         // Required to get Marquee to work.
         final View scrollableViews[] = {
                 mCarrierView, mDateView, mStatus1View, mOwnerInfoView,
-                mAlarmStatusView
+                mAlarmStatusView, mWeatherView, mCalendarView
         };
         for (View v : scrollableViews) {
             if (v != null) {
@@ -339,6 +340,10 @@ class KeyguardStatusViewManager implements OnClickListener {
                 case WEATHER_INFO:
                     updateWeatherInfo();
                     break;
+                case CALENDAR_INFO:
+					updateCalendar();
+					updateColors();
+					break;
                 default:
                     ;
             }
@@ -416,7 +421,9 @@ class KeyguardStatusViewManager implements OnClickListener {
     private void updateWeatherInfo() {
         final ContentResolver res = getContext().getContentResolver();
         final boolean weatherInfoEnabled = Settings.System.getInt(res,
-                Settings.System.LOCKSCREEN_WEATHER, 0) == 1  && Settings.System.getInt(res, Settings.System.USE_WEATHER, 0) == 1;;
+                Settings.System.LOCKSCREEN_WEATHER, 0) == 1  
+                && Settings.System.getInt(res, Settings.System.USE_WEATHER, 0) == 1;
+        ;
         final boolean weatherLocationEnabled = Settings.System.getInt(res,
                 Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
 
@@ -425,21 +432,21 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (mWeatherInfo != null) {
                 if (mWeatherInfo.getCharSequenceExtra(EXTRA_CITY) != null) {
                     wText = (weatherLocationEnabled) ? (mWeatherInfo
-                        .getCharSequenceExtra(EXTRA_CITY)
-                        + ", "
-                        + mWeatherInfo.getCharSequenceExtra(EXTRA_TEMP) + ", "
-                        + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION)) : (mWeatherInfo
-                        .getCharSequenceExtra(EXTRA_TEMP) + ", "
-                        + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
+							.getCharSequenceExtra(EXTRA_CITY)
+							+ ", "
+							+ mWeatherInfo.getCharSequenceExtra(EXTRA_TEMP) + ", "
+							+ mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION)) : (mWeatherInfo
+							.getCharSequenceExtra(EXTRA_TEMP) + ", "
+							+ mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
                     mWeatherView.setText(wText);
-                    mWeatherView.setWidth((int)(findViewById(R.id.time).getWidth()*1.2));
+                    mWeatherView.setWidth((int) (findViewById(R.id.time).getWidth() * 1.2));
                 }
             }
             mWeatherView.setVisibility((weatherInfoEnabled && !wText.isEmpty()) ? View.VISIBLE
                     : View.GONE);
         }
     }
-    
+
     private void updateCalendar() {
         ContentResolver resolver = getContext().getContentResolver();
         boolean calendarEventsEnabled = (Settings.System.getInt(resolver,
@@ -450,43 +457,54 @@ class KeyguardStatusViewManager implements OnClickListener {
                 Settings.System.LOCKSCREEN_CALENDAR_FLIP, 0) == 1);
         int interval = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_CALENDAR_INTERVAL, 2500);
-        
+        long range = Settings.System.getLong(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR_RANGE, 86400000);
+        boolean hideOnGoing = (Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR_HIDE_ONGOING, 0) == 1);
+        mCalendarUsingColors = (Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_CALENDAR_USE_COLORS, 0) == 1);
+
         if (calendarSources == null)
-			calendarSources = "";			
+            calendarSources = "";
         try {
-            if (calendarEventsEnabled) {
-				ArrayList<EventBundle> events = getCalendarEvents(resolver, calendarSources, multipleEventsEnabled);
-                mCalendarView.removeAllViews();
-                Log.d(TAG, "we have " + String.valueOf(events.size()) + " event(s)");
-                
-                for (EventBundle e : events) {
-					Log.d(TAG, "eventloop, adding title: " + e.title);
-                    TextView tv = new TextView(getContext());
-                    tv.setText(e.title + (e.isTomorrow ? ", Tomorrow " : " ")
-                            + ((e.allDay) ? "all-day" : "at "
-                            + DateFormat.format(DateFormat.is24HourFormat(getContext()) ? "kk:mm" : "hh:mm a", e.begin).toString())
-                            + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
-                    tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
-                    tv.setWidth((int)(findViewById(R.id.time).getWidth()*1.2)); 
-                    tv.setSingleLine(true);
-                    tv.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
-                    tv.setGravity(android.view.Gravity.CENTER);
-                    mCalendarView.addView(tv);
-                }
-                Log.d(TAG, "successfully added " + String.valueOf(mCalendarView.getChildCount()) + " textviews");
-                mCalendarView.setFlipInterval(interval);
-                mCalendarView.setVisibility(View.VISIBLE);
-                mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
-                if (!multipleEventsEnabled || events.size() <= 1) {
-					Log.d(TAG, "single event");
-                    mCalendarView.stopFlipping();
+            getCalendarEvents(resolver, calendarSources, multipleEventsEnabled, hideOnGoing, range);
+
+            if (mCalendarView != null) {
+                if (calendarEventsEnabled) {
+                    mCalendarView.removeAllViews();
+                    Log.d(TAG, "we have " + String.valueOf(mCalendarEvents.size()) + " event(s)");
+
+                    for (EventBundle e : mCalendarEvents) {
+                        TextView tv = new TextView(getContext());
+                        tv.setText(e.title
+                                + (!e.dayString.isEmpty() ? e.dayString : "")
+                                + ((e.allDay) ? " all-day " : " at "
+                                        + DateFormat.format(
+                                                DateFormat.is24HourFormat(getContext()) ? "kk:mm"
+                                                        : "hh:mm a", e.begin).toString())
+                                + (!e.location.isEmpty() ? " (" + e.location + ")" : ""));
+                        tv.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
+                        tv.setWidth((int) (findViewById(R.id.time).getWidth() * 1.2));
+                        tv.setSingleLine(true);
+                        tv.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
+                        tv.setGravity(android.view.Gravity.RIGHT);
+                        if (mCalendarUsingColors)
+                            tv.setTextColor(e.color);
+                        mCalendarView.addView(tv);
+                    }
+                    mCalendarView.setFlipInterval(interval);
+                    mCalendarView.setVisibility(View.VISIBLE);
+                    mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
+                    if (!multipleEventsEnabled || mCalendarEvents.size() <= 1) {
+                        mCalendarView.stopFlipping();
+                    } else {
+                        Log.d(TAG, "multiple events, flip that shit");
+                        mCalendarView.startFlipping();
+                    }
                 } else {
-					Log.d(TAG, "multiple events, flip that shit");
-                    mCalendarView.startFlipping();
+                    Log.d(TAG, "hide calendar");
+                    mCalendarView.setVisibility(View.GONE);
                 }
-            } else {
-				Log.d(TAG, "hide calendar");
-                mCalendarView.setVisibility(View.GONE);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -809,6 +827,10 @@ class KeyguardStatusViewManager implements OnClickListener {
             mWeatherInfo = weatherIntent;
             update(WEATHER_INFO, null);
         }
+        
+        public void onRefreshCalendarInfo() {
+			update(CALENDAR_INFO, null);
+		}
 
         public void onTimeChanged() {
             refreshDate();
@@ -874,17 +896,20 @@ class KeyguardStatusViewManager implements OnClickListener {
     }
 
     public void updateColors() {
-	if (DEBUG) Log.d(TAG, "Lets update the colors");
+		if (DEBUG)
+			Log.d(TAG, "Lets update the colors");
 	ContentResolver resolver = getContext().getContentResolver();
 	int color = Settings.System.getInt(resolver,
-	    Settings.System.LOCKSCREEN_TEXT_COLOR, COLOR_WHITE);
+			Settings.System.LOCKSCREEN_TEXT_COLOR, COLOR_WHITE);
 
 		// carrier text color
 		try {
 			mCarrierView.setTextColor(color);
-			if (DEBUG) Log.d(TAG, String.format("Setting mCarrierview text color %d", color));
+			if (DEBUG)
+				Log.d(TAG, String.format("Setting mCarrierview text color %d", color));
 		} catch (NullPointerException ne) {
-			if (DEBUG) ne.printStackTrace();
+			if (DEBUG)
+				ne.printStackTrace();
 		}
 
 		// date text color
@@ -898,104 +923,135 @@ class KeyguardStatusViewManager implements OnClickListener {
 		// status text color
 		try {
 			mStatus1View.setTextColor(color);
-			if (DEBUG) Log.d(TAG, String.format("Settings mStatus1View DATE text color to %d", color));
+			if (DEBUG)
+				Log.d(TAG, String.format("Settings mStatus1View DATE text color to %d", color));
 		} catch (NullPointerException ne) {
-			if (DEBUG) ne.printStackTrace();
+			if (DEBUG)
+				ne.printStackTrace();
 		}
+        
+        // calendar view
+        try {
+            if (!mCalendarUsingColors) {
+				for (int i = 0; i < mCalendarView.getChildCount(); i++) {
+					((TextView) mCalendarView.getChildAt(i)).setTextColor(color);
+				}
+				if (DEBUG)
+					Log.d(TAG, String.format("Setting mWeatherView DATE text color to %d", color));
+			}
+        } catch (NullPointerException ne) {
+            if (DEBUG)
+				ne.printStackTrace();
+        }
 		
 		// owner text color
 		try {
 			mOwnerInfoView.setTextColor(color);
-			if (DEBUG) Log.d(TAG, String.format("Setting mOwnerInfoView DATE text color to %d", color));
+			if (DEBUG)
+				Log.d(TAG, String.format("Setting mOwnerInfoView DATE text color to %d", color));
 		} catch (NullPointerException ne) {
-			if (DEBUG) ne.printStackTrace();
+			if (DEBUG)
+				ne.printStackTrace();
 		}
 
 		// alarm text color
 		try {
 			mAlarmStatusView.setTextColor(color);
-			if (DEBUG) Log.d(TAG, String.format("Settings mAlarmStatusView DATE text color to %d", color));
+			if (DEBUG)
+				Log.d(TAG, String.format("Settings mAlarmStatusView DATE text color to %d", color));
 		} catch (NullPointerException ne) {
-			if (DEBUG) ne.printStackTrace();
+			if (DEBUG)
+				ne.printStackTrace();
 		}
 		
 		// weather text color
 		try {
 			mWeatherView.setTextColor(color);
-			if (DEBUG) Log.d(TAG, String.format("Settings mWeatherView DATE text color to %d", color));
+			if (DEBUG)
+				Log.d(TAG, String.format("Settings mWeatherView DATE text color to %d", color));
 		} catch (NullPointerException ne) {
-			if (DEBUG) ne.printStackTrace();
+			if (DEBUG)
+				ne.printStackTrace();
 		}
-        
-        // calendar view
-        try {
-            for (int i = 0; i < mCalendarView.getChildCount(); i++) {
-                ((TextView) mCalendarView.getChildAt(i)).setTextColor(color);
-            }
-            if (DEBUG) Log.d(TAG, String.format("Setting mWeatherView DATE text color to %d", color));
-        } catch (NullPointerException ne) {
-            if (DEBUG) ne.printStackTrace();
-        }
 
 		// emergency call button text color
 		try {
 			mEmergencyCallButton.setTextColor(color);
-			if (DEBUG) Log.d(TAG, String.format("Settings mEmergencyCallButton text color to %d", color));
+			if (DEBUG)
+				Log.d(TAG, String.format("Settings mEmergencyCallButton text color to %d", color));
 		} catch (NullPointerException ne) {
-			if (DEBUG) ne.printStackTrace();
+			if (DEBUG)
+				ne.printStackTrace();
 		}
     }
-    
-    private ArrayList<EventBundle> getCalendarEvents(ContentResolver resolver, String sources, boolean multipleEvents) {
-        
-        ArrayList<EventBundle> events = new ArrayList<EventBundle>();
-                
-        Date now = new Date();
+
+    private void getCalendarEvents(ContentResolver resolver, String sources,
+            boolean multipleEvents, boolean hideOnGoing, long range) {
+
+        mCalendarEvents = new ArrayList<EventBundle>();
+
+        Calendar now = Calendar.getInstance();
+
         Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
-        ContentUris.appendId(builder, now.getTime());
-        ContentUris.appendId(builder, now.getTime() + DateUtils.DAY_IN_MILLIS);
-        String selection = "((" + CalendarContract.Instances.CALENDAR_ID
-				+ " IN ( " + sources + " )) AND ( " + CalendarContract.Instances.BEGIN
-				+ " > " + now.getTime() + " ))";
-        
+        ContentUris.appendId(builder, now.getTimeInMillis());
+        ContentUris.appendId(builder, now.getTimeInMillis() + range);
+        String selection = "(( " + CalendarContract.Instances.CALENDAR_ID
+                + " IN ( " + sources + " ))"
+                + (hideOnGoing ? " AND ( " + CalendarContract.Instances.BEGIN
+                        + " > " + now.getTimeInMillis() + " ))" : ")");
+
         Cursor eventCur = resolver.query(builder.build(), new String[] {
-            CalendarContract.Instances.TITLE,
-            CalendarContract.Instances.BEGIN,
-            CalendarContract.Instances.EVENT_LOCATION,
-            CalendarContract.Instances.ALL_DAY }, selection, null,
-            CalendarContract.Instances.START_DAY + " ASC, "
-                + CalendarContract.Instances.START_MINUTE + " ASC");
-        
+                CalendarContract.Instances.TITLE,
+                CalendarContract.Instances.BEGIN,
+                CalendarContract.Instances.EVENT_LOCATION,
+                CalendarContract.Instances.ALL_DAY,
+                CalendarContract.Instances.CALENDAR_COLOR
+        }, selection, null,
+                CalendarContract.Instances.START_DAY + " ASC, "
+                        + CalendarContract.Instances.START_MINUTE + " ASC");
+
         if (!multipleEvents) {
             eventCur.moveToFirst();
-            events.add(new EventBundle(eventCur.getString(0),
+            mCalendarEvents.add(new EventBundle(eventCur.getString(0),
                     eventCur.getLong(1), eventCur.getString(2),
-                    now, (eventCur.getInt(3) != 0)));
+                    now, (eventCur.getInt(3) != 0), eventCur.getInt(4)));
         } else {
             while (eventCur.moveToNext()) {
-                events.add(new EventBundle(eventCur.getString(0),
+                mCalendarEvents.add(new EventBundle(eventCur.getString(0),
                         eventCur.getLong(1), eventCur.getString(2),
-                        now, (eventCur.getInt(3) != 0)));
+                        now, (eventCur.getInt(3) != 0), eventCur.getInt(4)));
             }
         }
-        
         eventCur.close();
-        return events;
     }
-    
+
     private class EventBundle {
         public String title;
-        public Date begin;
+        public Calendar begin;
         public String location;
-        public boolean isTomorrow;
+        public String dayString;
         public boolean allDay;
-        
-        EventBundle(String s, long b, String l, Date now, boolean a) {
+        public int color;
+
+        EventBundle(String s, long b, String l, Calendar now, boolean a, int c) {
             title = s;
-            begin = new Date(b);
+            begin = Calendar.getInstance();
+            begin.setTimeInMillis(b);
             location = (l == null) ? "" : l;
-            isTomorrow = (begin.getDay() > now.getDay() ? true : false);
+            int beginDay = begin.get(Calendar.DAY_OF_YEAR);
+            int today = now.get(Calendar.DAY_OF_YEAR);
+            if (beginDay == today) { // today
+                dayString = "";
+            } else if (today + 1 == beginDay || (today >= 365 && beginDay == 1)) { // tomorrow
+
+                dayString = ", Tomorrow";
+            } else { // another day of week
+                dayString = ", "
+                        + begin.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG,
+                                Locale.getDefault());
+            }
             allDay = a;
+            color = c;
         }
-    } 	
+    }
 }

@@ -1367,6 +1367,11 @@ public class KeyguardViewMediator implements KeyguardViewCallback,
         // ignored
     }
 
+	/** {@inheritDoc} */
+	public void onRefreshCalendarInfo() {
+		//ignored
+	}
+
     /** {@inheritDoc} */
     public void onRefreshCarrierInfo(CharSequence plmn, CharSequence spn) {
         // ignored
