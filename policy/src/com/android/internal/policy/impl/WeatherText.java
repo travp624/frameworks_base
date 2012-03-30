@@ -44,7 +44,7 @@ public class WeatherText extends TextView {
         super(context, attrs);
         setText("");
         ContentResolver resolver = mContext.getContentResolver();
-        showLocation = Settings.System.getInt(resolver, Settings.System.WEATHER_SHOW_LOCATION, 0) == 1);
+        showLocation = Settings.System.getInt(resolver, Settings.System.WEATHER_SHOW_LOCATION, 0) == 1;
     }
 
     @Override

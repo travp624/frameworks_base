@@ -478,12 +478,12 @@ class KeyguardStatusViewManager implements OnClickListener {
                     for (EventBundle e : mCalendarEvents) {
                         String title = e.title + (e.dayString.isEmpty() ? "" : ",");
                         String details = e.dayString
-								+ ((e.allday) ? " all-day " : " at " + DateFormat.format(
-										DateFormat.is24HourFormat(getContext()) ? "kk:mm"
-												: "hh:mm a", e.begin).toString())
-								+ (!e.location.isEmpty() ? " (" + e.location + ")" : "");
-						CalendarEntry cEntry = new CalendarEntry(getContext(), title, details, dateWidth);
-						cEntry.setLayoutParams(new LinearLayout.LayoutParams(dateWidth, -2));
+                                + ((e.allDay) ? " all-day " : " at " + DateFormat.format(
+                                        DateFormat.is24HourFormat(getContext()) ? "kk:mm"
+                                                : "hh:mm a", e.begin).toString())
+                                + (!e.location.isEmpty() ? " (" + e.location + ")" : "");
+                        CalendarEntry cEntry = new CalendarEntry(getContext(), title, details, dateWidth);
+                        cEntry.setLayoutParams(new LinearLayout.LayoutParams(dateWidth, -2));
                         if (mCalendarUsingColors)
                             cEntry.setColor(e.color);
                         mCalendarView.addView(cEntry);
