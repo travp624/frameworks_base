@@ -805,7 +805,7 @@ public class SamsungRIL extends RIL implements CommandsInterface {
 
         /* TODO: Add SignalStrength class to match RIL_SignalStrength */
         response = new int[numInts];
-
+		
 		if("SPH-D710".equals(SystemProperties.get("ro.product.device"))){
 			for(int i = 0 ; i < numInts ; i++){
 				response[i] = p.readInt();
@@ -813,7 +813,7 @@ public class SamsungRIL extends RIL implements CommandsInterface {
 
 			return response;
 		}
-
+		
         for (int i = 0 ; i < 7 ; i++) {
             response[i] = p.readInt();
         }
@@ -821,7 +821,7 @@ public class SamsungRIL extends RIL implements CommandsInterface {
         for (int i = 7; i < numInts; i++) {
             response[i] = -1;
         }
-
+		
 		if (mIsSamsungCdma)
             // Framework takes care of the rest for us.
             return response;
@@ -907,13 +907,13 @@ public class SamsungRIL extends RIL implements CommandsInterface {
                 }
             }
         } else {
-			if (mIsSamsungCdma) {
-				// On rare occasion the pppd_cdma service is left active from a stale
-				// session, causing the data call setup to fail. Make sure that pppd_cdma
-				// is stopped now, so that the next setup attempt may succeed.
-				Log.d(LOG_TAG, "Set ril.cdma.data_state=0 to make sure pppd_cdma is stopped.");
-				SystemProperties.set("ril.cdma.data_state", "0");
-			}
+            if (mIsSamsungCdma) {
+                // On rare occasion the pppd_cdma service is left active from a stale
+                // session, causing the data call setup to fail.  Make sure that pppd_cdma
+                // is stopped now, so that the next setup attempt may succeed.
+                Log.d(LOG_TAG, "Set ril.cdma.data_state=0 to make sure pppd_cdma is stopped.");
+                SystemProperties.set("ril.cdma.data_state", "0");
+            }
 
             dataCall.status = FailCause.ERROR_UNSPECIFIED.getErrorCode(); // Who knows?
         }
@@ -958,7 +958,7 @@ public class SamsungRIL extends RIL implements CommandsInterface {
 
     @Override
     public void
-	deactivateDataCall(int cid, int reason, Message result) {
+    deactivateDataCall(int cid, int reason, Message result) {
         if (mIsSamsungCdma) {
             // Disconnect: Set ril.cdma.data_state=0 to stop pppd_cdma service.
             Log.d(LOG_TAG, "Set ril.cdma.data_state=0.");

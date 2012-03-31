@@ -134,7 +134,7 @@ class HDMIService extends IHDMIService.Stub {
         if (hdmiUserOption != null && hdmiUserOption.equals("HDMI_ON"))
             mHDMIUserOption = true;
         else
-			setHDMIOutput(true);
+            setHDMIOutput(true);
     }
 
     BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {

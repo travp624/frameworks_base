@@ -841,7 +841,9 @@ public abstract class HardwareRenderer {
             if (canDraw()) {
                 if (!hasDirtyRegions()) {
                     dirty = null;
-                }
+                } else if (dirty != null) {
+					dirty.intersect(0, 0, mWidth, mHeight);
+				}
                 attachInfo.mIgnoreDirtyState = true;
                 attachInfo.mDrawingTime = SystemClock.uptimeMillis();
 

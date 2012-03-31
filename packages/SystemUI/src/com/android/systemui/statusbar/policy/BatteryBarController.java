@@ -20,7 +20,7 @@ import android.widget.LinearLayout;
 
 public class BatteryBarController extends LinearLayout {
 
-	private static final String TAG = "BatteryBarController";
+    private static final String TAG = "BatteryBarController";
 
     BatteryBar mainBar;
     BatteryBar alternateStyleBar;
@@ -78,14 +78,15 @@ public class BatteryBarController extends LinearLayout {
         super.onAttachedToWindow();
         if (!isAttached) {
             isVertical = (getLayoutParams().height == LayoutParams.MATCH_PARENT);
-            SettingsObserver observer = new SettingsObserver(new Handler());
-            observer.observer();
-            updateSettings();
 
             isAttached = true;
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
             getContext().registerReceiver(mIntentReceiver, filter);
+
+            SettingsObserver observer = new SettingsObserver(new Handler());
+            observer.observer();
+            updateSettings();
         }
     }
 
@@ -110,11 +111,12 @@ public class BatteryBarController extends LinearLayout {
         }
         super.onDetachedFromWindow();
     }
+
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		mBatteryLevel = Prefs.getLastBatteryLevel(getContext());
-	}
+        super.onConfigurationChanged(newConfig);
+        mBatteryLevel = Prefs.getLastBatteryLevel(getContext());
+    }
 
     public void addBars() {
 
@@ -168,7 +170,6 @@ public class BatteryBarController extends LinearLayout {
     }
 
     public void updateSettings() {
-
         mStyle = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.STATUSBAR_BATTERY_BAR_STYLE, 0);
         mLocation = Settings.System.getInt(getContext().getContentResolver(),
@@ -187,5 +188,4 @@ public class BatteryBarController extends LinearLayout {
     protected boolean isLocationValid(int location) {
         return mLocationToLookFor == location;
     }
-
 }
