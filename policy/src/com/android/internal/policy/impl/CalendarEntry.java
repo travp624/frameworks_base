@@ -1,10 +1,13 @@
-
 package com.android.internal.policy.impl;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.android.internal.R;
 
 public class CalendarEntry extends LinearLayout {
 
@@ -14,24 +17,13 @@ public class CalendarEntry extends LinearLayout {
 
     public CalendarEntry(Context context, String title, String details, int width) {
         super(context);
-        this.setOrientation(LinearLayout.HORIZONTAL);
-        this.setGravity(android.view.Gravity.CENTER);
-        mTitle = new TextView(getContext());
-        mTitle.setLayoutParams(new android.widget.LinearLayout.LayoutParams(0, -2, 1));
+        View view = LayoutInflater.from(context).inflate(R.layout.calendar_entry, this);
+        
+        this.mTitle = (TextView) view.findViewById(R.id.event_title);
+        this.mDetails = (TextView) view.findViewById(R.id.event_details);
+        mTitle.setWidth(width);
         mTitle.setText(title);
-        mTitle.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
-        mTitle.setSingleLine(true);
-        mTitle.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
-        mTitle.setPadding(0, 0, 2, 0);
-        mTitle.setGravity(android.view.Gravity.CENTER);
-        mDetails = new TextView(getContext());
-        mDetails.setLayoutParams(new android.widget.LinearLayout.LayoutParams(-2, -2));
         mDetails.setText(details);
-        mDetails.setTextAppearance(getContext(), android.R.attr.textAppearanceMedium);
-        mDetails.setSingleLine(true);
-        mDetails.setPadding(2, 0, 0, 0);
-        this.addView(mTitle);
-        this.addView(mDetails);
     }
 
     public void setColor(int color) {
