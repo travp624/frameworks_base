@@ -530,9 +530,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_HOME_LONGPRESS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP), false, this)
+                    Settings.System.NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP), false, this);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
-                    Settings.Secure.KILL_APP_LONGPRESS_BACK), false, this);;
+                    Settings.Secure.KILL_APP_LONGPRESS_BACK), false, this);
             updateSettings();
         }
 
@@ -875,7 +875,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // Eat the longpress so it won't dismiss the action immediately when
         // the user lets go of the home key
         mHomePressed = false;
-        }
     }
 
     /**
@@ -1182,7 +1181,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mLongPressHomeAppString = Settings.System.getString(
                     resolver, Settings.System.NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP);
             mLongPressBackKill = (Settings.Secure.getInt(
-                    resolver, Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1)
+                    resolver, Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
         }
         if (updateRotation) {
             updateRotation(true);
