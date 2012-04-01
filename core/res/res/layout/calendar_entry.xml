@@ -7,24 +7,24 @@
     android:orientation="horizontal"
     android:gravity="center"
     android:layout_gravity="center" >
-    
+
     <TextView
         android:id="@+id/event_title"
         android:layout_width="0dp"
-    	android:layout_height="wrap_content"
-    	android:layout_weight="1"
-    	android:singleLine="true"
-    	android:ellipsize="marquee"
-    	android:gravity="center"
-    	android:textAppearance="?android:attr/textAppearanceMedium"
-    	android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
-    
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
+
     <TextView
         android:id="@+id/event_details"
         android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:singleLine="true"
-    	android:textAppearance="?android:attr/textAppearanceMedium"
-    	android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
     
-    </LinearLayout
+</LinearLayout>
