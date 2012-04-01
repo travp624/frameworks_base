@@ -1029,7 +1029,7 @@ public final class InputMethodManager {
                         + mServedView + " conn=" + mServedConnecting + ")");
                 return false;
             }
-            
+
             // If we already have a text box, then this view is already
             // connected so we want to restart it.
             if (mCurrentTextBoxAttribute == null) {
@@ -1086,7 +1086,7 @@ public final class InputMethodManager {
                 Log.w(TAG, "IME died: " + mCurId, e);
             }
         }
-        
+
         return true;
     }
 
@@ -1168,7 +1168,7 @@ public final class InputMethodManager {
             startInputInner(null, 0, 0, 0);
         }
     }
-    
+
     private boolean checkFocusNoStartInput(boolean forceNewFocus) {
         // This is called a lot, so short-circuit before locking.
         if (mServedView == mNextServedView && !forceNewFocus) {
@@ -1194,7 +1194,7 @@ public final class InputMethodManager {
             }
 
             ic = mServedInputConnection;
-            
+
             mServedView = mNextServedView;
             mCurrentTextBoxAttribute = null;
             mCompletions = null;
@@ -1256,7 +1256,7 @@ public final class InputMethodManager {
                 return;
             }
         }
-
+        
         // For some reason we didn't do a startInput + windowFocusGain, so
         // we'll just do a window focus gain and call it a day.
         synchronized (mH) {
