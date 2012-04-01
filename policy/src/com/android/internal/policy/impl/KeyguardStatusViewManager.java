@@ -341,9 +341,9 @@ class KeyguardStatusViewManager implements OnClickListener {
                     updateWeatherInfo();
                     break;
                 case CALENDAR_INFO:
-					updateCalendar();
-					updateColors();
-					break;
+                    updateCalendar();
+                    updateColors();
+                    break;
                 default:
                     ;
             }
@@ -421,7 +421,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private void updateWeatherInfo() {
         final ContentResolver res = getContext().getContentResolver();
         final boolean weatherInfoEnabled = Settings.System.getInt(res,
-                Settings.System.LOCKSCREEN_WEATHER, 0) == 1  
+                Settings.System.LOCKSCREEN_WEATHER, 0) == 1
                 && Settings.System.getInt(res, Settings.System.USE_WEATHER, 0) == 1;
         ;
         final boolean weatherLocationEnabled = Settings.System.getInt(res,
@@ -432,12 +432,12 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (mWeatherInfo != null) {
                 if (mWeatherInfo.getCharSequenceExtra(EXTRA_CITY) != null) {
                     wText = (weatherLocationEnabled) ? (mWeatherInfo
-							.getCharSequenceExtra(EXTRA_CITY)
-							+ ", "
-							+ mWeatherInfo.getCharSequenceExtra(EXTRA_TEMP) + ", "
-							+ mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION)) : (mWeatherInfo
-							.getCharSequenceExtra(EXTRA_TEMP) + ", "
-							+ mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
+                            .getCharSequenceExtra(EXTRA_CITY)
+                            + ", "
+                            + mWeatherInfo.getCharSequenceExtra(EXTRA_TEMP) + ", "
+                            + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION)) : (mWeatherInfo
+                            .getCharSequenceExtra(EXTRA_TEMP) + ", "
+                            + mWeatherInfo.getCharSequenceExtra(EXTRA_CONDITION));
                     mWeatherView.setText(wText);
                     mWeatherView.setWidth((int) (findViewById(R.id.time).getWidth() * 1.2));
                 }
@@ -476,7 +476,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     int dateWidth = (int) (findViewById(R.id.time).getWidth() * 1.2);
 
                     for (EventBundle e : mCalendarEvents) {
-                        String title = e.title + (e.dayString.isEmpty() ? "" : ",");
+                        String title = e.title + (e.dayString.isEmpty() ? " " : ", ");
                         String details = e.dayString
                                 + ((e.allDay) ? " all-day " : " at " + DateFormat.format(
                                         DateFormat.is24HourFormat(getContext()) ? "kk:mm"
@@ -488,17 +488,14 @@ class KeyguardStatusViewManager implements OnClickListener {
                             cEntry.setColor(e.color);
                         mCalendarView.addView(cEntry);
                     }
-                    mCalendarView.setFlipInterval(interval);
-                    mCalendarView.setVisibility(View.VISIBLE);
-                    mCalendarView.bringChildToFront(mCalendarView.getChildAt(0));
                     if (!multipleEventsEnabled || mCalendarEvents.size() <= 1) {
                         mCalendarView.stopFlipping();
                     } else {
-                        Log.d(TAG, "multiple events, flipping");
+                        mCalendarView.setFlipInterval(interval);
                         mCalendarView.startFlipping();
                     }
+                    mCalendarView.setVisibility(View.VISIBLE);
                 } else {
-                    Log.d(TAG, "hide calendar");
                     mCalendarView.setVisibility(View.GONE);
                 }
             }
@@ -547,10 +544,11 @@ class KeyguardStatusViewManager implements OnClickListener {
                     string = getContext().getString(R.string.lockscreen_low_battery);
                     icon.value = BATTERY_LOW_ICON;
                     if (mLockAlwaysBattery) {
-						//Show battery at low percent
-						string = getContext().getString(R.string.lockscreen_always_battery,
-								icon.value = BATTERY_LOW_ICON);
-					}
+                        // Show battery at low percent
+                        string = getContext().getString(R.string.lockscreen_always_battery,
+                                mBatteryLevel);
+                        icon.value = BATTERY_LOW_ICON;
+                    }
                 } else {
                     // Always show battery
                     string = getContext().getString(R.string.lockscreen_always_battery,
@@ -588,9 +586,10 @@ class KeyguardStatusViewManager implements OnClickListener {
                     string = getContext().getString(R.string.lockscreen_low_battery);
                     icon.value = BATTERY_LOW_ICON;
                     if (mLockAlwaysBattery) {
-                        // Show battery at low percent	
+                        // Show battery at low percent
                         string = getContext().getString(R.string.lockscreen_always_battery,
-								icon.value = BATTERY_LOW_ICON);
+                                mBatteryLevel);
+                        icon.value = BATTERY_LOW_ICON;
                     }
                 } else {
                     // Always show battery
@@ -674,8 +673,9 @@ class KeyguardStatusViewManager implements OnClickListener {
                 break;
 
             case NetworkLocked:
-                carrierText = makeCarierString(mPlmn,
-                        getContext().getText(R.string.lockscreen_network_locked_message));
+                carrierText = makeCarrierStringOnEmergencyCapable(
+                        getContext().getText(R.string.lockscreen_network_locked_message),
+                        mPlmn);
                 carrierHelpTextId = R.string.lockscreen_instructions_when_pattern_disabled;
                 break;
 
@@ -687,10 +687,9 @@ class KeyguardStatusViewManager implements OnClickListener {
                 // has some connectivity. Otherwise, it should be null or empty
                 // and just show
                 // "No SIM card"
-                carrierText = getContext().getText(R.string.lockscreen_missing_sim_message_short);
-                if (mLockPatternUtils.isEmergencyCallCapable()) {
-                    carrierText = makeCarierString(carrierText, mPlmn);
-                }
+                carrierText =  makeCarrierStringOnEmergencyCapable(
+                        getContext().getText(R.string.lockscreen_missing_sim_message_short),
+                        mPlmn);
                 carrierHelpTextId = R.string.lockscreen_missing_sim_instructions_long;
                 break;
 
@@ -701,21 +700,24 @@ class KeyguardStatusViewManager implements OnClickListener {
                 break;
 
             case SimMissingLocked:
-                carrierText = makeCarierString(mPlmn,
-                        getContext().getText(R.string.lockscreen_missing_sim_message_short));
+                carrierText =  makeCarrierStringOnEmergencyCapable(
+                        getContext().getText(R.string.lockscreen_missing_sim_message_short),
+                        mPlmn);
                 carrierHelpTextId = R.string.lockscreen_missing_sim_instructions;
                 mEmergencyButtonEnabledBecauseSimLocked = true;
                 break;
 
             case SimLocked:
-                carrierText = makeCarierString(mPlmn,
-                        getContext().getText(R.string.lockscreen_sim_locked_message));
+                carrierText = makeCarrierStringOnEmergencyCapable(
+                        getContext().getText(R.string.lockscreen_sim_locked_message),
+                        mPlmn);
                 mEmergencyButtonEnabledBecauseSimLocked = true;
                 break;
 
             case SimPukLocked:
-                carrierText = makeCarierString(mPlmn,
-                        getContext().getText(R.string.lockscreen_sim_puk_locked_message));
+                carrierText = makeCarrierStringOnEmergencyCapable(
+                        getContext().getText(R.string.lockscreen_sim_puk_locked_message),
+                        mPlmn);
                 if (!mLockPatternUtils.isPukUnlockScreenEnable()) {
                     // This means we're showing the PUK unlock screen
                     mEmergencyButtonEnabledBecauseSimLocked = true;
@@ -734,6 +736,18 @@ class KeyguardStatusViewManager implements OnClickListener {
 
         setCarrierHelpText(carrierHelpTextId);
         updateEmergencyCallButtonState(mPhoneState);
+    }
+
+
+    /*
+     * Add emergencyCallMessage to carrier string only if phone supports emergency calls.
+     */
+    private CharSequence makeCarrierStringOnEmergencyCapable(
+            CharSequence simMessage, CharSequence emergencyCallMessage) {
+        if (mLockPatternUtils.isEmergencyCallCapable()) {
+            return makeCarierString(simMessage, emergencyCallMessage);
+        }
+        return simMessage;
     }
 
     private View findViewById(int id) {
@@ -823,10 +837,10 @@ class KeyguardStatusViewManager implements OnClickListener {
             mWeatherInfo = weatherIntent;
             update(WEATHER_INFO, null);
         }
-        
+
         public void onRefreshCalendarInfo() {
-			update(CALENDAR_INFO, null);
-		}
+            update(CALENDAR_INFO, null);
+        }
 
         public void onTimeChanged() {
             refreshDate();
@@ -902,7 +916,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 		try {
 			mCarrierView.setTextColor(color);
 			if (DEBUG)
-				Log.d(TAG, String.format("Setting mCarrierview text color %d", color));
+				Log.d(TAG, String.format("Setting mCarrierView text color to %d", color));
 		} catch (NullPointerException ne) {
 			if (DEBUG)
 				ne.printStackTrace();
@@ -920,7 +934,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 		try {
 			mStatus1View.setTextColor(color);
 			if (DEBUG)
-				Log.d(TAG, String.format("Settings mStatus1View DATE text color to %d", color));
+				Log.d(TAG, String.format("Setting mStatus1View DATE text color to %d", color));
 		} catch (NullPointerException ne) {
 			if (DEBUG)
 				ne.printStackTrace();
@@ -954,7 +968,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 		try {
 			mAlarmStatusView.setTextColor(color);
 			if (DEBUG)
-				Log.d(TAG, String.format("Settings mAlarmStatusView DATE text color to %d", color));
+				Log.d(TAG, String.format("Setting mAlarmStatusView DATE text color to %d", color));
 		} catch (NullPointerException ne) {
 			if (DEBUG)
 				ne.printStackTrace();
@@ -1005,21 +1019,18 @@ class KeyguardStatusViewManager implements OnClickListener {
         }, selection, null,
                 CalendarContract.Instances.START_DAY + " ASC, "
                         + CalendarContract.Instances.START_MINUTE + " ASC");
-        if (eventCur.getCount() < 1) {
-			eventCur.close();
-			return;
-		}
-        if (!multipleEvents) {
+        
+        int events = eventCur.getCount();
+        
+        if (events > 0) {
             eventCur.moveToFirst();
+            do {
             mCalendarEvents.add(new EventBundle(eventCur.getString(0),
                     eventCur.getLong(1), eventCur.getString(2),
                     now, (eventCur.getInt(3) != 0), eventCur.getInt(4)));
-        } else {
-            while (eventCur.moveToNext()) {
-                mCalendarEvents.add(new EventBundle(eventCur.getString(0),
-                        eventCur.getLong(1), eventCur.getString(2),
-                        now, (eventCur.getInt(3) != 0), eventCur.getInt(4)));
-            }
+            if (!multipleEvents)
+                break;
+            } while (eventCur.moveToNext());
         }
         eventCur.close();
     }
@@ -1046,7 +1057,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                 dayString = "Tomorrow";
             } else { // another day of week
                 dayString = begin.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT,
-						Locale.getDefault());
+                        Locale.getDefault());
             }
             allDay = a;
             color = c;

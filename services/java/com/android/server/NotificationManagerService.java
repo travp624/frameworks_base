@@ -320,8 +320,8 @@ public class NotificationManagerService extends INotificationManager.Stub
 
             boolean queryRestart = false;
 
-	    boolean ledScreenOn = Settings.Secure.getInt(mContext.getContentResolver(),
-				Settings.Secure.LED_SCREEN_ON, 0) == 1;
+            boolean ledScreenOn = Settings.Secure.getInt(mContext.getContentResolver(),
+                    Settings.Secure.LED_SCREEN_ON, 0) == 1;
 
             if (action.equals(Intent.ACTION_PACKAGE_REMOVED)
                     || action.equals(Intent.ACTION_PACKAGE_RESTARTED)
@@ -795,8 +795,11 @@ public class NotificationManagerService extends INotificationManager.Stub
                     long identity = Binder.clearCallingIdentity();
                     try {
                         r.statusBarKey = mStatusBar.addNotification(n);
-                        mAttentionLight.pulse();
-                    } finally {
+                        if ((n.notification.flags & Notification.FLAG_SHOW_LIGHTS) != 0) {
+                            mAttentionLight.pulse();
+                        }
+                    }
+                    finally {
                         Binder.restoreCallingIdentity(identity);
                     }
                 }
@@ -1084,10 +1087,10 @@ public class NotificationManagerService extends INotificationManager.Stub
     // lock on mNotificationList
     private void updateLightsLocked()
     {
-	// Get ROMControl "flash when screen ON" flag
-	boolean ledScreenOn = Settings.Secure.getInt(
-	  mContext.getContentResolver(),
-	  Settings.Secure.LED_SCREEN_ON, 0) == 1;
+        // Get ROMControl "flash when screen ON" flag
+        boolean ledScreenOn = Settings.Secure.getInt(
+          mContext.getContentResolver(),
+          Settings.Secure.LED_SCREEN_ON, 0) == 1;
 
         // handle notification lights
         if (mLedNotification == null) {
@@ -1099,8 +1102,8 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
 
         // Don't flash while we are in a call or screen is on
-        // Depending on ROMControl "Screen ON flash" flag
-	if (mLedNotification == null || mInCall || (mScreenOn && !ledScreenOn)) {
+				// Depending on ROMControl "Screen ON flash" flag
+        if (mLedNotification == null || mInCall || (mScreenOn && !ledScreenOn)) {
             mNotificationLight.turnOff();
         } else {
             int ledARGB = mLedNotification.notification.ledARGB;

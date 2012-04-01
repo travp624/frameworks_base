@@ -543,6 +543,7 @@ import java.util.Set;
  *     <li> {@link #CATEGORY_DESK_DOCK}
  *     <li> {@link #CATEGORY_LE_DESK_DOCK}
  *     <li> {@link #CATEGORY_HE_DESK_DOCK}
+ *     <li> {@link #CATEGORY_TF101_KB_DOCK}
  *     <li> {@link #CATEGORY_CAR_MODE}
  *     <li> {@link #CATEGORY_APP_MARKET}
  * </ul>
@@ -563,6 +564,7 @@ import java.util.Set;
  *     <li> {@link #EXTRA_DOCK_STATE_LE_DESK}
  *     <li> {@link #EXTRA_DOCK_STATE_CAR}
  *     <li> {@link #EXTRA_DOCK_STATE_DESK}
+ *     <li> {@link #EXTRA_DOCK_STATE_TF101_KB}
  *     <li> {@link #EXTRA_DOCK_STATE_UNDOCKED}
  *     <li> {@link #EXTRA_DONT_KILL_APP}
  *     <li> {@link #EXTRA_EMAIL}
@@ -1136,7 +1138,7 @@ public class Intent implements Parcelable, Cloneable {
     /**
      * Activity Action: The user pressed the "Report" button in the crash/ANR dialog.
      * This intent is delivered to the package which installed the application, usually
-     * the Market.
+     * Google Play.
      * <p>Input: No data is specified. The bug report is passed in using
      * an {@link #EXTRA_BUG_REPORT} field.
      * <p>Output: Nothing.
@@ -2303,6 +2305,14 @@ public class Intent implements Parcelable, Cloneable {
     public static final String CATEGORY_HE_DESK_DOCK = "android.intent.category.HE_DESK_DOCK";
 
     /**
+     * An activity to run when device is inserted into a keyboard dock.
+     * Used with {@link #ACTION_MAIN} to launch an activity.  For more
+     * information, see {@link android.app.UiModeManager}.
+     */
+    @SdkConstant(SdkConstantType.INTENT_CATEGORY)
+    public static final String CATEGORY_TF101_KB_DOCK = "android.intent.category.TF101_KB_DOCK";
+
+    /**
      * Used to indicate that the activity can be used in a car environment.
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2318,7 +2328,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2330,7 +2340,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2342,7 +2352,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2354,7 +2364,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2366,7 +2376,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2379,7 +2389,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2391,7 +2401,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2403,7 +2413,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2416,7 +2426,7 @@ public class Intent implements Parcelable, Cloneable {
      * <p>NOTE: This should not be used as the primary key of an Intent,
      * since it will not result in the app launching with the correct
      * action and category.  Instead, use this with
-     * {@link #makeMainSelectorActivity(String, String) to generate a main
+     * {@link #makeMainSelectorActivity(String, String)} to generate a main
      * Intent with this category in the selector.</p>
      */
     @SdkConstant(SdkConstantType.INTENT_CATEGORY)
@@ -2565,7 +2575,8 @@ public class Intent implements Parcelable, Cloneable {
      * {@link android.content.Intent#EXTRA_DOCK_STATE_DESK}, or
      * {@link android.content.Intent#EXTRA_DOCK_STATE_CAR}, or
      * {@link android.content.Intent#EXTRA_DOCK_STATE_LE_DESK}, or
-     * {@link android.content.Intent#EXTRA_DOCK_STATE_HE_DESK}.
+     * {@link android.content.Intent#EXTRA_DOCK_STATE_HE_DESK}, or
+     * {@link android.content.Intent#EXTRA_DOCK_STATE_TF101_KB}.
      */
     public static final String EXTRA_DOCK_STATE = "android.intent.extra.DOCK_STATE";
 
@@ -2598,6 +2609,12 @@ public class Intent implements Parcelable, Cloneable {
      * to represent that the phone is in a digital (high end) dock.
      */
     public static final int EXTRA_DOCK_STATE_HE_DESK = 4;
+
+    /**
+     * Used as an int value for {@link android.content.Intent#EXTRA_DOCK_STATE}
+     * to represent that the device is in a keyboard dock.
+     */
+    public static final int EXTRA_DOCK_STATE_TF101_KB = 10;
 
     /**
      * Boolean that can be supplied as meta-data with a dock activity, to

@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include <binder/IPCThreadState.h>
 #include <binder/IServiceManager.h>
@@ -66,6 +68,23 @@ static int getCallingUid() {
 
 // ----------------------------------------------------------------------------
 
+#if defined(BOARD_HAVE_HTC_FFC)
+#define HTC_SWITCH_CAMERA_FILE_PATH "/sys/android_camera2/htcwc"
+static void htcCameraSwitch(int cameraId)
+{
+    char buffer[16];
+    int fd;
+
+    if (access(HTC_SWITCH_CAMERA_FILE_PATH, W_OK) == 0) {
+        snprintf(buffer, sizeof(buffer), "%d", cameraId);
+
+        fd = open(HTC_SWITCH_CAMERA_FILE_PATH, O_WRONLY);
+        write(fd, buffer, strlen(buffer));
+        close(fd);
+    }
+}
+#endif
+
 // This is ugly and only safe if we never re-create the CameraService, but
 // should be ok for now.
 static CameraService *gCameraService;
@@ -96,16 +115,6 @@ void CameraService::onFirstRef()
         for (int i = 0; i < mNumberOfCameras; i++) {
             setCameraFree(i);
         }
-    }
-
-    // Read the system property to determine if we have to use the
-    // AUDIO_STREAM_ENFORCED_AUDIBLE type.
-    char value[PROPERTY_VALUE_MAX];
-    property_get("ro.camera.sound.forced", value, "0");
-    if (strcmp(value, "0") != 0) {
-        mAudioStreamType = AUDIO_STREAM_ENFORCED_AUDIBLE;
-    } else {
-        mAudioStreamType = AUDIO_STREAM_MUSIC;
     }
 }
 
@@ -166,6 +175,10 @@ sp<ICamera> CameraService::connect(
         LOGI("Camera is disabled. connect X (pid %d) rejected", callingPid);
         return NULL;
     }
+
+#if defined(BOARD_HAVE_HTC_FFC)
+    htcCameraSwitch(cameraId);
+#endif
 
     Mutex::Autolock lock(mServiceLock);
     if (mClient[cameraId] != 0) {
@@ -295,7 +308,7 @@ void CameraService::setCameraFree(int cameraId) {
 MediaPlayer* CameraService::newMediaPlayer(const char *file) {
     MediaPlayer* mp = new MediaPlayer();
     if (mp->setDataSource(file, NULL) == NO_ERROR) {
-        mp->setAudioStreamType(mAudioStreamType);
+        mp->setAudioStreamType(AUDIO_STREAM_ENFORCED_AUDIBLE);
         mp->prepare();
     } else {
         LOGE("Failed to load CameraService sounds: %s", file);
