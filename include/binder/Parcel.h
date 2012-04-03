@@ -77,7 +77,7 @@ public:
     bool                enforceInterface(const String16& interface,
                                          IPCThreadState* threadState = NULL) const;
 #ifdef _INTERNAL_BINDER_PARCEL_
-	bool 				enforceInterface(const String16& interface) const;
+    bool                enforceInterface(const String16& interface) const;
 #endif
     bool                checkInterface(IBinder*) const;
 
