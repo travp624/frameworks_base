@@ -2697,6 +2697,13 @@ public final class Settings {
         public static final String NAVIGATION_BAR_HOME_LONGPRESS = "navigation_bar_home_longpress";
 
         /**
+         * The custom app to launch if the above is set so
+         * 
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP = "navigation_bar_home_longpress_customapp";
+
+        /**
          * Whether to show the battery bar
          * 
          * @hide
@@ -4896,14 +4903,6 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_SAVER_DATA_DELAY = "power_saver_data_delay";
-
-        /**
-         * use the lock screen timeout settings when the user turns the power off manually?
-         * Boolean value.
-         * 
-         * @hide
-         */
-        public static final String LOCK_SCREEN_LOCK_USER_OVERRIDE = "lock_screen_lock_suer_override";
 
         /**
          * @hide
