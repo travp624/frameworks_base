@@ -197,31 +197,31 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void updateResources() {
         }
 
-			/** {@inheritDoc} */
-			public void onTrigger(View v, int whichHandle) {
-				if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
-					Intent callIntent = new Intent(Intent.ACTION_DIAL);
-					callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					getContext().startActivity(callIntent);
-					mCallback.goToUnlockScreen();
-				} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
-					Intent intent = new Intent(Intent.ACTION_MAIN);
-					intent.addCategory(Intent.CATEGORY_LAUNCHER);
-					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-							| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-					intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
-					mContext.startActivity(intent);
-					mCallback.goToUnlockScreen();
-					if (mCustomAppActivity != null) {
-						runActivity(mCustomAppActivity);
-					}
+        /** {@inheritDoc} */
+		public void onTrigger(View v, int whichHandle) {
+			if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
+				Intent callIntent = new Intent(Intent.ACTION_DIAL);
+				callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				getContext().startActivity(callIntent);
+				mCallback.goToUnlockScreen();
+			} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
+				Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                intent.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+                mContext.startActivity(intent);
+                mCallback.goToUnlockScreen();
+				if (mCustomAppActivity != null) {
+					runActivity(mCustomAppActivity);
 				}
 			}
+		}
 
-			/** {@inheritDoc} */
-			public void onGrabbedStateChange(View v, int grabbedState) {
-				mCallback.pokeWakelock();
-			}
+        /** {@inheritDoc} */
+		public void onGrabbedStateChange(View v, int grabbedState) {
+			mCallback.pokeWakelock();
+		}
 
         public View getView() {
             return mSlidingTab2;
@@ -683,7 +683,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mSilentMode = isSilentMode();
 
         mCarrier = (TextView) findViewById(R.id.carrier);
-		mDigitalClock = (DigitalClock) findViewById(R.id.time);
+        mDigitalClock = (DigitalClock) findViewById(R.id.time);
 
         mUnlockWidget = findViewById(R.id.unlock_widget);
         mUnlockWidget2 = findViewById(R.id.unlock_widget2);
@@ -701,7 +701,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             slidingTabView.setOnTriggerListener(slidingTabMethods);
             mUnlockWidgetMethods = slidingTabMethods;
             SlidingTab slidingTabView2 = (SlidingTab) mUnlockWidget2;
-			slidingTabView2.setHoldAfterTrigger(true, false);
+            slidingTabView2.setHoldAfterTrigger(true, false);
             slidingTabView2.setLeftHintText(R.string.lockscreen_phone_label);
             slidingTabView2.setLeftTabResources(
                     R.drawable.ic_jog_dial_answer,
@@ -737,8 +737,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         // Update widget with initial ring state
         mUnlockWidgetMethods.updateResources();
-		// Update the settings everytime we draw lockscreen
-		updateSettings();
+        // Update the settings everytime we draw lockscreen
+        updateSettings();
 
         if (DBG)
             Log.v(TAG, "*** LockScreen accel is "
@@ -817,7 +817,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     + ", new config=" + getResources().getConfiguration());
         }
         updateConfiguration();
-		updateSettings();
+        updateSettings();
     }
 
     /** {@inheritDoc} */
@@ -853,9 +853,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public void onResume() {
         mStatusViewManager.onResume();
         postDelayed(mOnResumePing, ON_RESUME_PING_DELAY);
-		// update the settings when we resume
-		if (DEBUG) Log.d(TAG, "We are resuming and want to update settings");
-		updateSettings();
+        // update the settings when we resume
+        if (DEBUG) Log.d(TAG, "We are resuming and want to update settings");
+        updateSettings();
     }
 
     /** {@inheritDoc} */
@@ -901,9 +901,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     }
 
     private Drawable resize(Drawable image) {
-		int size = 50;
-		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());
-		
+        int size = 50;
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());
+
         Bitmap d = ((BitmapDrawable) image).getBitmap();
         Bitmap bitmapOrig = Bitmap.createScaledBitmap(d, px, px, false);
         return new BitmapDrawable(getContext().getResources(), bitmapOrig);
@@ -919,12 +919,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 		int mLockscreenColor = Settings.System.getInt(resolver,
 				Settings.System.LOCKSCREEN_TEXT_COLOR, COLOR_WHITE);
 
-		// digital clock first (see @link com.android.internal.widget.DigitalClock.updateTime())
-		try {
-			mDigitalClock.updateTime();
-		} catch (NullPointerException npe) {
-			if (DEBUG) Log.d(TAG, "date update time failed: NullPointerException");
-		}
+        // digital clock first (see @link com.android.internal.widget.DigitalClock.updateTime())
+        try {
+            mDigitalClock.updateTime();
+        } catch (NullPointerException npe) {
+            if (DEBUG) Log.d(TAG, "date update time failed: NullPointerException");
+        }
 
 		// then the rest (see @link com.android.internal.policy.impl.KeyguardStatusViewManager.updateColors())
 		try {
@@ -934,16 +934,16 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 		}
 
     }
-  
-		private void runActivity(String uri) {
-			try {
-				Intent i = Intent.parseUri(uri, 0);
-				i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-								| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-				mContext.startActivity(i);
-				mCallback.goToUnlockScreen();
-			} catch (URISyntaxException e) {
-			} catch (ActivityNotFoundException e) {
-			}
+
+	private void runActivity(String uri) {
+		try {
+			Intent i = Intent.parseUri(uri, 0);
+			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+					| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+			mContext.startActivity(i);
+			mCallback.goToUnlockScreen();
+		} catch (URISyntaxException e) {
+		} catch (ActivityNotFoundException e) {
 		}
+	}
 }

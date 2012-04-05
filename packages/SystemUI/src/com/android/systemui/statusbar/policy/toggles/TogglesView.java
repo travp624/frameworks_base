@@ -123,7 +123,7 @@ public class TogglesView extends LinearLayout {
                 newToggle = new SyncToggle(mContext);
             else if (splitToggle.equals(TOGGLE_FCHARGE))
                 newToggle = new FChargeToggle(mContext);
-            
+
             if (newToggle != null)
                 toggles.add(newToggle);
         }

@@ -155,7 +155,15 @@ LOCAL_SRC_FILES:= \
 	android_app_backup_FullBackup.cpp \
 	android_content_res_ObbScanner.cpp \
 	android_content_res_Configuration.cpp \
-    android_animation_PropertyValuesHolder.cpp
+        android_animation_PropertyValuesHolder.cpp
+
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+        LOCAL_CFLAGS += -DQCOM_HARDWARE
+	LOCAL_SRC_FILES += org_codeaurora_Performance.cpp
+endif
+ifeq ($(BOARD_USES_LEGACY_QCOM), true)
+	LOCAL_CFLAGS += -DLEGACY_QCOM
+endif
 
 LOCAL_C_INCLUDES += \
 	$(JNI_H_INCLUDE) \

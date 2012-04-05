@@ -298,7 +298,7 @@ public interface WindowManagerPolicy {
         boolean isDisplayedLw();
 
         /**
-         * Is this window considered to be gone for puposes of layout?
+         * Is this window considered to be gone for purposes of layout?
          */
         boolean isGoneForLayoutLw();
 

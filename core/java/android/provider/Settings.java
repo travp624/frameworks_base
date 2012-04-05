@@ -1519,7 +1519,6 @@ public final class Settings {
         public static final String LIGHT_FILTER_INTERVAL = "light_filter_interval";
 
         /**
-
          * Control whether the process CPU usage meter should be shown.
          */
         public static final String SHOW_PROCESSES = "show_processes";
@@ -2364,14 +2363,14 @@ public final class Settings {
          * @hide
          */
         public static final String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
-        
+
         /**
          * Setting to enable volume options.
          * 
          * @hide
          */
         public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
-        
+
         /**
          * Which layout to use to display the navigation menu at the bottom.
          * 0 = default
@@ -2460,21 +2459,21 @@ public final class Settings {
         /**
          * @hide
          */
-		public static final String STATUSBAR_CLOCK_WEEKDAY = "statubar_clock_weekday";
+        public static final String STATUSBAR_CLOCK_WEEKDAY = "statusbar_clock_weekday";
 
-	    /**
-		 * @hide
-		 */
-		public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
+        /**
+         * @hide
+         */
+        public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
 
-		/**
-		 * @hide
-		 */
-		public static final String STATUS_BAR_LAYOUT = "status_bar_layout";
+        /**
+         * @hide
+         */
+        public static final String STATUS_BAR_LAYOUT = "status_bar_layout";
 
-		/**
-		 * @hide
-		 */
+        /**
+         * @hide
+         */
         public static final String POWER_DIALOG_SHOW_POWER_SAVER = "power_dialog_show_power_saver";
 
         /**
@@ -2482,12 +2481,12 @@ public final class Settings {
          */
         public static final String POWER_DIALOG_SHOW_TORCH_TOGGLE = "power_dialog_show_torch_toggle";
         
-		/**
+        /**
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_NAVBAR_HIDE = "power_dialog_show_navbar_hide";
-        
-		/**
+
+        /**
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_SCREENSHOT = "power_dialog_show_screenshot";
@@ -2583,12 +2582,12 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_STYLE_MULTIWAVEVIEW_SILENTMODE =
                 "lockscreen_style_multiwaveview_silentmode";
-
-		/**
-		 * App to launch with custom app toggle enabled
-		 * @hide
-		 */
-		public static final String LOCKSCREEN_CUSTOM_APP_ACTIVITY = "lockscreen_custom_app_activity";
+        
+        /**
+         * App to launch with custom app toggle enabled
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_APP_ACTIVITY = "lockscreen_custom_app_activity";
 
         /**
          * Lockscreen custom app array 1 [0] - Left 2 [1] - Right 3 [2] - Top
@@ -2678,16 +2677,17 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_CALENDAR_INTERVAL = "lockscreen_calendar_interval";
 
-		/**
-		 * Setting to use lockscreen alongside secure lock
-		 * @hide
-		 */
-		public static final String SHOW_LOCK_BEFORE_UNLOCK = "show_lock_before_unlock";
+        /**
+         * Setting to use lockscreen alongside secure lock
+         * @hide
+         */
+        public static final String SHOW_LOCK_BEFORE_UNLOCK = "show_lock_before_unlock";
 
-	    /**
-		 * @hide
-		 */
-		public static final String LOCKSCREEN_TEXT_COLOR = "lockscreen_text_color";
+        /**
+         * custom lockscreen text color
+         * @hide
+         */
+        public static final String LOCKSCREEN_TEXT_COLOR = "lockscreen_text_color";
 
         /**
          * The action to take when long pressing home
@@ -2852,11 +2852,11 @@ public final class Settings {
          * @hide
          */
         public static final String WEATHER_SHOW_LOCATION = "weather_show_location";
-
-		/**
-		 * @hide
-		 */
-		public static final String WEATHER_STATUSBAR_STYLE = "weather_statusbar_style";
+        
+        /**
+         * @hide
+         */
+        public static final String WEATHER_STATUSBAR_STYLE = "weather_statusbar_style";
 
         /**
          * Whether to enable torch by long pressing power from a screen-off state
@@ -2886,31 +2886,29 @@ public final class Settings {
          */
         public static final String STATUSBAR_HIDE_SIGNAL_BARS = "statusbar_hide_signal_bars";
 
-		/**
-		 * Whether to show statusbar WiFi signal text
-		 * 
-		 * @hide
-		 * 
-		 */
-		public static final String STATUSBAR_WIFI_SIGNAL_TEXT = "statusbar_wifi_signal_text";
-		
-		/**
-		 * statusbar WiFi signal text color
-		 * 
-		 * @hide
-		 */
-		public static final String STATUSBAR_WIFI_SIGNAL_TEXT_COLOR = "statusbar_wifi_signal_text_color";
+        /**
+         * Whether to show statusbar WiFi signal text
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_WIFI_SIGNAL_TEXT = "statusbar_wifi_signal_text";
 
-		/**
-		 * @hide
-		 */
-	    public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
+        /**
+         * statusbar WIFI signal text color
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_WIFI_SIGNAL_TEXT_COLOR = "statusbar_wifi_signal_text_color";
+        /**
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
 
-		/**
-		 * @hide
-		 */
-		public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
-	}
+        /**
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
+    }
 
     /**
      * Secure system settings, containing system preferences that applications
@@ -2918,7 +2916,7 @@ public final class Settings {
      * the user must explicitly modify through the system UI or specialized
      * APIs for those values, not modified directly by applications.
      */
-	public static final class Secure extends NameValueTable {
+    public static final class Secure extends NameValueTable {
         public static final String SYS_PROP_SETTING_VERSION = "sys.settings_secure_version";
 
         // Populated lazily, guarded by class object:
@@ -4603,13 +4601,12 @@ public final class Settings {
         public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
         /**
-         * The {@link ComponentName} string of the service to be used as the voice recognition
-         * service.
-         *
+         * The {@link ComponentName} string of the service to be used as the
+         * voice recognition service.
+         * 
          * @hide
          */
         public static final String VOICE_RECOGNITION_SERVICE = "voice_recognition_service";
-
 
         /**
          * The {@link ComponentName} string of the selected spell checker service which is

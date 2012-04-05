@@ -1,19 +1,23 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
+ifeq ($(BOARD_HAVE_CODEC_SUPPORT),SAMSUNG_CODEC_SUPPORT)
+LOCAL_CFLAGS     += -DSAMSUNG_CODEC_SUPPORT
+endif
+
 LOCAL_SRC_FILES:= \
-    Layer.cpp \
-    LayerBase.cpp \
-    LayerDim.cpp \
-    LayerScreenshot.cpp	\
-    DdmConnection.cpp \
-    DisplayHardware/DisplayHardware.cpp \
+    Layer.cpp 								\
+    LayerBase.cpp 							\
+    LayerDim.cpp 							\
+    LayerScreenshot.cpp						\
+    DdmConnection.cpp						\
+    DisplayHardware/DisplayHardware.cpp 	\
     DisplayHardware/DisplayHardwareBase.cpp \
-    DisplayHardware/HWComposer.cpp \
-    GLExtensions.cpp \
-    MessageQueue.cpp \
-    SurfaceFlinger.cpp \
-    SurfaceTextureLayer.cpp \
+    DisplayHardware/HWComposer.cpp 			\
+    GLExtensions.cpp 						\
+    MessageQueue.cpp 						\
+    SurfaceFlinger.cpp 						\
+    SurfaceTextureLayer.cpp 				\
     Transform.cpp
 
 LOCAL_CFLAGS:= -DLOG_TAG=\"SurfaceFlinger\"
@@ -56,6 +60,12 @@ LOCAL_C_INCLUDES += hardware/libhardware/modules/gralloc
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
 ifneq ($(BOARD_USES_LEGACY_QCOM),true)
+ifeq ($(TARGET_HAVE_BYPASS),true)
+    LOCAL_CFLAGS += -DBUFFER_COUNT_SERVER=3
+else
+    LOCAL_CFLAGS += -DBUFFER_COUNT_SERVER=2
+endif
+
 LOCAL_SHARED_LIBRARIES += \
 	libQcomUI
 LOCAL_C_INCLUDES += hardware/qcom/display/libqcomui

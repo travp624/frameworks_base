@@ -230,8 +230,8 @@ interface IWindowManager
      */
     boolean hasNavigationBar();
 
-	/**
-	 * Lock the device immediately.
-	 */
-	void lockNow();	 
+    /**
+     * Lock the device immediately.
+     */
+    void lockNow();
 }
