@@ -25,11 +25,10 @@ public class AirplaneModeToggle extends Toggle {
 
         updateState();
         setLabel(R.string.toggle_airplane);
-       	  if (mToggle.isChecked())
-	     setIcon(R.drawable.toggle_airplane);
-	  else
-	     setIcon(R.drawable.toggle_airplane_off);
-
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_airplane);
+        else
+        	setIcon(R.drawable.toggle_airplane_off);
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -72,10 +71,10 @@ public class AirplaneModeToggle extends Toggle {
     protected void updateInternalToggleState() {
         mAirplaneMode = getAirplaneMode();
         mToggle.setChecked(mAirplaneMode);
-	  if (mToggle.isChecked())
-	     setIcon(R.drawable.toggle_airplane);
-	  else
-	     setIcon(R.drawable.toggle_airplane_off);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_airplane);
+        else
+        	setIcon(R.drawable.toggle_airplane_off);
     }
 
     @Override
@@ -84,10 +83,10 @@ public class AirplaneModeToggle extends Toggle {
             mAirplaneMode = checked;
             unsafe(checked);
         }
-	if (checked)
-	   setIcon(R.drawable.toggle_airplane);
-	else
-	   setIcon(R.drawable.toggle_airplane_off);
+        if (checked)
+        	setIcon(R.drawable.toggle_airplane);
+        else
+        	setIcon(R.drawable.toggle_airplane_off);
     }
     
     @Override

@@ -1,4 +1,3 @@
-
 package com.android.internal.policy.impl;
 
 import java.io.File;

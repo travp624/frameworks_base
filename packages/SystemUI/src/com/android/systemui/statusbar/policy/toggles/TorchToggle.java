@@ -47,10 +47,10 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
     public TorchToggle(Context context) {
         super(context);
         setLabel(R.string.toggle_torch);
-	if (mToggle.isChecked())
-           setIcon(R.drawable.toggle_torch);
-	else
-	   setIcon(R.drawable.toggle_torch_off);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_torch);
+        else
+        	setIcon(R.drawable.toggle_torch_off);
         mContext = context;
         prefs = mContext.getSharedPreferences("torch", Context.MODE_WORLD_READABLE);
         prefs.registerOnSharedPreferenceChangeListener(this);
@@ -61,20 +61,22 @@ public class TorchToggle extends Toggle implements OnSharedPreferenceChangeListe
     @Override
     protected void updateInternalToggleState() {
         mToggle.setChecked(mIsTorchOn);
+        if (mToggle.isChecked())
+        	setIcon(R.drawable.toggle_torch);
+        else
+        	setIcon(R.drawable.toggle_torch_off);
     }
 
     @Override
     protected void onCheckChanged(boolean isChecked) {
     	mToggle.setEnabled(false); // we've changed torch - let's disable until torch catches up;
         if (isChecked) {
-	    setIcon(R.drawable.toggle_torch);
             Intent i = new Intent(INTENT_TORCH_ON);
             i.setAction(INTENT_TORCH_ON);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(i);
         }
         else {
-		setIcon(R.drawable.toggle_torch_off);
         	Intent i = new Intent(INTENT_TORCH_OFF);
         	i.setAction(INTENT_TORCH_OFF);
         	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

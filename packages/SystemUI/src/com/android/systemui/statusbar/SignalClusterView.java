@@ -211,8 +211,8 @@ public class SignalClusterView
                     Settings.System.getUriFor(Settings.System.STATUSBAR_SIGNAL_TEXT), false,
                     this);
             resolver.registerContentObserver(
-					Settings.System.getUriFor(Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT), false,
-					this);
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT), false,
+                    this);
             updateSettings();
         }
 
@@ -228,7 +228,7 @@ public class SignalClusterView
         showingSignalText = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_SIGNAL_TEXT, 0) != 0;
         showingWifiText = Settings.System.getInt(resolver,
-				Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, 0) != 0;
+                Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, 0) != 0;
         apply();
     }
  
