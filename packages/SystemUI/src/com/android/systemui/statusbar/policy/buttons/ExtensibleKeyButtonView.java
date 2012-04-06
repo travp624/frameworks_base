@@ -200,7 +200,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         	} else if (mLongpress.equals(ACTION_POWER)) {
         		injectKeyDelayed(KeyEvent.KEYCODE_POWER);
         		return true;
-        	} else if (mLongpress.equals(ACTION_KILL)) {        		
+        	} else if (mLongpress.equals(ACTION_KILL)) {
         		mHandler.postDelayed(mKillTask, 0);  
         		return true;
         	} else if (mLongpress.equals(ACTION_RECENTS)) {
