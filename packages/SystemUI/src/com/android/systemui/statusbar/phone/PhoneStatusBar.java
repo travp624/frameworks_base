@@ -19,6 +19,7 @@ package com.android.systemui.statusbar.phone;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.jar.Attributes;
 
 import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
@@ -51,6 +52,7 @@ import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Slog;
@@ -62,6 +64,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -88,6 +92,7 @@ import com.android.systemui.statusbar.NotificationData;
 import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBar;
 import com.android.systemui.statusbar.StatusBarIconView;
+import com.android.systemui.statusbar.phone.CarrierLabelTop;
 import com.android.systemui.statusbar.policy.BrightnessController;
 import com.android.systemui.statusbar.policy.CenterClock;
 import com.android.systemui.statusbar.policy.Clock;
@@ -104,7 +109,8 @@ public class PhoneStatusBar extends StatusBar {
     public static final boolean SPEW = false;
     public static final boolean DUMPTRUCK = true; // extra dumpsys info
 
-    // additional instrumentation for testing purposes; intended to be left on during development
+    // additional instrumentation for testing purposes; intended to be left on 
+    // during development
     public static final boolean CHATTY = DEBUG;
 
     public static final String ACTION_STATUSBAR_START = "com.android.internal.policy.statusbar.START";
@@ -168,6 +174,8 @@ public class PhoneStatusBar extends StatusBar {
 
     // icons
     LinearLayout mIcons;
+    LinearLayout mCarrierSpace;
+    CarrierLabelTop mCarrier;
     IconMerger mNotificationIcons;
     View mMoreIcon;
     LinearLayout mStatusIcons;
@@ -254,6 +262,8 @@ public class PhoneStatusBar extends StatusBar {
     private int mIsBrightNessMode = 0;
     private boolean mIsStatusBarBrightNess;
     private boolean mIsAutoBrightNess;
+    private boolean mShowCarrierTop1;
+    private boolean mShowCarrierTop2;
     private BrightNessContentObserver mBrightNessContentObs = new BrightNessContentObserver();
     private Float mPropFactor;
 
@@ -268,6 +278,9 @@ public class PhoneStatusBar extends StatusBar {
     int mSystemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
 
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
+    // boolean to check for enabling the date to calendar clicky
+    private boolean mEnableDateOpensCalendar = false;
+    private int mDateViewColor = 0xFF33B5E5;
 
     private class ExpandedDialog extends Dialog {
         ExpandedDialog(Context context) {
@@ -363,6 +376,8 @@ public class PhoneStatusBar extends StatusBar {
         mNotificationIcons.setOverflowIndicator(mMoreIcon);
         mIcons = (LinearLayout) sb.findViewById(R.id.icons);
         mCenterClockLayout = (LinearLayout) sb.findViewById(R.id.center_clock_layout);
+        mCarrier = (CarrierLabelTop) sb.findViewById(R.id.carriertop);
+        mCarrierSpace = (LinearLayout) sb.findViewById(R.id.carriertopspace);
         mTickerView = sb.findViewById(R.id.ticker);
 
         mExpandedDialog = new ExpandedDialog(context);
@@ -1180,6 +1195,7 @@ public class PhoneStatusBar extends StatusBar {
         final boolean any = mNotificationData.size() > 0;
 
         final boolean clearable = any && mNotificationData.hasClearableItems();
+        boolean hasData = mNotificationData.hasVisibleItems();
 
         if (DEBUG) {
             Slog.d(TAG, "setAreThereNotifications: N=" + mNotificationData.size()
@@ -1189,6 +1205,19 @@ public class PhoneStatusBar extends StatusBar {
         mClearButton.setVisibility(clearable ? View.VISIBLE : View.GONE);
         mSettingsButton.setLayoutParams(clearable ? mSettingswClearParams : mSettingswoClearParams);
         mClearButton.setEnabled(clearable);
+
+        mShowCarrierTop1 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOP_CARRIER_LABEL, 0) == 1);
+        mShowCarrierTop2 =  (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOP_CARRIER_LABEL, 0) == 2);
+
+        if (mShowCarrierTop1 || mShowCarrierTop2) {
+            if (hasData) {
+              mCarrier.setVisibility(View.GONE);
+            } else {
+              mCarrier.setVisibility(View.VISIBLE);
+            }
+        }
 
         /*
          * if (mNoNotificationsTitle.isShown()) { if (any !=
@@ -1203,6 +1232,13 @@ public class PhoneStatusBar extends StatusBar {
     public void showClock(boolean show) {
 
         Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
+
+        mShowCarrierTop1 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOP_CARRIER_LABEL, 0) == 1);
+        mShowCarrierTop2 =  (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOP_CARRIER_LABEL, 0) == 2);
+        boolean hasData = mNotificationData.hasVisibleItems();
+
         if (clock != null) {
             clock.updateVisibilityFromStatusBar(show);
         }
@@ -1210,6 +1246,14 @@ public class PhoneStatusBar extends StatusBar {
         CenterClock cclock = (CenterClock) mStatusBarView.findViewById(R.id.center_clock);
         if (cclock != null) {
             cclock.updateVisibilityFromStatusBar(show);
+        }
+
+        if (mShowCarrierTop1 && show && !hasData || mShowCarrierTop2 && show && !hasData) {
+            mCarrier.setVisibility(View.VISIBLE);
+        } else if (mShowCarrierTop1 && show && hasData  || mShowCarrierTop2 && show && hasData) {
+            mCarrier.setVisibility(View.GONE);
+        } else if (mShowCarrierTop1 || mShowCarrierTop2) {
+            mCarrier.setVisibility(View.GONE);
         }
     }
 
@@ -1945,10 +1989,12 @@ public class PhoneStatusBar extends StatusBar {
             mIcons.setVisibility(View.GONE);
             mCenterClockLayout.setVisibility(View.GONE);
             mTickerView.setVisibility(View.VISIBLE);
+            mCarrierSpace.setVisibility(View.GONE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
             mCenterClockLayout.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out,
                     null));
+            mCarrierSpace.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
         }
 
         @Override
@@ -1956,9 +2002,11 @@ public class PhoneStatusBar extends StatusBar {
             mIcons.setVisibility(View.VISIBLE);
             mCenterClockLayout.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
+            mCarrierSpace.setVisibility(View.VISIBLE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
             mCenterClockLayout.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in,
                     null));
+            mCarrierSpace.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out,
                     mTickingDoneListener));
         }
@@ -1967,8 +2015,10 @@ public class PhoneStatusBar extends StatusBar {
             mIcons.setVisibility(View.VISIBLE);
             mCenterClockLayout.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
+            mCarrierSpace.setVisibility(View.VISIBLE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             mCenterClockLayout.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
+            mCarrierSpace.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out,
                     mTickingDoneListener));
         }
@@ -2567,6 +2617,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.getUriFor(Settings.System.WEATHER_STATUSBAR_STYLE), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.DATE_OPENS_CALENDAR), false, this);
         }
 
         @Override
@@ -2608,6 +2660,18 @@ public class PhoneStatusBar extends StatusBar {
                 Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
 
         reDrawHeader();
+        
+        mEnableDateOpensCalendar = Settings.System.getInt(
+                mContext.getContentResolver(),
+                Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
+
+        if (mEnableDateOpensCalendar) {
+            mDateView.setOnClickListener(mCalendarClickListener);
+            mDateView.setOnTouchListener(mCalendarTouchListener);
+        } else {
+            mDateView.setOnClickListener(null);
+            mDateView.setOnTouchListener(null);
+        }
     }
     
     private void reDrawHeader() {
@@ -2646,6 +2710,36 @@ public class PhoneStatusBar extends StatusBar {
         mTxtLayout.setLayoutParams(mTxtParams);
         mClearButton.setLayoutParams(mClearParams);
     }
+
+    private View.OnClickListener mCalendarClickListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            try {
+                // Dismiss the lock screen when Calendar starts.
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+
+            }
+            v.getContext().startActivity(
+                    new Intent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setClassName(
+                            "com.android.calendar", "com.android.calendar.LaunchActivity"));
+            animateCollapse();
+        }
+    };
+
+    private OnTouchListener mCalendarTouchListener = new View.OnTouchListener() {
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            int action = event.getAction();
+            if (action == MotionEvent.ACTION_DOWN) {
+                mDateView.setShadowLayer(5, 1, 1, mDateViewColor);
+            } else if (action == MotionEvent.ACTION_UP) {
+                mDateView.setShadowLayer(0, 0, 0, mDateViewColor);
+            }
+
+            return false;
+        }
+    };
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
