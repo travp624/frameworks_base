@@ -108,10 +108,6 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
         // Put up the view
         final int height = getStatusBarHeight();
 
-	final int opacity = Settings.System.getInt(
-					sb.getContext().getContentResolver(),
-					Settings.System.STATUS_BAR_TRANSPARENCY, 100);
-
         final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 height,
@@ -123,16 +119,6 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
                 // to ensure that the layer can be handled by HWComposer.  On some devices the
                 // HWComposer is unable to handle SW-rendered RGBX_8888 layers.
 
-		(opacity != 100 ? PixelFormat.TRANSPARENT : PixelFormat.RGB_565)
-		
-		);
-
-	if (opacity != 100) {
-	    sb.setBackgroundColor(
-		(int) (((float)opacity / 100.0F) * 255) * 0x1000000
-	    );
-	}
-        
         // the status bar should be in an overlay if possible
         final Display defaultDisplay 
             = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE))
