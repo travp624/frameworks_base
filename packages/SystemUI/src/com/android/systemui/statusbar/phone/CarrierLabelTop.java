@@ -41,8 +41,7 @@ import com.android.internal.R;
 
 
 /**
- * This widget display an analogic clock with two hands for hours and
- * minutes.
+ * This widget display carrier text in the miui style.
  */
 public class CarrierLabelTop extends TextView {
     private boolean mAttached;

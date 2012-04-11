@@ -80,6 +80,8 @@ public class StatusBarIconView extends AnimatedImageView {
             setScaleY(scale);
             float alpha = Settings.System.getFloat(context.getContentResolver(), Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.55f);
             setAlpha(alpha);
+
+            updateSettings();
         }
 
         setScaleType(ImageView.ScaleType.CENTER);
