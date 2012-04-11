@@ -118,7 +118,8 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
                 // We use a pixel format of RGB565 for the status bar to save memory bandwidth and
                 // to ensure that the layer can be handled by HWComposer.  On some devices the
                 // HWComposer is unable to handle SW-rendered RGBX_8888 layers.
-
+                PixelFormat.RGB_565);
+        
         // the status bar should be in an overlay if possible
         final Display defaultDisplay 
             = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE))
