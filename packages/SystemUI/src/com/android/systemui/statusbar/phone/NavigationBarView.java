@@ -234,7 +234,7 @@ public class NavigationBarView extends LinearLayout {
 
                 v = generateKey(landscape, mClickActions[j], mLongpressActions[j],
                         landscape ? mPortraitIcons[j] : mLandscapeIcons[j]);
-                v.setTag("Key_" + j);
+                v.setTag((landscape ? "key_land_" : "key_") + j);
 
                 addButton(navButtonLayout, v, landscape);
                 addLightsOutButton(lightsOut, v, landscape, false);
@@ -423,7 +423,7 @@ public class NavigationBarView extends LinearLayout {
         final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0);
 
         for (int j = 0; j < mNumberOfButtons; j++) {
-            View v = (View) findViewWithTag("Key_" + j);
+            View v = (View) findViewWithTag((mVertical ? "key_land_" : "Key_") + j);
             if (v != null) {
                 int vid = v.getId();
                 if (vid == R.id.back) {
@@ -790,7 +790,7 @@ public class NavigationBarView extends LinearLayout {
                 return getResources().getDrawable(R.drawable.ic_sysbar_search);
             } else if (uri.equals(ACTION_MENU)) {
 
-                return getResources().getDrawable(R.drawable.ic_sysbar_menu_land);
+                return getResources().getDrawable(R.drawable.ic_sysbar_menu_big);
             } else if (uri.equals(ACTION_KILL)) {
 
                 return getResources().getDrawable(R.drawable.ic_sysbar_killtask);

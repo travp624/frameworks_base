@@ -52,7 +52,7 @@ public class WeatherText extends TextView {
         super.onAttachedToWindow();
         if (!mAttached) {
             mAttached = true;
-            IntentFilter filter = new IntentFilter("com.aokp.romcontrol.INTENT_WEATHER_UPDATE");
+            IntentFilter filter = new IntentFilter("com.blackice.control.INTENT_WEATHER_UPDATE");
             getContext().registerReceiver(weatherReceiver, filter, null, getHandler());
         }
     }

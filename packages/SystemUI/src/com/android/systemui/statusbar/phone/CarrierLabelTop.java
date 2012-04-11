@@ -1,5 +1,8 @@
+
 /*
  * Copyright (C) 2006 The Android Open Source Project
+ *
+ * Code modified by syaoran12 (Adam Fisch)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,26 +39,28 @@ import java.util.TimeZone;
 
 import com.android.internal.R;
 
+
 /**
- * This widget display an analogic clock with two hands for hours and minutes.
+ * This widget display carrier text in the miui style.
  */
-public class CarrierLabel extends TextView {
+public class CarrierLabelTop extends TextView {
     private boolean mAttached;
-
+    
     private Handler mHandler;
+    
 
-    public CarrierLabel(Context context) {
+    public CarrierLabelTop(Context context) {
         this(context, null);
     }
 
-    public CarrierLabel(Context context, AttributeSet attrs) {
+    public CarrierLabelTop(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CarrierLabel(Context context, AttributeSet attrs, int defStyle) {
+    public CarrierLabelTop(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         updateNetworkName(false, null, false, null);
-
+        
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
@@ -103,7 +108,7 @@ public class CarrierLabel extends TextView {
                     + " showPlmn=" + showPlmn + " plmn=" + plmn);
         }
 
-        boolean mCustomCarrier = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.USE_CUSTOM_CARRIER, 1) == 2);
+        boolean mCustomCarrier = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.TOP_CARRIER_LABEL, 0) == 2);
         if (mCustomCarrier) {
         	String customCarrier = null;
             customCarrier = Settings.System.getString(mContext.getContentResolver(), Settings.System.CUSTOM_CARRIER_LABEL);
@@ -152,7 +157,7 @@ public class CarrierLabel extends TextView {
         }
         
     }
-    
+
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -161,9 +166,9 @@ public class CarrierLabel extends TextView {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                Settings.System.getUriFor(Settings.System.USE_CUSTOM_CARRIER), false, this);
+                Settings.System.getUriFor(Settings.System.TOP_CARRIER_LABEL), false, this);
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.USE_CUSTOM_CARRIER_COLOR), false, this);
+                    Settings.System.getUriFor(Settings.System.TOP_CARRIER_LABEL_COLOR), false, this);
         }
 
         @Override
@@ -176,16 +181,15 @@ public class CarrierLabel extends TextView {
     	ContentResolver resolver = mContext.getContentResolver();
     	
     	int mColorChanger = Settings.System.getInt(resolver,
-                Settings.System.USE_CUSTOM_CARRIER_COLOR, 0xFF33B5E5);
+                Settings.System.TOP_CARRIER_LABEL_COLOR, 0xFF33B5E5);
 
         setTextColor(mColorChanger);
         
-        boolean mDontShow = (Settings.System.getInt(resolver, Settings.System.USE_CUSTOM_CARRIER, 1) == 0);
+        boolean mDontShow = (Settings.System.getInt(resolver, Settings.System.TOP_CARRIER_LABEL, 0) == 0);
         if (mDontShow) {
             setVisibility(View.GONE);
         } else {
             setVisibility(View.VISIBLE);
         }
     }
-
 }

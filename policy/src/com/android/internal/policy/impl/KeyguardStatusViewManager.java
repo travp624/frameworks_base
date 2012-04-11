@@ -478,7 +478,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     for (EventBundle e : mCalendarEvents) {
                         String title = e.title + (e.dayString.isEmpty() ? " " : ", ");
                         String details = e.dayString
-                                + ((e.allDay) ? " all-day " : " at " + DateFormat.format(
+                                + ((e.allDay) ? "" : " " + DateFormat.format(
                                         DateFormat.is24HourFormat(getContext()) ? "kk:mm"
                                                 : "hh:mm a", e.begin).toString())
                                 + (!e.location.isEmpty() ? " (" + e.location + ")" : "");
@@ -1040,20 +1040,27 @@ class KeyguardStatusViewManager implements OnClickListener {
         public Calendar begin;
         public String location;
         public String dayString;
-        public boolean allDay;
+        public boolean allDay = false;
         public int color;
 
         EventBundle(String s, long b, String l, Calendar now, boolean a, int c) {
             title = s;
             begin = Calendar.getInstance();
-            begin.setTimeInMillis(b);
+
+            if (a) {
+                begin.setTimeInMillis(b - begin.get(Calendar.ZONE_OFFSET) - begin.get(Calendar.DST_OFFSET));
+                allDay = true;
+            } else {
+                begin.setTimeInMillis(b);
+            }
+
             location = (l == null) ? "" : l;
             int beginDay = begin.get(Calendar.DAY_OF_YEAR);
             int today = now.get(Calendar.DAY_OF_YEAR);
             if (beginDay == today) { // today
                 dayString = "";
             } else if (today + 1 == beginDay || (today >= 365 && beginDay == 1)) { // tomorrow
-                dayString = "Tomorrow";
+                dayString = getContext().getString(R.string.lockscreen_calendar_tomorrow);
             } else { // another day of week
                 dayString = begin.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT,
                         Locale.getDefault());

@@ -2464,11 +2464,6 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
-
-        /**
-         * @hide
-         */
         public static final String STATUS_BAR_LAYOUT = "status_bar_layout";
 
         /**
@@ -2526,6 +2521,51 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_TOGGLES_BRIGHTNESS_LOC = "statusbar_toggles_brightness_loc";
+
+        /**
+         * Carrier text MIUI styles
+         * 0 = off, 1 = stock carrier, 2 = custom carrier
+         * @hide
+         */
+        public static final String TOP_CARRIER_LABEL = "top_carrier_label";
+
+        /**
+         * Carrier text MIUI styles Color
+         * @hide
+         */
+        public static final String TOP_CARRIER_LABEL_COLOR = "top_carrier_label_color";
+
+        /**
+         * Carrier Text Toggle
+         * 0 = off, 1 = stock carrier, 2 = custom carrier
+         * @hide
+         */
+        public static final String USE_CUSTOM_CARRIER = "use_custom_carrier";
+
+        /**
+         * Carrier Text Color
+         * @hide
+         */
+        public static final String USE_CUSTOM_CARRIER_COLOR = "use_custom_carrier_color";
+
+        /**
+         * statusbar color picker
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BACKGROUND_COLOR = "statusbar_background_color";
+
+        /**
+         * Alpha % for icons in the notification bar.
+         * @hide
+         */
+        public static final String STATUSBAR_NOTIFICATION_ALPHA = "statusbar_notification_alpha";
+
+        /**
+         * Colorfilter for the statusbar notifications.
+         * @hide
+         */
+        public static final String STATUSBAR_NOTIFICATION_COLOR = "statusbar_notification_color";
 
         /**
          * @hide
@@ -2743,6 +2783,14 @@ public final class Settings {
         public static final String LOCKSCREEN_CALENDAR_INTERVAL = "lockscreen_calendar_interval";
 
         /**
+         * The Date Text View opens the calendar app on the notification
+         * expanded view
+         * 
+         * @hide
+         */
+        public static final String DATE_OPENS_CALENDAR = "date_opens_calendar";
+
+        /**
          * Setting to use lockscreen alongside secure lock
          * @hide
          */
@@ -2760,13 +2808,6 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_HOME_LONGPRESS = "navigation_bar_home_longpress";
-
-        /**
-         * The custom app to launch if the above is set so
-         * 
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_HOME_LONGPRESS_CUSTOMAPP = "navigation_bar_home_longpress_customapp";
 
         /**
          * Whether to show the battery bar
