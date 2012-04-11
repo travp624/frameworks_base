@@ -10,17 +10,18 @@
 
     <TextView
         android:id="@+id/event_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.5"
+        android:layout_weight="2"
         android:singleLine="true"
-        android:ellipsize="marquee"
+        android:ellipsize="none"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="@dimen/keyguard_lockscreen_status_line_font_size" />
 
     <TextView
         android:id="@+id/event_details"
+        android:layout_toRightOf="@+id/event_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
