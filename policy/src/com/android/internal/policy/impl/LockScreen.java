@@ -417,7 +417,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
             String customIconUri = Settings.System.getString(getContext().getContentResolver(),
                     Settings.System.LOCKSCREEN_CUSTOM_APP_ICONS[index]);
-
             if(customIconUri != null && !customIconUri.equals("")) {
                 if (customIconUri.startsWith("file")) {
                     // it's an icon the user chose from the gallery here
@@ -442,7 +441,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     }
                 }
             }
-            
+
             if (action.equals(ACTION_UNLOCK)) {
                 resId = R.drawable.ic_lockscreen_unlock;
                 drawable = res.getDrawable(resId);
@@ -614,8 +613,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
      * @param callback Used to communicate back to the host keyguard view.
      */
     LockScreen(Context context, Configuration configuration, LockPatternUtils lockPatternUtils,
-        KeyguardUpdateMonitor updateMonitor,
-        KeyguardScreenCallback callback) {
+            KeyguardUpdateMonitor updateMonitor,
+            KeyguardScreenCallback callback) {
         super(context);
         mLockPatternUtils = lockPatternUtils;
         mUpdateMonitor = updateMonitor;
