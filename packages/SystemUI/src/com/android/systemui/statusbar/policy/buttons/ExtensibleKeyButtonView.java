@@ -26,10 +26,8 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.R;
 
-
-
 public class ExtensibleKeyButtonView extends KeyButtonView {
-	
+
 	final static String ACTION_HOME = "**home**";
 	final static String ACTION_BACK = "**back**";
 	final static String ACTION_SEARCH = "**search**";
@@ -42,11 +40,11 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
     private static final String TAG = "Key.Ext";
 
     IStatusBarService mBarService;
-    
+
     public String mClickAction, mLongpress;
-    
+
     public Handler mHandler;
-    
+
     public int mInjectKeycode;
 
     public ExtensibleKeyButtonView(Context context, AttributeSet attrs) {
@@ -55,7 +53,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
 
     public ExtensibleKeyButtonView(Context context, AttributeSet attrs, String ClickAction, String Longpress) {
         super(context, attrs);
-        
+
         mHandler = new Handler();
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
@@ -92,7 +90,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         		setOnLongClickListener(mLongPressListener);
         	}
     }
-        
+
     public void injectKeyDelayed(int keycode){
         mInjectKeycode = keycode;
         mHandler.removeCallbacks(onInjectKeyDelayed);
@@ -109,7 +107,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         	}
         }
     };
- 
+
     Runnable mKillTask = new Runnable() {
         public void run() {
             try {
@@ -135,30 +133,30 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
             }
         }
     };
-    
+
     private OnClickListener mClickListener = new OnClickListener() {
 
         @Override
         public void onClick(View v) {
         	// the other consts were handled by keycode.  
-        	
+
         	if (mClickAction.equals(ACTION_NULL)) {
         		// who would set a button with no ClickAction?  
         		// Stranger things have happened.
         		return;
-        		
+
         	} else if (mClickAction.equals(ACTION_RECENTS)) {
         		try {
                     mBarService.toggleRecentApps();
                 } catch (RemoteException e) {            	
                 }
                 return;
-        		
+
         	} else if (mClickAction.equals(ACTION_KILL)) {
-        		
+
         		mHandler.postDelayed(mKillTask, ViewConfiguration.getGlobalActionKeyTimeout());
         		return;
-        		
+
         	} else {  // we must have a custom uri
         		 try {
                      Intent intent = Intent.parseUri(mClickAction, 0);
@@ -173,7 +171,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
             return;
         }
     };
-    
+
     private OnLongClickListener mLongPressListener = new OnLongClickListener() {
 
         @Override
@@ -221,7 +219,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
        		 		Log.e(TAG, "ActivityNotFound: [" + mLongpress + "]");
        		 	}
        		 	return true;
-        	}        	           
+        	}
         }
     };
 
