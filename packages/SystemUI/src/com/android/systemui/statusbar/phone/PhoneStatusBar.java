@@ -196,8 +196,10 @@ public class PhoneStatusBar extends StatusBar {
     RelativeLayout.LayoutParams mSettingswoClearParams;
 
     boolean mWeatherPanelEnabled;
+    boolean mWeatherStatusBar;
     WeatherPanel mWeatherPanel1;
     WeatherPanel mWeatherPanel2;
+    WeatherPanel mWeatherPanel3;
     
     TogglesView mQuickToggles;
     BrightnessController mBrightness;
@@ -402,6 +404,7 @@ public class PhoneStatusBar extends StatusBar {
         mSettingswClearParams = new RelativeLayout.LayoutParams(mSettingswoClearParams);
         mWeatherPanel1 = (WeatherPanel) expanded.findViewById(R.id.wp1);
         mWeatherPanel2 = (WeatherPanel) expanded.findViewById(R.id.wp2);
+        mWeatherPanel3 = (WeatherPanel) sb.findViewById(R.id.wp3);
 
         mScrollView = (ScrollView) expanded.findViewById(R.id.scroll);
 
@@ -1210,12 +1213,20 @@ public class PhoneStatusBar extends StatusBar {
                 Settings.System.TOP_CARRIER_LABEL, 0) == 1);
         mShowCarrierTop2 =  (Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.TOP_CARRIER_LABEL, 0) == 2);
+        mWeatherStatusBar = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.WEATHER_STATUSBAR_STYLE, 0) == 3);
 
         if (mShowCarrierTop1 || mShowCarrierTop2) {
             if (hasData) {
-              mCarrier.setVisibility(View.GONE);
+                mCarrier.setVisibility(View.GONE);
             } else {
-              mCarrier.setVisibility(View.VISIBLE);
+                mCarrier.setVisibility(View.VISIBLE);
+            }
+        } else if (mWeatherStatusBar) {
+            if (hasData) {
+                mWeatherPanel3.setVisibility(View.GONE);
+            } else {
+                mWeatherPanel3.setVisibility(View.VISIBLE);
             }
         }
 
@@ -1237,6 +1248,8 @@ public class PhoneStatusBar extends StatusBar {
                 Settings.System.TOP_CARRIER_LABEL, 0) == 1);
         mShowCarrierTop2 =  (Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.TOP_CARRIER_LABEL, 0) == 2);
+        mWeatherStatusBar = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.WEATHER_STATUSBAR_STYLE, 0) == 3);
         boolean hasData = mNotificationData.hasVisibleItems();
 
         if (clock != null) {
@@ -1250,10 +1263,16 @@ public class PhoneStatusBar extends StatusBar {
 
         if (mShowCarrierTop1 && show && !hasData || mShowCarrierTop2 && show && !hasData) {
             mCarrier.setVisibility(View.VISIBLE);
+        } else if (mWeatherStatusBar && show && !hasData) {
+            mWeatherPanel3.setVisibility(View.VISIBLE);
         } else if (mShowCarrierTop1 && show && hasData  || mShowCarrierTop2 && show && hasData) {
             mCarrier.setVisibility(View.GONE);
+        } else if (mWeatherStatusBar && show && hasData) {
+            mWeatherPanel3.setVisibility(View.GONE);            
         } else if (mShowCarrierTop1 || mShowCarrierTop2) {
             mCarrier.setVisibility(View.GONE);
+        } else if (mWeatherStatusBar) {
+            mWeatherPanel3.setVisibility(View.GONE);
         }
     }
 
@@ -2655,6 +2674,9 @@ public class PhoneStatusBar extends StatusBar {
         mWeatherPanelEnabled = (Settings.System.getInt(cr, Settings.System.WEATHER_STATUSBAR_STYLE, 0) == 1) &&
                 (Settings.System.getInt(cr, Settings.System.USE_WEATHER, 0) == 1);
 
+        mWeatherStatusBar = (Settings.System.getInt(cr, Settings.System.WEATHER_STATUSBAR_STYLE, 0) == 3) &&
+                (Settings.System.getInt(cr, Settings.System.USE_WEATHER, 0) == 1);
+
         mIsStatusBarBrightNess = Settings.System.getInt(mStatusBarView.getContext()
                 .getContentResolver(),
                 Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
@@ -2689,6 +2711,22 @@ public class PhoneStatusBar extends StatusBar {
             mClearParams.addRule(RelativeLayout.CENTER_VERTICAL, 0);
             mWeatherPanel1.setVisibility(View.VISIBLE);
             mWeatherPanel2.setVisibility(View.VISIBLE);
+            mWeatherPanel3.setVisibility(View.GONE);
+        } else if (mWeatherStatusBar) {
+            mTxtParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+            mTxtParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            mTxtLayout.setPadding(0, 1, 0, 0);
+            mSettingswClearParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+            mSettingswClearParams.addRule(RelativeLayout.RIGHT_OF, 0);
+            mSettingswClearParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+            mSettingswClearParams.addRule(RelativeLayout.CENTER_VERTICAL, 0);
+            mSettingswoClearParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+            mSettingswoClearParams.addRule(RelativeLayout.RIGHT_OF, 0);
+            mClearParams.addRule(RelativeLayout.BELOW, R.id.settings_button);
+            mClearParams.addRule(RelativeLayout.CENTER_VERTICAL, 0);
+            mWeatherPanel1.setVisibility(View.GONE);
+            mWeatherPanel2.setVisibility(View.GONE);
+            mWeatherPanel3.setVisibility(View.VISIBLE);
         } else {
             mTxtParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
             mTxtParams.addRule(RelativeLayout.CENTER_HORIZONTAL, 0);
@@ -2703,6 +2741,7 @@ public class PhoneStatusBar extends StatusBar {
             mClearParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
             mWeatherPanel1.setVisibility(View.GONE);
             mWeatherPanel2.setVisibility(View.GONE);
+            mWeatherPanel3.setVisibility(View.GONE);
         }
         View drawer_header_hr2 = mExpandedView.findViewById(R.id.drawer_header_hr2);
         drawer_header_hr2.setVisibility(mWeatherPanelEnabled ? View.VISIBLE : View.GONE);
