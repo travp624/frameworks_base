@@ -2469,6 +2469,11 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
+
+        /**
+         * @hide
+         */
         public static final String POWER_DIALOG_SHOW_POWER_SAVER = "power_dialog_show_power_saver";
 
         /**
