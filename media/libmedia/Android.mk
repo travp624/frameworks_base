@@ -12,6 +12,7 @@ include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 
+
 LOCAL_SRC_FILES:= \
     AudioTrack.cpp \
     IAudioFlinger.cpp \
@@ -55,6 +56,10 @@ ifeq ($(BOARD_USES_AUDIO_LEGACY),true)
     ifeq ($(BOARD_USE_KINETO_COMPATIBILITY),true)
         LOCAL_CFLAGS += -DUSE_KINETO_COMPATIBILITY
     endif
+endif
+
+ifeq ($(BOARD_USE_YAMAHAPLAYER),true)
+    LOCAL_CFLAGS += -DYAMAHAPLAYER
 endif
 
 LOCAL_SHARED_LIBRARIES := \
