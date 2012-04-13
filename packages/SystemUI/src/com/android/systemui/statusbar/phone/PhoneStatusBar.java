@@ -1220,7 +1220,7 @@ public class PhoneStatusBar extends StatusBar {
             if (hasData) {
                 mCarrier.setVisibility(View.GONE);
             } else {
-                mCarrier.setVisibility(View.VISIBLE);
+                mCarrier.setVisibility(View.VISIBLE);               
             }
         } else if (mWeatherStatusBar) {
             if (hasData) {

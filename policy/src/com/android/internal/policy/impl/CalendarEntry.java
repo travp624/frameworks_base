@@ -19,11 +19,12 @@ public class CalendarEntry extends LinearLayout {
     public CalendarEntry(Context context, String title, String details, int width) {
         super(context);
         View view = LayoutInflater.from(context).inflate(R.layout.calendar_entry, this);
-        
+
         this.mTitle = (TextView) view.findViewById(R.id.event_title);
         this.mDetails = (TextView) view.findViewById(R.id.event_details);
         mTitle.setWidth(width);
         mTitle.setText(title);
+        mDetails.setWidth(width);
         mDetails.setText(details);
     }
 
