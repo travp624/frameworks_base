@@ -423,7 +423,7 @@ public class NavigationBarView extends LinearLayout {
         final boolean disableBack = ((disabledFlags & View.STATUS_BAR_DISABLE_BACK) != 0);
 
         for (int j = 0; j < mNumberOfButtons; j++) {
-            View v = (View) findViewWithTag((mVertical ? "key_land_" : "Key_") + j);
+            View v = (View) findViewWithTag((mVertical ? "key_land_" : "key_") + j);
             if (v != null) {
                 int vid = v.getId();
                 if (vid == R.id.back) {
