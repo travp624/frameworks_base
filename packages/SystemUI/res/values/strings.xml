@@ -382,6 +382,10 @@
     <string name="toggle_torch">Torch</string>
     <string name="toggle_sync">Sync</string>
     <string name="toggle_fcharge">FastChrg</string>
+    <string name="toggle_media_next">Next</string>
+    <string name="toggle_media_pause">Pause</string>
+    <string name="toggle_media_play">Play</string>
+    <string name="toggle_media_previous">Back</string>
     <string name="status_bar_settings_toggles">Toggles</string>
     <string name="weatherpanel_leftbracket">(</string>
     <string name="weatherpanel_rightbracket">)</string>
