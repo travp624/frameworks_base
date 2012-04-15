@@ -2464,6 +2464,11 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String STATUSBAR_FONT_SIZE = "statusbar_font_size";
+
+        /**
+         * @hide
+         */
         public static final String STATUS_BAR_LAYOUT = "status_bar_layout";
 
         /**

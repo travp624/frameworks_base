@@ -2638,6 +2638,8 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.getUriFor(Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.DATE_OPENS_CALENDAR), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false, this);
         }
 
         @Override
@@ -2663,7 +2665,9 @@ public class PhoneStatusBar extends StatusBar {
 
     private void updateSettings() {
         // Slog.i(TAG, "updated settings values");
-        
+
+        int fontSize = 16;
+
         ContentResolver cr = mContext.getContentResolver();
         mDropdownSettingsDefualtBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_SETTINGS_BEHAVIOR, 0) == 1;
@@ -2681,8 +2685,12 @@ public class PhoneStatusBar extends StatusBar {
                 .getContentResolver(),
                 Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
 
+        fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16);
+
         reDrawHeader();
-        
+
+        mDateView.setTextSize(fontsize);
+
         mEnableDateOpensCalendar = Settings.System.getInt(
                 mContext.getContentResolver(),
                 Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
