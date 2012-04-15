@@ -2689,7 +2689,7 @@ public class PhoneStatusBar extends StatusBar {
 
         reDrawHeader();
 
-        mDateView.setTextSize(fontsize);
+        mDateView.setTextSize(fontSize);
 
         mEnableDateOpensCalendar = Settings.System.getInt(
                 mContext.getContentResolver(),
