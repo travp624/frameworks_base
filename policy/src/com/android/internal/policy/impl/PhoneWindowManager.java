@@ -522,7 +522,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_FAST_TORCH), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false, this);;
+                    Settings.System.NAVIGATION_BAR_BUTTONS_SHOW), false, this);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.KILL_APP_LONGPRESS_BACK), false, this);
             updateSettings();
@@ -837,7 +837,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             } catch (RemoteException e) {
                 Slog.e(TAG, "RemoteException when showing recent apps", e);
             }
-         }
+        }
     }
 
     /**
@@ -3335,7 +3335,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mHandler.postDelayed(mTorchOn, ViewConfiguration.getLongPressTimeout());
         } else {
             mHandler.removeCallbacks(mTorchOn);
-            mHandler.post(mTorchOff);
+            if (mFastTorchOn) {
+                mHandler.post(mTorchOff);
+            }
         }
     }
 
