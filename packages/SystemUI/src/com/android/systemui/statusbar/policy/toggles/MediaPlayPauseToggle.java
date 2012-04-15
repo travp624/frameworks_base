@@ -55,11 +55,13 @@ public class MediaPlayPauseToggle extends Toggle {
     @Override
     public void updateState() {
         if (isMusicActive()) {
+            mToggle.setEnabled(true);
             setLabel(R.string.toggle_media_pause);
-        	setIcon(R.drawable.toggle_media_pause);
+            setIcon(R.drawable.toggle_media_pause);
         } else {
+            mToggle.setEnabled(true);
             setLabel(R.string.toggle_media_play);
-        	setIcon(R.drawable.toggle_media_play);
+            setIcon(R.drawable.toggle_media_play);
         }
     }
 
@@ -68,21 +70,8 @@ public class MediaPlayPauseToggle extends Toggle {
         sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
 
         mCurrentState = (isMusicActive() ? MEDIA_STATE_INACTIVE : MEDIA_STATE_ACTIVE);
-        switch (mCurrentState) {
-            case MEDIA_STATE_ACTIVE:
-                mToggle.setChecked(true);
-                mToggle.setEnabled(true);
-                break;
-            case MEDIA_STATE_INACTIVE:
-                mToggle.setChecked(false);
-                mToggle.setEnabled(true);
-                break;
-            case MEDIA_STATE_UNKNOWN:
-            default:
-                mToggle.setChecked(false);
-                mToggle.setEnabled(false);
-                break;
-        }
+        
+        updateState();
     }
 
     @Override
