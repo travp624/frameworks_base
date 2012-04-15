@@ -2713,17 +2713,17 @@ public class PhoneStatusBar extends StatusBar {
             mWeatherPanel2.setVisibility(View.VISIBLE);
             mWeatherPanel3.setVisibility(View.GONE);
         } else if (mWeatherStatusBar) {
-            mTxtParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
-            mTxtParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-            mTxtLayout.setPadding(0, 1, 0, 0);
-            mSettingswClearParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-            mSettingswClearParams.addRule(RelativeLayout.RIGHT_OF, 0);
-            mSettingswClearParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            mSettingswClearParams.addRule(RelativeLayout.CENTER_VERTICAL, 0);
-            mSettingswoClearParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-            mSettingswoClearParams.addRule(RelativeLayout.RIGHT_OF, 0);
-            mClearParams.addRule(RelativeLayout.BELOW, R.id.settings_button);
-            mClearParams.addRule(RelativeLayout.CENTER_VERTICAL, 0);
+            mTxtParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+            mTxtParams.addRule(RelativeLayout.CENTER_HORIZONTAL, 0);
+            mTxtLayout.setPadding(16, 0, 0, 0);
+            mSettingswClearParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+            mSettingswClearParams.addRule(RelativeLayout.RIGHT_OF, R.id.txtlayout);
+            mSettingswClearParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+            mSettingswClearParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+            mSettingswoClearParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+            mSettingswoClearParams.addRule(RelativeLayout.RIGHT_OF, R.id.txtlayout);
+            mClearParams.addRule(RelativeLayout.BELOW, 0);
+            mClearParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
             mWeatherPanel1.setVisibility(View.GONE);
             mWeatherPanel2.setVisibility(View.GONE);
             mWeatherPanel3.setVisibility(View.VISIBLE);

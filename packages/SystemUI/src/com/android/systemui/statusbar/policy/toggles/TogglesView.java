@@ -55,6 +55,9 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_TORCH = "TORCH";
     private static final String TOGGLE_SYNC = "SYNC";
     private static final String TOGGLE_FCHARGE = "FCHARGE";
+    private static final String TOGGLE_MEDIA_NEXT = "MEDIA_NEXT";
+    private static final String TOGGLE_MEDIA_PLAY = "MEDIA_PLAY";
+    private static final String TOGGLE_MEDIA_PREVIOUS = "MEDIA_PREVIOUS";
 
 
     private int mWidgetsPerRow = 2;
@@ -123,6 +126,12 @@ public class TogglesView extends LinearLayout {
                 newToggle = new SyncToggle(mContext);
             else if (splitToggle.equals(TOGGLE_FCHARGE))
                 newToggle = new FChargeToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_MEDIA_NEXT))
+                newToggle = new MediaNextToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_MEDIA_PLAY))
+                newToggle = new MediaPlayPauseToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_MEDIA_PREVIOUS))
+                newToggle = new MediaPreviousToggle(mContext);
 
             if (newToggle != null)
                 toggles.add(newToggle);
