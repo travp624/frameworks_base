@@ -3066,6 +3066,12 @@ public final class Settings {
          * @hide
          */
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
+
+        /**
+         * Color to tint the nav bar glow
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_GLOW_TINT = "navigation_bar_glow_tint";
     }
 
     /**
@@ -3341,13 +3347,6 @@ public final class Settings {
          * @hide
          */
         public static final String ADB_ICON = "adb_icon";
-
-		/**
-		 * Whether to blink the LED when screen is on
-		 *
-		 * @hide
-		 */
-		public static final String LED_SCREEN_ON = "led_screen_on";
 
         /**
          * Setting to allow mock locations and location provider status to be injected into the
