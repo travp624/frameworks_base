@@ -531,9 +531,9 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     private int checkMinMax(int brightness) {
-		int min = 0;
-		int max = 255;
-		
+        int min = 0;
+        int max = 255;
+
         if (min > brightness) // brightness < 0x1E
             return min;
         else if (max < brightness) { // brightness > 0xFF
@@ -2687,9 +2687,14 @@ public class PhoneStatusBar extends StatusBar {
 
         fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16);
 
-        reDrawHeader();
-
-        mDateView.setTextSize(fontSize);
+        Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
+        if (clock != null) {
+            clock.setTextSize(fontSize);
+        }
+        CenterClock cclock = (CenterClock) mStatusBarView.findViewById(R.id.center_clock);
+        if (cclock != null) {
+            cclock.setTextSize(fontSize);
+        }
 
         mEnableDateOpensCalendar = Settings.System.getInt(
                 mContext.getContentResolver(),
@@ -2702,6 +2707,8 @@ public class PhoneStatusBar extends StatusBar {
             mDateView.setOnClickListener(null);
             mDateView.setOnTouchListener(null);
         }
+        reDrawHeader();
+
     }
     
     private void reDrawHeader() {
