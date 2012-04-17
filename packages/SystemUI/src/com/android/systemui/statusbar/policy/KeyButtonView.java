@@ -50,6 +50,7 @@ import com.android.systemui.R;
 
 public class KeyButtonView extends ImageView {
     protected static final String TAG = "StatusBar.KeyButtonView";
+    private static final boolean DEBUG = true;
 
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
     float BUTTON_QUIESCENT_ALPHA = 1f;
@@ -390,14 +391,15 @@ public class KeyButtonView extends ImageView {
         invalidate();
 
         try {
-            int color = Settings.System.getInt(resolver, Settings.System.NAVIGATION_BAR_TINT);
+            int color = Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_TINT);
 
             if (color == Integer.MIN_VALUE) {
                 setColorFilter(null);
             } else {
                 setColorFilter(null);
-                setColorFilter(Settings.System
-                        .getInt(resolver, Settings.System.NAVIGATION_BAR_TINT));
+                setColorFilter(Settings.System.getInt(resolver,
+                        Settings.System.NAVIGATION_BAR_TINT));
             }
         } catch (SettingNotFoundException e) {
         }

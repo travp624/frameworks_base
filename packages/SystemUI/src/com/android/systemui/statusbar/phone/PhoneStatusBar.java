@@ -2635,16 +2635,18 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_SETTINGS_BEHAVIOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.USE_WEATHER), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.WEATHER_STATUSBAR_STYLE), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.DATE_OPENS_CALENDAR), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.USE_WEATHER), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.WEATHER_STATUSBAR_STYLE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DATE_OPENS_CALENDAR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_FONT_SIZE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR), false, this);
         }
 
         @Override
@@ -2712,6 +2714,18 @@ public class PhoneStatusBar extends StatusBar {
             mDateView.setOnClickListener(null);
             mDateView.setOnTouchListener(null);
         }
+
+        // NavigationBar background color
+        final int DEFAULT_BACKGROUND_COLOR = 0xFF000000;
+        int navbarBackgroundColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR, DEFAULT_BACKGROUND_COLOR);
+        if (DEBUG) {
+                if (DEFAULT_BACKGROUND_COLOR != navbarBackgroundColor) Log.d(TAG, String.format
+                        ("background navbar color found to be: %d", navbarBackgroundColor));
+                else Log.d(TAG, "default navbar color found");
+        }
+        if (navbarBackgroundColor != DEFAULT_BACKGROUND_COLOR)
+            mNavigationBarView.setBackgroundColor(navbarBackgroundColor);
         reDrawHeader();
 
     }
