@@ -151,15 +151,15 @@ public class SignalClusterView
             mWifi.setImageResource(mWifiStrengthId);
             mWifiActivity.setImageResource(mWifiActivityId);
             mWifiGroup.setContentDescription(mWifiDescription);
-			if (showingWifiText) {
-				mWifi.setVisibility(View.GONE);
-				mWifiActivity.setVisibility(View.GONE);
-				mWifiText.setVisibility(View.VISIBLE);
-			} else {
-				mWifi.setVisibility(View.VISIBLE);
-				mWifiActivity.setVisibility(View.VISIBLE);
-				mWifiText.setVisibility(View.GONE);
-			}
+            if (showingWifiText) {
+                mWifi.setVisibility(View.GONE);
+                mWifiActivity.setVisibility(View.GONE);
+                mWifiText.setVisibility(View.VISIBLE);
+            } else {
+                mWifi.setVisibility(View.VISIBLE);
+                mWifiActivity.setVisibility(View.VISIBLE);
+                mWifiText.setVisibility(View.GONE);
+            }
         } else {
             mWifiGroup.setVisibility(View.GONE);
         }
@@ -213,6 +213,8 @@ public class SignalClusterView
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT), false,
                     this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false, this);
             updateSettings();
         }
 
@@ -229,6 +231,12 @@ public class SignalClusterView
                 Settings.System.STATUSBAR_SIGNAL_TEXT, 0) != 0;
         showingWifiText = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, 0) != 0;
+        int fontSize = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_FONT_SIZE, 16);
+        if (mMobileText != null)
+        	mMobileText.setTextSize(fontSize);
+        if (mWifiText != null)
+        	mWifiText.setTextSize(fontSize);
         apply();
     }
  

@@ -172,22 +172,22 @@ public class BatteryController extends LinearLayout {
             }
             mBatteryTextOnly.setText(formatted);
             if (plugged) { // add colorpicker to charge and >16 battery text!
-		mBatteryChargeTextColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_BATTERY_CHARGE_TEXT_COLOR,
-				0XFF99CC00);
-		if (mBatteryChargeTextColor == Integer.MIN_VALUE) {
-		    // flag to reset the color
-		    mBatteryChargeTextColor = 0xFF99CC00;
-		} 
-		mBatteryTextOnly.setTextColor(mBatteryChargeTextColor);
-	    	} else if (level < 16) {
-                    mBatteryTextOnly.setTextColor(Color.RED);
-            	} else {
-		    mBatteryTextColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT_COLOR,
-				0xFF33B5E5);
-		    if (mBatteryTextColor == Integer.MIN_VALUE) {
-			// flag to reset the color
-			mBatteryTextColor = 0xFF33B5E5;
-		}
+                mBatteryChargeTextColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_BATTERY_CHARGE_TEXT_COLOR,
+                0XFF99CC00);
+                if (mBatteryChargeTextColor == Integer.MIN_VALUE) {
+                    // flag to reset the color
+                    mBatteryChargeTextColor = 0xFF99CC00;
+                }
+                mBatteryTextOnly.setTextColor(mBatteryChargeTextColor);
+            } else if (level < 16) {
+                mBatteryTextOnly.setTextColor(Color.RED);
+            } else {
+                mBatteryTextColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT_COLOR,
+                0xFF33B5E5);
+                if (mBatteryTextColor == Integer.MIN_VALUE) {
+                    // flag to reset the color
+                    mBatteryTextColor = 0xFF33B5E5;
+                }
                 mBatteryTextOnly.setTextColor(mBatteryTextColor);
             }
         }
@@ -201,14 +201,13 @@ public class BatteryController extends LinearLayout {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.STATUSBAR_BATTERY_ICON), false,
-                    this);
-	    resolver.registerContentObserver(
-		    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_CHARGE_TEXT_COLOR), false,
-		    this);
-	    resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_TEXT_COLOR), false,
-                    this);
+                    .getUriFor(Settings.System.STATUSBAR_BATTERY_ICON), false, this);
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_CHARGE_TEXT_COLOR), false, this);
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_TEXT_COLOR), false, this);
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false, this);
         }
 
         @Override
@@ -276,5 +275,11 @@ public class BatteryController extends LinearLayout {
         }
 
         setBatteryIcon(mLevel, mPlugged);
+        
+        int fontSize = Settings.System.getInt(cr,
+                Settings.System.STATUSBAR_FONT_SIZE, 16);
+        if (mBatteryTextOnly != null)
+        	 mBatteryTextOnly.setTextSize(fontSize);
+
     }
 }

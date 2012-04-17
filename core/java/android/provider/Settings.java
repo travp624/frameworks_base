@@ -2464,6 +2464,11 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String STATUSBAR_FONT_SIZE = "statusbar_font_size";
+
+        /**
+         * @hide
+         */
         public static final String STATUS_BAR_LAYOUT = "status_bar_layout";
 
         /**
@@ -2578,6 +2583,11 @@ public final class Settings {
         public static final String NAVIGATION_BAR_TINT = "navigation_bar_tint";
 
         /**
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BACKGROUND_COLOR = "navigation_bar_background_color";
+
+        /**
          * The number of milliseconds for which the device posture must be stable before we perform
          * an orientation change. If the device appears to be rotating (being picked up, put down)
          * then we keep waiting until it settles.
@@ -2660,21 +2670,6 @@ public final class Settings {
                 "navigation_custom_app_icon_2",
                 "navigation_custom_app_icon_3",
                 "navigation_custom_app_icon_4",
-        };
-        
-        /**
-         * Drawable URIs, each index needs to be matched up to NAVIGATION_CUSTOM_ACTIVITIES
-         *
-         * OR ELSE
-         *
-         * @hide
-         */
-        public static final String[] NAVIGATION_LANDSCAPE_APP_ICONS = new String[] {
-                "navigation_landscape_app_icon_0",
-                "navigation_landscape_app_icon_1",
-                "navigation_landscape_app_icon_2",
-                "navigation_landscape_app_icon_3",
-                "navigation_landscape_app_icon_4",
         };
         
         /**
@@ -3061,6 +3056,12 @@ public final class Settings {
          * @hide
          */
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
+
+        /**
+         * Color to tint the nav bar glow
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_GLOW_TINT = "navigation_bar_glow_tint";
     }
 
     /**
@@ -3337,12 +3338,12 @@ public final class Settings {
          */
         public static final String ADB_ICON = "adb_icon";
 
-		/**
-		 * Whether to blink the LED when screen is on
-		 *
-		 * @hide
-		 */
-		public static final String LED_SCREEN_ON = "led_screen_on";
+        /**
+         * Whether to blink the LED when screen is on
+         *
+         * @hide
+         */
+        public static final String LED_SCREEN_ON = "led_screen_on";
 
         /**
          * Setting to allow mock locations and location provider status to be injected into the

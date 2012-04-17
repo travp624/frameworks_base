@@ -37,6 +37,9 @@ typedef void (*overlay_queue_buffer_hook)(void *data,
 
 namespace android {
 
+class IMemory;
+class IMemoryHeap;
+
 struct mapping_data_t {
     int fd;
     size_t length;
@@ -63,7 +66,12 @@ typedef uint32_t overlay_handle_t;
 class Overlay : public virtual RefBase
 {
 public:
-    Overlay(uint32_t width, uint32_t height, OverlayFormats format, overlay_queue_buffer_hook queue_buffer, void* hook_data);
+    Overlay(overlay_set_fd_hook set_fd,
+            overlay_set_crop_hook set_crop,
+            overlay_queue_buffer_hook queue_buffer,
+            uint32_t width, uint32_t height,
+            OverlayFormats format,
+            void* hook_data);
 
     /* destroys this overlay */
     void destroy();

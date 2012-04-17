@@ -517,10 +517,15 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     private void doBrightNess(MotionEvent e) {
-        int screenBrightness = checkMinMax(Float.valueOf((e.getRawX() * mPropFactor.floatValue()))
+        int screenBrightness;
+        try {
+            screenBrightness = checkMinMax(Float.valueOf((e.getRawX() * mPropFactor.floatValue()))
                 .intValue());
-        Settings.System.putInt(mContext.getContentResolver(), "screen_brightness", screenBrightness);
-        // Log.e(TAG, "Screen brightness: " + screenBrightness);
+            Settings.System.putInt(mContext.getContentResolver(), "screen_brightness",
+                    screenBrightness);
+        } catch (NullPointerException e2) {
+            return;
+        }
         try {
             IPowerManager pw = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
             if (pw != null) {
@@ -531,9 +536,9 @@ public class PhoneStatusBar extends StatusBar {
     }
 
     private int checkMinMax(int brightness) {
-		int min = 0;
-		int max = 255;
-		
+        int min = 0;
+        int max = 255;
+
         if (min > brightness) // brightness < 0x1E
             return min;
         else if (max < brightness) { // brightness > 0xFF
@@ -2630,14 +2635,18 @@ public class PhoneStatusBar extends StatusBar {
                     Settings.System.STATUSBAR_SETTINGS_BEHAVIOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_QUICKTOGGLES_AUTOHIDE), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.USE_WEATHER), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.WEATHER_STATUSBAR_STYLE), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE), false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.DATE_OPENS_CALENDAR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.USE_WEATHER), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.WEATHER_STATUSBAR_STYLE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DATE_OPENS_CALENDAR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_FONT_SIZE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR), false, this);
         }
 
         @Override
@@ -2663,7 +2672,9 @@ public class PhoneStatusBar extends StatusBar {
 
     private void updateSettings() {
         // Slog.i(TAG, "updated settings values");
-        
+
+        int fontSize = 16;
+
         ContentResolver cr = mContext.getContentResolver();
         mDropdownSettingsDefualtBehavior = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_SETTINGS_BEHAVIOR, 0) == 1;
@@ -2681,8 +2692,17 @@ public class PhoneStatusBar extends StatusBar {
                 .getContentResolver(),
                 Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
 
-        reDrawHeader();
-        
+        fontSize = Settings.System.getInt(cr, Settings.System.STATUSBAR_FONT_SIZE, 16);
+
+        Clock clock = (Clock) mStatusBarView.findViewById(R.id.clock);
+        if (clock != null) {
+            clock.setTextSize(fontSize);
+        }
+        CenterClock cclock = (CenterClock) mStatusBarView.findViewById(R.id.center_clock);
+        if (cclock != null) {
+            cclock.setTextSize(fontSize);
+        }
+
         mEnableDateOpensCalendar = Settings.System.getInt(
                 mContext.getContentResolver(),
                 Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
@@ -2694,6 +2714,20 @@ public class PhoneStatusBar extends StatusBar {
             mDateView.setOnClickListener(null);
             mDateView.setOnTouchListener(null);
         }
+
+        // NavigationBar background color
+        final int DEFAULT_BACKGROUND_COLOR = 0xFF000000;
+        int navbarBackgroundColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NAVIGATION_BAR_BACKGROUND_COLOR, DEFAULT_BACKGROUND_COLOR);
+        if (DEBUG) {
+                if (DEFAULT_BACKGROUND_COLOR != navbarBackgroundColor) Log.d(TAG, String.format
+                        ("background navbar color found to be: %d", navbarBackgroundColor));
+                else Log.d(TAG, "default navbar color found");
+        }
+        if (navbarBackgroundColor != DEFAULT_BACKGROUND_COLOR)
+            mNavigationBarView.setBackgroundColor(navbarBackgroundColor);
+        reDrawHeader();
+
     }
     
     private void reDrawHeader() {

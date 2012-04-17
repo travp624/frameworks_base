@@ -25,8 +25,16 @@ public class MediaPlayPauseToggle extends Toggle {
 
     public MediaPlayPauseToggle(Context context) {
         super(context);
-        
         updateState();
+        if (isMusicActive()) {
+            mToggle.setChecked(true);
+            setLabel(R.string.toggle_media_pause); 
+            setIcon(R.drawable.toggle_media_pause);
+        } else {
+            mToggle.setChecked(true);
+            setLabel(R.string.toggle_media_play);
+            setIcon(R.drawable.toggle_media_play);
+        }
     }
 
     protected void sendMediaKeyEvent(int code) {
@@ -53,45 +61,32 @@ public class MediaPlayPauseToggle extends Toggle {
     }
 
     @Override
-    public void updateState() {
-        if (isMusicActive()) {
-            setLabel(R.string.toggle_media_pause);
-        	setIcon(R.drawable.toggle_media_pause);
-        } else {
-            setLabel(R.string.toggle_media_play);
-        	setIcon(R.drawable.toggle_media_play);
-        }
-    }
-
-    @Override
     protected void updateInternalToggleState() {
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-
         mCurrentState = (isMusicActive() ? MEDIA_STATE_INACTIVE : MEDIA_STATE_ACTIVE);
-        switch (mCurrentState) {
-            case MEDIA_STATE_ACTIVE:
-                mToggle.setChecked(true);
-                mToggle.setEnabled(true);
-                break;
-            case MEDIA_STATE_INACTIVE:
-                mToggle.setChecked(false);
-                mToggle.setEnabled(true);
-                break;
-            case MEDIA_STATE_UNKNOWN:
-            default:
-                mToggle.setChecked(false);
-                mToggle.setEnabled(false);
-                break;
+        if (isMusicActive()) {
+            mToggle.setChecked(true);
+            setLabel(R.string.toggle_media_pause); 
+            setIcon(R.drawable.toggle_media_pause);
+        } else {
+            mToggle.setChecked(true);
+            setLabel(R.string.toggle_media_play);
+            setIcon(R.drawable.toggle_media_play);
         }
     }
 
     @Override
-    protected void onCheckChanged(boolean isChecked) {
+    protected void onCheckChanged(boolean isMusicActive) {
         sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-
         mCurrentState = (isMusicActive() ? MEDIA_STATE_INACTIVE : MEDIA_STATE_ACTIVE);
-
-        updateState();
+        if (isMusicActive()) {
+            mToggle.setChecked(true);
+            setLabel(R.string.toggle_media_pause); 
+            setIcon(R.drawable.toggle_media_pause);
+        } else {
+            mToggle.setChecked(true);
+            setLabel(R.string.toggle_media_play);
+            setIcon(R.drawable.toggle_media_play);
+        }
     }
 
     @Override
