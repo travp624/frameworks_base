@@ -160,6 +160,20 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
         }
 
         mDoNotDisturb = new DoNotDisturb(mContext);
+        // refresh weather here (after 10s) in case systemui was restarted or somehow crashed
+        Handler h = new Handler();
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refreshWeather();
+            }
+        }, 10000);
+    }
+
+    private void refreshWeather() {
+        Intent weatherintent = new Intent("com.blackice.control.INTENT_WEATHER_REQUEST");
+        weatherintent.putExtra(android.content.Intent.EXTRA_TEXT, "updateweather");
+        mContext.sendBroadcast(weatherintent);
     }
 
     protected View updateNotificationVetoButton(View row, StatusBarNotification n) {
