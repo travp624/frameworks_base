@@ -3336,7 +3336,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else {
             mHandler.removeCallbacks(mTorchOn);
             mHandler.post(mTorchOff);
-            }
         }
     }
 
