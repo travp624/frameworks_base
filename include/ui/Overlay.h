@@ -28,17 +28,10 @@
 
 #include <ui/PixelFormat.h>
 
-typedef void (*overlay_set_fd_hook)(void *data,
-        int fd);
-typedef void (*overlay_set_crop_hook)(void *data,
-        uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 typedef void (*overlay_queue_buffer_hook)(void *data,
         void* buffer, size_t size);
 
 namespace android {
-
-class IMemory;
-class IMemoryHeap;
 
 struct mapping_data_t {
     int fd;
@@ -66,11 +59,7 @@ typedef uint32_t overlay_handle_t;
 class Overlay : public virtual RefBase
 {
 public:
-    Overlay(overlay_set_fd_hook set_fd,
-            overlay_set_crop_hook set_crop,
-            uint32_t width, uint32_t height, OverlayFormats format,
-            overlay_queue_buffer_hook queue_buffer,
-            void* hook_data);
+    Overlay(uint32_t width, uint32_t height, OverlayFormats format, overlay_queue_buffer_hook queue_buffer, void* hook_data);
 
     /* destroys this overlay */
     void destroy();
@@ -111,8 +100,6 @@ private:
     virtual ~Overlay();
 
     // C style hook
-    overlay_set_fd_hook set_fd_hook;
-    overlay_set_crop_hook set_crop_hook;
     overlay_queue_buffer_hook queue_buffer_hook;
     void* hook_data;
 

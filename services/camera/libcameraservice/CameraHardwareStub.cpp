@@ -67,7 +67,7 @@ void CameraHardwareStub::initHeapLocked()
     // Create raw heap.
     int picture_width, picture_height;
     mParameters.getPictureSize(&picture_width, &picture_height);
-    mRawHeap = new MemoryHeapBase(picture_width * picture_height * 3 / 2);
+    mRawHeap = new MemoryHeapBase(picture_width * picture_height * 2);
 
     int preview_width, preview_height;
     mParameters.getPreviewSize(&preview_width, &preview_height);
