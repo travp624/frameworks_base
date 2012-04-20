@@ -5056,6 +5056,14 @@ public final class Settings {
         public static final String POWER_SAVER_DATA_DELAY = "power_saver_data_delay";
 
         /**
+         * use the lock screen timeout settings when the user turns the power off manually?
+         * Boolean value.
+         * 
+         * @hide
+         */
+        public static final String LOCK_SCREEN_LOCK_USER_OVERRIDE = "lock_screen_lock_suer_override";
+
+        /**
          * @hide
          */
         public static final String POWER_SAVER_WIFI_MODE = "power_saver_wifi_mode";
