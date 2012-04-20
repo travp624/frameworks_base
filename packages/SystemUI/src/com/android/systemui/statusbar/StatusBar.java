@@ -19,7 +19,9 @@ package com.android.systemui.statusbar;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -160,6 +162,7 @@ public abstract class StatusBar extends SystemUI implements CommandQueue.Callbac
         }
 
         mDoNotDisturb = new DoNotDisturb(mContext);
+
         // refresh weather here (after 10s) in case systemui was restarted or somehow crashed
         Handler h = new Handler();
         h.postDelayed(new Runnable() {
