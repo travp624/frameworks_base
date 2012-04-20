@@ -2726,7 +2726,10 @@ public class PhoneStatusBar extends StatusBar {
         }
         if (navbarBackgroundColor != DEFAULT_BACKGROUND_COLOR)
             mNavigationBarView.setBackgroundColor(navbarBackgroundColor);
-        reDrawHeader();
+        else
+            mNavigationBarView.setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
+
+       reDrawHeader();
 
     }
     
