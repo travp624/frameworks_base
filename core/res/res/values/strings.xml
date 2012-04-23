@@ -68,6 +68,23 @@
          could not be performed because FDN is enabled. This will be displayed in a toast. -->
     <string name="mmiFdnError">Operation is restricted to fixed dialing numbers only.</string>
 
+    <!-- Names of default profiles. -->
+    <string name="profileNameDefault">Default</string>
+    <string name="profileNameWork">Work</string>
+    <string name="profileNameHome">Home</string>
+    <string name="profileNameSilent">Silent</string>
+    <string name="profileNameNight">Night</string>
+
+    <!-- Names of application groups. -->
+    <string name="profileGroupPhone">Phone</string>
+    <string name="profileGroupCalendar">Calendar</string>
+    <string name="profileGroupGmail">Gmail</string>
+    <string name="profileGroupEmail">Email</string>
+    <string name="profileGroupSMS">SMS</string>
+
+    <!-- Name of wildcard profile. -->
+    <string name="wildcardProfile">Other</string>
+
     <!-- Displayed when a phone feature such as call barring was activated. -->
     <string name="serviceEnabled">Service was enabled.</string>
     <!-- Displayed in front of the list of a set of service classes
@@ -322,6 +339,7 @@
 
     <!-- Title of the Global Actions Dialog -->
     <string name="global_actions" product="tablet">Tablet options</string>
+
     <!-- Title of the Global Actions Dialog -->
     <string name="global_actions" product="default">Phone options</string>
 
@@ -348,6 +366,9 @@
 
     <!-- status message in phone options dialog for when airplane mode is off -->
     <string name="global_actions_airplane_mode_off_status">Airplane mode is OFF</string>
+
+    <!-- label for item that reboots the phone in phone options dialog -->
+    <string name="global_action_choose_profile">Choose profile</string>
 
     <!-- label for item that toggles power saver mode -->
     <string name="global_actions_toggle_power_saver">Power saver mode</string>

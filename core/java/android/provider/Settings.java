@@ -2541,6 +2541,10 @@ public final class Settings {
         /**
          * @hide
          */
+        public static final String POWER_DIALOG_SHOW_PROFILE_CHOOSER = "power_dialog_show_profile_chooser";
+        /**
+         * @hide
+         */
         public static final String STATUSBAR_CLOCK_LOCKSCREEN_HIDE = "statusbar_clock_lockscreen_hide";
 
         /**
@@ -4097,6 +4101,12 @@ public final class Settings {
          */
         public static final String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS =
             "wifi_mobile_data_transition_wakelock_timeout_ms";
+
+        /**
+         * Whether the Wimax should be on.  Only the WiMAX service should touch this.
+         * @hide
+         */
+        public static final String WIMAX_ON = "wimax_on";
 
         /**
          * Whether background data usage is allowed by the user. See
