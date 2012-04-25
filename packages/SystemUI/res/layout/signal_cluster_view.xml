@@ -20,99 +20,57 @@
 
 <com.android.systemui.statusbar.SignalClusterView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_width="wrap_content"
-    android:orientation="horizontal"
-    >
+    android:orientation="horizontal">
     <FrameLayout
         android:id="@+id/wifi_combo"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_width="wrap_content"
-        android:layout_marginRight="-6dp"
-        >
+        android:layout_marginRight="-6dp">
         <ImageView
             android:id="@+id/wifi_signal"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:scaleType="center"
-            />
+            android:layout_gravity="center" />
         <ImageView
             android:id="@+id/wifi_inout"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_gravity="center|bottom"
-            />
+            android:layout_gravity="center|bottom" />
         <com.android.systemui.statusbar.policy.WifiText
             android:id="@+id/wifi_signal_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingLeft="4dp" />
+            android:paddingRight="8dp" />
     </FrameLayout>
     <View
         android:layout_height="6dp"
         android:layout_width="6dp"
         android:visibility="gone"
-        android:id="@+id/spacer"
-        />
-    <!--<FrameLayout
-        android:id="@+id/wimax_combo"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginRight="-6dp"
-        >
-        <ImageView
-            android:id="@+id/wimax_signal"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:scaleType="center"
-            />
-        <ImageView
-            android:id="@+id/wimax_inout"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center|bottom"
-            />
-    </FrameLayout>
-    -->
+        android:id="@+id/spacer" />
     <FrameLayout
-        android:layout_height="wrap_content"
+        android:id="@+id/mobile_combo"
         android:layout_width="wrap_content"
-        >
-        <View
-            android:layout_height="6dp"
-            android:layout_width="6dp"
-            android:visibility="invisible"
-            />
-        <FrameLayout
-            android:id="@+id/mobile_combo"
-            android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/mobile_signal"
             android:layout_height="wrap_content"
-            >
-            <ImageView
-                android:id="@+id/mobile_signal"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                />
-            <ImageView
-                android:id="@+id/mobile_type"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                />
-            <ImageView
-                android:id="@+id/mobile_inout"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_gravity="right|bottom"
-                />
-            <com.android.systemui.statusbar.policy.SignalText
-                android:id="@+id/signal_text"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:paddingLeft="4dp" />
-        </FrameLayout>
+            android:layout_width="wrap_content"
+            android:layout_gravity="center" />
+        <ImageView
+            android:id="@+id/mobile_type"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+        <ImageView
+            android:id="@+id/mobile_inout"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="right|bottom" />
+        <com.android.systemui.statusbar.policy.SignalText
+            android:id="@+id/signal_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="4dp" />
     </FrameLayout>
 </com.android.systemui.statusbar.SignalClusterView>

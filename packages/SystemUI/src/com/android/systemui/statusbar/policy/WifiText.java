@@ -141,7 +141,7 @@ public class WifiText extends TextView {
         	signal = min - Math.abs(mRssi);
         	signal = ((signal / (min - max)) * 100f);
         	mRssi = (signal > 100f ? 100 : Math.round(signal));
-            String result = Integer.toString(mRssi);
+            setText(Integer.toString(mRssi));
 			SpannableStringBuilder formatted = new SpannableStringBuilder(
                     Integer.toString(mRssi) + "%");
             CharacterStyle style = new RelativeSizeSpan(0.7f); // beautiful
