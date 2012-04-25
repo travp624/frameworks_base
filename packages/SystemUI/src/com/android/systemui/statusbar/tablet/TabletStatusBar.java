@@ -2062,7 +2062,7 @@ public class TabletStatusBar extends StatusBar implements
         if (mNumberOfButtons == 0){
             mNumberOfButtons = StockButtonsQty;
             Settings.System.putInt(resolver,
-                Settings.System.NAVIGATION_BAR_BUTTONS_QTY, StockButtonsQty);      
+                Settings.System.NAVIGATION_BAR_BUTTONS_QTY, StockButtonsQty);
         }
 
         for (int j = 0; j < mNumberOfButtons; j++) {

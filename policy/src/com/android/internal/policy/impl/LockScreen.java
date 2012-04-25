@@ -19,22 +19,29 @@ package com.android.internal.policy.impl;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.PixelFormat;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -51,6 +58,8 @@ import android.widget.TextView;
 import com.android.internal.R;
 import com.android.internal.widget.DigitalClock;
 import com.android.internal.widget.LockPatternUtils;
+import com.android.internal.widget.RingSelector;
+import com.android.internal.widget.SenseLikeLock;
 import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.MultiWaveView;
@@ -75,10 +84,17 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public static final int LAYOUT_OCTO = 8;
     public static final int LAYOUT_HONEY = 0;
     public static final int LAYOUT_AOSP = 1;
+    public static final int LAYOUT_RINGSLOCK = 4;
+    public static final int LAYOUT_SENSELIKE = 5;
 
-    private boolean mLockscreen4Tab = false || (Settings.System.getInt(
-		mContext.getContentResolver(),
-		Settings.System.LOCKSCREEN_4TAB, 0) == 1);
+    // lockscreen toggles
+    private boolean mLockscreenCustom = (Settings.System.getInt(
+        mContext.getContentResolver(),
+        Settings.System.LOCKSCREEN_EXTRA_ICONS, 0) == 1);
+
+    private boolean mLockscreen4Tab = (Settings.System.getInt(
+        mContext.getContentResolver(),
+        Settings.System.LOCKSCREEN_4TAB, 0) == 1);
 
     private int mLockscreenTargets = LAYOUT_STOCK;
 
@@ -105,12 +121,27 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private TextView mCarrier;
     private DigitalClock mDigitalClock;
 
-    private Drawable[] lockDrawables;
-    
-    ArrayList<Target> lockTargets = new ArrayList<Target>();
+    private String mCustomAppActivity = 
+            Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[0]);
 
-	private String mCustomAppActivity = (Settings.System.getString(mContext.getContentResolver(),
-			Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITY));
+    // ring lock.
+    private String[] mCustomRingAppActivities = new String[] {
+            Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[0]),
+            Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[1]),
+            Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[2]),
+            Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[3]),
+    };
+
+    private Drawable[] lockDrawables;
+    private Bitmap[] mCustomRingAppIcons = new Bitmap[4];
+    private Intent[] mCustomApps = new Intent[4];
+
+    ArrayList<Target> lockTargets = new ArrayList<Target>();
 
     private interface UnlockWidgetCommonMethods {
         // Update resources based on phone state
@@ -344,6 +375,130 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
+    class RingSelectorMethods implements RingSelector.OnRingTriggerListener,
+            UnlockWidgetCommonMethods {
+
+        private final RingSelector mRingSelector;
+
+        RingSelectorMethods(RingSelector ringSelector) {
+            mRingSelector = ringSelector;
+        }
+
+        public void updateResources() {
+            boolean vibe = mSilentMode
+                && (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE);
+
+            mRingSelector.setRightRingResources(
+                    mSilentMode ? (vibe ? R.drawable.ic_jog_dial_vibrate_on
+                                         : R.drawable.ic_jog_dial_sound_off)
+                                : R.drawable.ic_jog_dial_sound_on,
+                    mSilentMode ? R.drawable.jog_tab_target_yellow
+                                : R.drawable.jog_tab_target_gray,
+                    mSilentMode ? R.drawable.jog_ring_ring_yellow
+                                : R.drawable.jog_ring_ring_gray);
+        }
+
+        /** {@inheritDoc} */
+        public void onRingTrigger(View v, int whichRing, int whichApp) {
+            if (whichRing == RingSelector.OnRingTriggerListener.LEFT_RING) {
+                mCallback.goToUnlockScreen();
+            } else if (whichRing == RingSelector.OnRingTriggerListener.RIGHT_RING) {
+                toggleRingMode();
+                mUnlockWidgetMethods.updateResources();
+                mCallback.pokeWakelock();
+            } else if (whichRing == RingSelector.OnRingTriggerListener.MIDDLE_RING) {
+                if (mCustomRingAppActivities[whichApp] != null) {
+                    runActivity(mCustomRingAppActivities[whichApp]);
+                }
+            }
+        }
+
+        /** {@inheritDoc} */
+        public void onGrabbedStateChange(View v, int grabbedState) {
+            if (grabbedState == RingSelector.OnRingTriggerListener.RIGHT_RING) {
+                mSilentMode = isSilentMode();
+            }
+            // Don't poke the wake lock when returning to a state where the handle is
+            // not grabbed since that can happen when the system (instead of the user)
+            // cancels the grab.
+            if (grabbedState != RingSelector.OnRingTriggerListener.NO_RING) {
+                mCallback.pokeWakelock();
+            }
+        }
+
+        public View getView() {
+            return mRingSelector;
+        }
+
+        public void reset(boolean animate) {
+            mRingSelector.reset(animate);
+        }
+
+        public void ping() {
+        }
+    }
+
+	class SenseLikeLockMethods implements SenseLikeLock.OnSenseLikeSelectorTriggerListener,
+            UnlockWidgetCommonMethods {
+
+        private final SenseLikeLock mSenseLikeLock;
+
+		SenseLikeLockMethods(SenseLikeLock senseLikeLock) {
+			mSenseLikeLock = senseLikeLock;
+		}
+
+		public void updateResources() {
+		}
+
+		/** {@inheritDoc} */
+		public void onSenseLikeSelectorTrigger(View v, int Trigger) {
+			mCallback.goToUnlockScreen();
+
+            switch (Trigger) {
+                case SenseLikeLock.OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_ONE_TRIGGERED: {
+                    runActivity(mCustomRingAppActivities[0]);
+                    mCallback.goToUnlockScreen();
+                    break;
+                }
+                case SenseLikeLock.OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_TWO_TRIGGERED: {
+                    runActivity(mCustomRingAppActivities[1]);
+                    mCallback.goToUnlockScreen();
+                    break;
+                }
+                case SenseLikeLock.OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_THREE_TRIGGERED: {
+                    runActivity(mCustomRingAppActivities[2]);
+                    mCallback.goToUnlockScreen();
+                    break;
+                }
+                case SenseLikeLock.OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_FOUR_TRIGGERED: {
+                    runActivity(mCustomRingAppActivities[3]);
+                    mCallback.goToUnlockScreen();
+                    break;
+                }
+                case SenseLikeLock.OnSenseLikeSelectorTriggerListener.LOCK_ICON_TRIGGERED: {
+                    mCallback.goToUnlockScreen();
+                    break;
+                }
+            }
+        }
+
+		/** {@inheritDoc} */
+		public void OnSenseLikeSelectorGrabbedStateChanged(View v,
+				int grabbedState) {
+			mCallback.pokeWakelock();
+		}
+
+		public View getView() {
+			return mSenseLikeLock;
+		}
+
+		public void reset(boolean animate) {
+		}
+
+		public void ping() {
+		}
+	}
+
     private void requestUnlockScreen() {
         // Delay hiding lock screen long enough for animation to finish
         postDelayed(new Runnable() {
@@ -369,6 +524,18 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
+    private void runActivity(String uri) {
+		try {
+			Intent i = Intent.parseUri(uri, 0);
+			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+					| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+			mContext.startActivity(i);
+			mCallback.goToUnlockScreen();
+		} catch (URISyntaxException e) {
+		} catch (ActivityNotFoundException e) {
+		}
+	}
+
     /**
      * In general, we enable unlocking the insecure key guard with the menu key. However, there are
      * some cases where we wish to disable it, notably when the menu button placement or technology
@@ -385,6 +552,181 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         return (Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.LOCKSCREEN_ENABLE_MENU_KEY, defaultValue ? 1 : 0) == 1);
+    }
+
+    /**
+     * Setup the sense lockscreen, clean this up later because it is
+     * disgustingly messy Need to recode to get rid of the mCustomApps[] Intent
+     * as I have removed it from being needed in widget setup to start the
+     * activity. Also thank you OMFGB for this :)
+     */
+    private void setupSenseLikeRingShortcuts(Context context,
+            SenseLikeLock senseringselector) {
+
+        int numTargets = 0;
+        Intent intent = new Intent();
+        PackageManager pm = getContext().getPackageManager();
+        Drawable[] shortcutsicons;
+
+        Log.d(TAG, "Setting up sense ring");
+        for (int i = 0; i < mCustomRingAppActivities.length; i++) {
+            if (mCustomRingAppActivities[i] != null) {
+                numTargets++;
+            }
+        }
+
+        Log.d(TAG, "Setting intents");
+        if (numTargets != 4) {
+            Log.d(TAG, "Seting defaults");
+            mCustomApps = senseringselector.setDefaultIntents();
+            for (int i = 0; i < 4; i++) {
+                if (mCustomRingAppActivities[i] != null) {
+                    Log.d(TAG, "Setting custom intent #" + i);
+                    try {
+                        intent = Intent.parseUri(mCustomRingAppActivities[i], 0);
+                    } catch (java.net.URISyntaxException ex) {
+                        Log.w(TAG, "Invalid hotseat intent: "
+                                + mCustomRingAppActivities[i]);
+                        // bogus; leave intent=null
+                    }
+                }
+            }
+
+            numTargets = 4;
+
+        } else 
+            for (int i = 0; i < numTargets; i++) {
+                Log.d(TAG, "Setting custom intent #" + i);
+                try {
+                    intent = Intent.parseUri(mCustomRingAppActivities[i], 0);
+                } catch (java.net.URISyntaxException ex) {
+                    Log.w(TAG, "Invalid hotseat intent: "
+                            + mCustomRingAppActivities[i]);
+                    ex.printStackTrace();
+                }
+                mCustomApps[i] = intent;
+            }
+
+        shortcutsicons = new Drawable[numTargets];
+        float iconScale = getResources().getDisplayMetrics().density;
+
+        for (int i = 0; i < numTargets; i++) {
+            try {
+                shortcutsicons[i] = pm.getActivityIcon(mCustomApps[i]);
+                shortcutsicons[i] = scaledDrawable(shortcutsicons[i], context,
+                        iconScale);
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                Log.w(TAG, "Missing shortcut_icons array item #" 
+                        + i + mCustomRingAppActivities[i]);
+                shortcutsicons[i] = null;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+                shortcutsicons[i] = null;
+                // Do-Nothing
+            }
+        }
+
+        // Finnally set the images
+        senseringselector.setShortCutsDrawables(shortcutsicons[0], shortcutsicons[1],
+                shortcutsicons[2], shortcutsicons[3]);
+    }
+
+    private Drawable scaledDrawable(Drawable icon, Context context, float scale) {
+        final Resources resources = context.getResources();
+        int sIconHeight = (int) resources
+                .getDimension(android.R.dimen.app_icon_size);
+        int sIconWidth = sIconHeight;
+        int width = sIconWidth;
+        int height = sIconHeight;
+        Bitmap original;
+        try {
+            original = Bitmap.createBitmap(width, height,
+                    Bitmap.Config.ARGB_8888);
+        } catch (OutOfMemoryError e) {
+            return icon;
+        }
+
+        Canvas canvas = new Canvas(original);
+        canvas.setBitmap(original);
+        icon.setBounds(0, 0, width, height);
+        icon.draw(canvas);
+
+        try {
+            Bitmap endImage = Bitmap.createScaledBitmap(original,
+                    (int) (width * scale), (int) (height * scale), true);
+            original.recycle();
+            return new FastBitmapDrawable(endImage);
+        } catch (OutOfMemoryError e) {
+            return icon;
+        }
+    }
+
+    public class FastBitmapDrawable extends Drawable {
+        private Bitmap mBitmap;
+        private int mWidth;
+        private int mHeight;
+
+        public FastBitmapDrawable(Bitmap b) {
+            mBitmap = b;
+            if (b != null) {
+                mWidth = mBitmap.getWidth();
+                mHeight = mBitmap.getHeight();
+            } else {
+                mWidth = mHeight = 0;
+            }
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            canvas.drawBitmap(mBitmap, 0.0f, 0.0f, null);
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter cf) {
+        }
+
+        @Override
+        public int getIntrinsicWidth() {
+            return mWidth;
+        }
+
+        @Override
+        public int getIntrinsicHeight() {
+            return mHeight;
+        }
+
+        @Override
+        public int getMinimumWidth() {
+            return mWidth;
+        }
+
+        @Override
+        public int getMinimumHeight() {
+            return mHeight;
+        }
+
+        public void setBitmap(Bitmap b) {
+            mBitmap = b;
+            if (b != null) {
+                mWidth = mBitmap.getWidth();
+                mHeight = mBitmap.getHeight();
+            } else {
+                mWidth = mHeight = 0;
+            }
+        }
+
+        public Bitmap getBitmap() {
+            return mBitmap;
+        }
     }
 
     class Target {
@@ -662,22 +1004,37 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
                             true);
                 break;
-			case LAYOUT_HONEY:
-				if (landscape)
-					inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this,
-						true);
-				else
-					inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
-						true);
-				break;
+            case LAYOUT_HONEY:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this,
+                        true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
+                        true);
+                break;
             case LAYOUT_AOSP:
-				if (landscape)
-					inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
-							true);
-				else
-					inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock, this,
-							true);
-				break;
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
+                            true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock, this,
+                            true);
+                break;
+            case LAYOUT_RINGSLOCK:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_ring_unlock_land, this,
+                            true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_ring_unlock, this,
+                            true);
+                break;
+            case LAYOUT_SENSELIKE:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_sense_unlock_land, this,
+                            true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_sense_unlock, this,
+                            true);
         }
 
         mStatusViewManager = new KeyguardStatusViewManager(this, mUpdateMonitor, mLockPatternUtils,
@@ -739,6 +1096,47 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             MultiWaveViewMethods multiWaveViewMethods = new MultiWaveViewMethods(multiWaveView);
             multiWaveView.setOnTriggerListener(multiWaveViewMethods);
             mUnlockWidgetMethods = multiWaveViewMethods;
+        } else if (mUnlockWidget instanceof RingSelector) {
+            RingSelector ringSelectorView = (RingSelector) mUnlockWidget;
+            float density = getResources().getDisplayMetrics().density;
+            int ringAppIconSize = context.getResources().getInteger(R.integer.config_ringSecIconSizeDIP);
+            for (int q = 0; q < 4; q++) {
+                if (mCustomRingAppActivities[q] != null) {
+                    ringSelectorView.showSecRing(q);
+                    try {
+                        Intent i = Intent.parseUri(mCustomRingAppActivities[q], 0);
+                        PackageManager pm = context.getPackageManager();
+                        ActivityInfo ai = i.resolveActivityInfo(pm, PackageManager.GET_ACTIVITIES);
+                        if (ai != null) {
+                            Bitmap iconBmp = ((BitmapDrawable) ai.loadIcon(pm)).getBitmap();
+                            mCustomRingAppIcons[q] = Bitmap.createScaledBitmap(iconBmp,
+                                    (int) (density * ringAppIconSize), (int) (density * ringAppIconSize), true);
+                            ringSelectorView.setSecRingResources(q, mCustomRingAppIcons[q], R.drawable.jog_ring_secback_normal);
+                        }
+                    } catch (URISyntaxException e) {
+                    }
+                } else {
+                    ringSelectorView.hideSecRing(q);
+                }
+            }
+            ringSelectorView.enableMiddleRing(mLockscreenCustom);
+            ringSelectorView.setLeftRingResources(
+                    R.drawable.ic_jog_dial_unlock,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_ring_ring_green);
+            ringSelectorView.setMiddleRingResources(
+                    R.drawable.ic_jog_dial_custom,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_ring_ring_green);
+            RingSelectorMethods ringSelectorMethods = new RingSelectorMethods(ringSelectorView);
+            ringSelectorView.setOnRingTriggerListener(ringSelectorMethods);
+            mUnlockWidgetMethods = ringSelectorMethods;
+        } else if (mUnlockWidget instanceof SenseLikeLock) {
+            SenseLikeLock senseLikeLockView = (SenseLikeLock) mUnlockWidget;
+            setupSenseLikeRingShortcuts(context, senseLikeLockView);
+            SenseLikeLockMethods senseLikeLockMethods = new SenseLikeLockMethods(senseLikeLockView);
+            senseLikeLockView.setOnSenseLikeSelectorTriggerListener(senseLikeLockMethods);
+            mUnlockWidgetMethods = senseLikeLockMethods;
         } else {
             throw new IllegalStateException("Unrecognized unlock widget: " + mUnlockWidget);
         }
@@ -751,7 +1149,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         if (DBG)
             Log.v(TAG, "*** LockScreen accel is "
                     + (mUnlockWidget.isHardwareAccelerated() ? "on" : "off"));
-		}
+        }
 
     private boolean isSilentMode() {
         return mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
@@ -896,9 +1294,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.LOCKSCREEN_LAYOUT), false,
                     this);
-			resolver.registerContentObserver(
-					Settings.System.getUriFor(Settings.System.LOCKSCREEN_TEXT_COLOR), false,
-					this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.LOCKSCREEN_TEXT_COLOR), false,
+                    this);
             updateSettings();
         }
 
@@ -918,14 +1316,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     }
 
     private void updateSettings() {
-		if (DEBUG) Log.d(TAG, "Settings for lockscreen have changed lets update");
-		ContentResolver resolver = mContext.getContentResolver();
+        if (DEBUG) Log.d(TAG, "Settings for lockscreen have changed lets update");
+        ContentResolver resolver = mContext.getContentResolver();
 
-		mLockscreenTargets = Settings.System.getInt(resolver,
+        mLockscreenTargets = Settings.System.getInt(resolver,
                 Settings.System.LOCKSCREEN_LAYOUT, LAYOUT_STOCK);
 
-		int mLockscreenColor = Settings.System.getInt(resolver,
-				Settings.System.LOCKSCREEN_TEXT_COLOR, COLOR_WHITE);
+        int mLockscreenColor = Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_TEXT_COLOR, COLOR_WHITE);
 
         // digital clock first (see @link com.android.internal.widget.DigitalClock.updateTime())
         try {
@@ -934,24 +1332,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             if (DEBUG) Log.d(TAG, "date update time failed: NullPointerException");
         }
 
-		// then the rest (see @link com.android.internal.policy.impl.KeyguardStatusViewManager.updateColors())
-		try {
-	    mStatusViewManager.updateColors();
-		} catch (NullPointerException npe) {
-			if (DEBUG) Log.d(TAG, "KeyguardStatusViewManager.updateColors() failed: NullPointerException");
-		}
-
+        // then the rest (see @link com.android.internal.policy.impl.KeyguardStatusViewManager.updateColors())
+        try {
+            mStatusViewManager.updateColors();
+        } catch (NullPointerException npe) {
+            if (DEBUG) Log.d(TAG, "KeyguardStatusViewManager.updateColors() failed: NullPointerException");
+        }
     }
-
-	private void runActivity(String uri) {
-		try {
-			Intent i = Intent.parseUri(uri, 0);
-			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-					| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-			mContext.startActivity(i);
-			mCallback.goToUnlockScreen();
-		} catch (URISyntaxException e) {
-		} catch (ActivityNotFoundException e) {
-		}
-	}
 }

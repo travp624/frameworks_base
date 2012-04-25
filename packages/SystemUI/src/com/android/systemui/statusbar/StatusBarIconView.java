@@ -95,6 +95,7 @@ public class StatusBarIconView extends AnimatedImageView {
 
     public StatusBarIconView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mHandler = new Handler();
         final Resources res = context.getResources();
         final int outerBounds = res.getDimensionPixelSize(R.dimen.status_bar_icon_size);
         final int imageBounds = res.getDimensionPixelSize(R.dimen.status_bar_icon_drawing_size);
@@ -291,8 +292,10 @@ public class StatusBarIconView extends AnimatedImageView {
     }
 
     class SettingsObserver extends ContentObserver {
+        ContentResolver resolver;
         SettingsObserver(Handler handler) {
             super(handler);
+            resolver = mContext.getContentResolver();
         }
 
         void observe() {

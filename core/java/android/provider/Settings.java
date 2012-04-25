@@ -2770,6 +2770,17 @@ public final class Settings {
         };
 
         /**
+         * Ring Apps to launch with ring style and custom app toggle enabled
+         * @hide
+         */
+        public static final String[] LOCKSCREEN_CUSTOM_RING_APP_ACTIVITIES = new String[] {
+                "lockscreen_custom_app_activity_1",
+                "lockscreen_custom_app_activity_2",
+                "lockscreen_custom_app_activity_3",
+                "lockscreen_custom_app_activity_4"
+        };
+
+        /**
          * Whether volume up/down can be long pressed to skip tracks
          * @hide
          */
@@ -2830,6 +2841,13 @@ public final class Settings {
          * @hide
          */
         public static final String DATE_OPENS_CALENDAR = "date_opens_calendar";
+
+        /**
+         * Lockscreen toggle to allow 4 icons 0:false/1:true
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_EXTRA_ICONS = "lockscreen_extra_icons";
 
         /**
          * Setting to use lockscreen alongside secure lock

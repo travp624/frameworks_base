@@ -172,7 +172,7 @@ public class TogglesView extends LinearLayout {
             // we are using switches, and have an uneven number - let's add a
             // spacer
             mToggleSpacer = new LinearLayout(mContext);
-            rows.get(rows.size() - 1).addView(mToggleSpacer,PARAMS_TOGGLE);
+            rows.get(rows.size() - 1).addView(mToggleSpacer, PARAMS_TOGGLE);
 
         }
         if (useAltButtonLayout) {

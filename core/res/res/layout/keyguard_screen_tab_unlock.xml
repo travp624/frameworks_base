@@ -40,8 +40,6 @@
 		android:layout_height="match_parent"
 		android:gravity="center_horizontal">
 
-
-
 		<com.android.internal.widget.DigitalClock
 			android:id="@+id/time"
 			android:layout_marginTop="@dimen/keyguard_lockscreen_status_line_clockfont_top_margin"
@@ -160,7 +158,6 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_alignParentBottom="true"
-
 				android:targetDrawables="@array/lockscreen_targets_with_camera"
 				android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
 				android:directionDescriptions="@array/lockscreen_direction_descriptions"
