@@ -2020,15 +2020,17 @@ public class TabletStatusBar extends StatusBar implements
             // false,
             // this);
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.MENU_LOCATION), false,
-                    this);
+                    Settings.System.getUriFor(Settings.System.MENU_LOCATION),
+                    false, this);
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.MENU_VISIBILITY), false,
-                    this);
-
+                    Settings.System.getUriFor(Settings.System.MENU_VISIBILITY),
+                    false, this);
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_QTY), false,
-                    this);
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_QTY),
+                    false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_SHOW),
+                    false, this);
 
             for (int j = 0; j < 5; j++) { // watch all 5 settings for changes.
                 resolver.registerContentObserver(
@@ -2039,9 +2041,6 @@ public class TabletStatusBar extends StatusBar implements
                         false, this);
                 resolver.registerContentObserver(
                         Settings.System.getUriFor(Settings.System.NAVIGATION_CUSTOM_APP_ICONS[j]),
-                        false, this);
-                resolver.registerContentObserver(
-                        Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_SHOW),
                         false, this);
             }
             updateSettings();
