@@ -2835,6 +2835,13 @@ public final class Settings {
         public static final String LOCKSCREEN_CALENDAR_INTERVAL = "lockscreen_calendar_interval";
 
         /**
+         * Choose the ICS music widget or old style on lockscreen
+         * 
+         * @hide
+         */
+        public static final String MUSIC_WIDGET_TYPE = "music_widget_type";
+
+        /**
          * The Date Text View opens the calendar app on the notification
          * expanded view
          * 

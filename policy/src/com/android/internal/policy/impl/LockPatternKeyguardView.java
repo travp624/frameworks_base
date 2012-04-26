@@ -106,9 +106,13 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
     private volatile boolean mWindowFocused = false;
     private boolean mEnableFallback = false; // assume no fallback UI until we know better
 
-	private boolean mShowLockBeforeUnlock = false || (Settings.System.getInt(
-			mContext.getContentResolver(),
-			Settings.System.SHOW_LOCK_BEFORE_UNLOCK, 0) == 1);
+    private boolean mShowLockBeforeUnlock = false || (Settings.System.getInt(
+            mContext.getContentResolver(),
+            Settings.System.SHOW_LOCK_BEFORE_UNLOCK, 0) == 1);
+
+     private boolean mUseOldMusic = false || (Settings.System.getInt(
+            mContext.getContentResolver(),
+            Settings.System.MUSIC_WIDGET_TYPE, 0) == 1);
 
     // The following were added to support FaceLock
     private IFaceLockInterface mFaceLockService;
@@ -276,6 +280,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
     };
 
     private TransportControlView mTransportControlView;
+    private TransportControlView mTransportControlView2;
 
     private Parcelable mSavedState;
 
@@ -624,17 +629,37 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
     }
 
     private void saveWidgetState() {
-        if (mTransportControlView != null) {
-            if (DEBUG) Log.v(TAG, "Saving widget state");
-            mSavedState = mTransportControlView.onSaveInstanceState();
+        if (mUseOldMusic) {
+            if (mTransportControlView2 != null) {
+                if (DEBUG)
+                    Log.v(TAG, "Saving widget state");
+                mSavedState = mTransportControlView2.onSaveInstanceState();
+            }
+        } else {
+            if (mTransportControlView != null) {
+                if (DEBUG)
+                    Log.v(TAG, "Saving widget state");
+                mSavedState = mTransportControlView.onSaveInstanceState();
+            }
         }
     }
 
     private void restoreWidgetState() {
-        if (mTransportControlView != null) {
-            if (DEBUG) Log.v(TAG, "Restoring widget state");
-            if (mSavedState != null) {
-                mTransportControlView.onRestoreInstanceState(mSavedState);
+        if (mUseOldMusic) {
+            if (mTransportControlView2 != null) {
+                if (DEBUG)
+                    Log.v(TAG, "Restoring widget state");
+                if (mSavedState != null) {
+                    mTransportControlView2.onRestoreInstanceState(mSavedState);
+                }
+            }
+        } else {
+            if (mTransportControlView != null) {
+                if (DEBUG)
+                    Log.v(TAG, "Restoring widget state");
+                if (mSavedState != null) {
+                    mTransportControlView.onRestoreInstanceState(mSavedState);
+                }
             }
         }
     }
@@ -999,12 +1024,25 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
 
     private void initializeTransportControlView(View view) {
         mTransportControlView = (TransportControlView) view.findViewById(R.id.transport);
-        if (mTransportControlView == null) {
-            if (DEBUG) Log.w(TAG, "Couldn't find transport control widget");
+        mTransportControlView2 = (TransportControlView) view.findViewById(R.id.transport2);
+        if (mUseOldMusic) {
+            if (mTransportControlView2 == null) {
+                if (DEBUG)
+                    Log.w(TAG, "Couldn't find transport control widget");
+            } else {
+                mUpdateMonitor.reportClockVisible(true);
+                mTransportControlView2.setVisibility(View.GONE); // hide until it requests being shown.
+                mTransportControlView2.setCallback(mWidgetCallback);
+            }
         } else {
-            mUpdateMonitor.reportClockVisible(true);
-            mTransportControlView.setVisibility(View.GONE); // hide until it requests being shown.
-            mTransportControlView.setCallback(mWidgetCallback);
+            if (mTransportControlView == null) {
+                if (DEBUG)
+                    Log.w(TAG, "Couldn't find transport control widget");
+            } else {
+                mUpdateMonitor.reportClockVisible(true);
+                mTransportControlView.setVisibility(View.GONE); // hide until it requests being shown.
+                mTransportControlView.setCallback(mWidgetCallback);
+            }
         }
     }
 

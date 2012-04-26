@@ -15,19 +15,18 @@
 -->
 
 <shape 
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:shape="oval">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
 
-	<size 
-		android:height="@dimen/keyguard_lockscreen_outerring_diameter"
-		android:width="@dimen/keyguard_lockscreen_outerring_diameter" />
+    <size 
+        android:height="@dimen/keyguard_lockscreen_outerring_diameter"
+        android:width="@dimen/keyguard_lockscreen_outerring_diameter" />
 
-    	<stroke 
-		android:color="#1affffff" 
-		android:width="2dp" />
-    	
-	<solid 
-		android:color="#1a33b5e5"
-		android:width="4dp" />
+    <solid 
+        android:color="#1a33b5e5" />
+
+    <stroke 
+        android:color="#1affffff" 
+        android:width="2dp" />
 
 </shape>

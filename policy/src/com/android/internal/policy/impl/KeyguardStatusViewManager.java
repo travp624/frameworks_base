@@ -100,6 +100,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private TextView mOwnerInfoView;
     private TextView mAlarmStatusView;
     private TransportControlView mTransportView;
+    private TransportControlView mTransportView2;
     private ViewFlipper mCalendarView;
 
     // Top-level container view for above views
@@ -114,6 +115,8 @@ class KeyguardStatusViewManager implements OnClickListener {
 
     private boolean mLockAlwaysBattery;
 
+    // toggle boolean for music widget
+    private boolean mUseOldMusic;
     // last known plugged in state
     private boolean mPluggedIn = false;
 
@@ -222,12 +225,16 @@ class KeyguardStatusViewManager implements OnClickListener {
         mAlarmStatusView = (TextView) findViewById(R.id.alarm_status);
         mOwnerInfoView = (TextView) findViewById(R.id.propertyOf);
         mTransportView = (TransportControlView) findViewById(R.id.transport);
+        mTransportView2 = (TransportControlView) findViewById(R.id.transport2);
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
         mEmergencyCallButtonEnabledInScreen = emergencyButtonEnabledInScreen;
 
         // Hide transport control view until we know we need to show it.
         if (mTransportView != null) {
             mTransportView.setVisibility(View.GONE);
+        }
+        if (mTransportView2 != null) {
+            mTransportView2.setVisibility(View.GONE);
         }
 
         if (mEmergencyCallButton != null) {
@@ -257,7 +264,11 @@ class KeyguardStatusViewManager implements OnClickListener {
     }
 
     private boolean inWidgetMode() {
-        return mTransportView != null && mTransportView.getVisibility() == View.VISIBLE;
+        if (mUseOldMusic) {
+            return mTransportView2 != null && mTransportView2.getVisibility() == View.VISIBLE;
+        } else {
+            return mTransportView != null && mTransportView.getVisibility() == View.VISIBLE;
+        }
     }
 
     void setInstructionText(String string) {
@@ -562,6 +573,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         CharSequence string = null;
         mLockAlwaysBattery = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.LOCKSCREEN_BATTERY, 0) == 1;
+        mUseOldMusic = Settings.System.getInt(getContext().getContentResolver(), Settings.System.MUSIC_WIDGET_TYPE, 0) == 1;
         if (!TextUtils.isEmpty(mInstructionText)) {
             // Instructions only
             string = mInstructionText;
