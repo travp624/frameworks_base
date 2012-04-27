@@ -202,7 +202,7 @@
                 android:layout_height="match_parent"
                 android:layout_rowSpan="10"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="-46dip" />
+                android:layout_marginBottom="-40dip" />
 
             <!-- Music transport control -->
             <include android:id="@+id/transport"
