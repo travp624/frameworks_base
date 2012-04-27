@@ -47,7 +47,7 @@
 
             <!-- Column 0 -->
             <com.android.internal.widget.DigitalClock android:id="@+id/time"
-                android:layout_width="300dip"
+                android:layout_width="240dip"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="20dip"
@@ -86,7 +86,7 @@
             <LinearLayout
                 android:id="@+id/datealarm"
                 android:orientation="horizontal"
-                android:layout_width="300dip"
+                android:layout_width="240dip"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="20dip"
@@ -118,7 +118,7 @@
 
             <com.android.internal.policy.impl.WeatherText
                 android:id="@+id/weather"
-                android:layout_width="300dip"
+                android:layout_width="240dip"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="20dip"
@@ -134,7 +134,7 @@
 
             <ViewFlipper
                 android:id="@+id/calendar"
-                android:layout_width="300dip"
+                android:layout_width="240dip"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="20dip"
@@ -147,7 +147,7 @@
 
             <TextView
                 android:id="@+id/status1"
-                android:layout_width="300dip"
+                android:layout_width="240dip"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="20dip"
@@ -167,7 +167,7 @@
 
             <TextView
                 android:id="@+id/carrier"
-                android:layout_width="300dip"
+                android:layout_width="240dip"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="20dip"
@@ -208,7 +208,8 @@
                 android:layout_height="match_parent"
                 android:layout_rowSpan="10"
                 android:layout_alignParentBottom="true"
-                android:layout_alignLeft="@id/time"
+                android:layout_alignLeft="@id/status"
+                android:paddingLeft="20dip"
                 android:layout_marginBottom="-20dip" />
 
             <!-- Music transport control -->
