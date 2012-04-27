@@ -23,7 +23,7 @@
         android:id="@+id/event_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_leftOf="@id/event_title"
+        android:layout_toLeftOf="@id/event_title"
         android:paddingLeft="6dip"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
