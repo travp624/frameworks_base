@@ -22,9 +22,9 @@ public class CalendarEntry extends LinearLayout {
 
         this.mTitle = (TextView) view.findViewById(R.id.event_title);
         this.mDetails = (TextView) view.findViewById(R.id.event_details);
-        mTitle.setWidth(width);
+        mTitle.setHorizontallyScrolling(true);
         mTitle.setText(title);
-        mDetails.setWidth(width);
+        mDetails.setHorizontallyScrolling(true);
         mDetails.setText(details);
     }
 

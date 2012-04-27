@@ -571,12 +571,22 @@ public class SenseLikeLock extends View{
     // ************* Initilization function
     
     private void initializeUI(){
-        Log.d(TAG, "Initializing user interface");
-        mLockIcon = getBitmapFor(R.drawable.sense_ring);
-        mLowerBackground = getBitmapFor(R.drawable.sense_panel);
-        mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
-        mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
-        //setShortCutsDrawables(null, null, null, null);
+        if (isVertical()) {
+            Log.d(TAG, "Initializing user interface");
+            mLockIcon = getBitmapFor(R.drawable.sense_ring);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel);
+            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
+            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
+            //setShortCutsDrawables(null, null, null, null);
+        }
+        if (isHorizontal()) {
+            Log.d(TAG, "Initializing user interface");
+            mLockIcon = getBitmapFor(R.drawable.sense_ring);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel);
+            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
+            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
+            //setShortCutsDrawables(null, null, null, null);
+        }
     }
     
     
@@ -709,58 +719,53 @@ public class SenseLikeLock extends View{
         return (mOrientation == VERTICAL);
     }
 
+    private boolean isHorizontal() {
+        return (mOrientation == HORIZONTAL);
+    }
+
     private void log(String msg) {
-	    Log.d(TAG, msg);
-	}
-	    
+        Log.d(TAG, msg);
+    }
+
     private Bitmap getBitmapFor(int resId) {
         return BitmapFactory.decodeResource(getContext().getResources(), resId);
     }
     
     
     private Bitmap getBitmapFromDrawable(Drawable icon) {
-    	Log.d(TAG, "Decoding drawable to bitmap");
-    	
-	Bitmap myBitmap =  Bitmap.createBitmap(icon.getIntrinsicWidth(),icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-	Canvas canvas = new Canvas(myBitmap);
-	// create your favourite drawable:
-	Drawable drawable = icon;// new, or load drawable resource
- 	drawable.draw(canvas);
- 	// Since the canvas draws onto the bitmap
- 	// and the drawable draws onto the canvas
- 	// the bitmap should have the image as
- 	// from the drawable drawn onto it
- 	myBitmap = Bitmap.createScaledBitmap(myBitmap, mShortcutsBackground.getWidth(), mShortcutsBackground.getHeight(), false);
- 	if(myBitmap != null)
- 		return myBitmap;
- 	else if (icon instanceof BitmapDrawable)
-    		
-    		return((BitmapDrawable)icon).getBitmap();
-    	else
-    	{
-    		Log.d(TAG, "The drawable could not be decoded into a bitmap");
-    		return null;
-    	}
-
-
-         
+        Log.d(TAG, "Decoding drawable to bitmap");
+        Bitmap myBitmap =  Bitmap.createBitmap(icon.getIntrinsicWidth(),icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(myBitmap);
+        // create your favourite drawable:
+        Drawable drawable = icon;// new, or load drawable resource
+        drawable.draw(canvas);
+        // Since the canvas draws onto the bitmap
+        // and the drawable draws onto the canvas
+        // the bitmap should have the image as
+        // from the drawable drawn onto it
+        myBitmap = Bitmap.createScaledBitmap(myBitmap, mShortcutsBackground.getWidth(), mShortcutsBackground.getHeight(), false);
+        if(myBitmap != null)
+            return myBitmap;
+        else if (icon instanceof BitmapDrawable)
+            return((BitmapDrawable)icon).getBitmap();
+        else {
+            Log.d(TAG, "The drawable could not be decoded into a bitmap");
+            return null;
+        }
     }
+
+
     private void reset(){
-    	
-    	setGrabbedState(OnSenseLikeSelectorTriggerListener.ICON_GRABBED_STATE_NONE);
-    	mIsTouchInCircle = false;
-    	mUsingShortcuts = false;
-    	mTriggering = false;
-    	this.mLockX = 0;
-    	this.mLockY = 0;
-    	
-    	
+        setGrabbedState(OnSenseLikeSelectorTriggerListener.ICON_GRABBED_STATE_NONE);
+        mIsTouchInCircle = false;
+        mUsingShortcuts = false;
+        mTriggering = false;
+        this.mLockX = 0;
+        this.mLockY = 0;
     }
-    
 
-    
     /* Functions associated with setting the pictures for the app */
-    
+
     /**
      * Wrapper function associated with setting the shortcut icons.
      * Trigger is controlled by {@link onSenseLikeSelectorTrigger} from with

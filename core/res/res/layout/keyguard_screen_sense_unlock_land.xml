@@ -196,11 +196,10 @@
             <!-- Column 2 -->
             <com.android.internal.widget.SenseLikeLock
                 android:id="@+id/unlock_widget"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="fill_horizontal"
-                android:layout_rowSpan="10"
                 android:layout_alignParentBottom="true" />
 
             <!-- Music transport control -->
