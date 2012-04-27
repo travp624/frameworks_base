@@ -59,130 +59,117 @@ import com.android.internal.R;
  */
 public class SenseLikeLock extends View{
 
-	private String TAG = "SenseLikeLock";
-	private static final boolean DBG = true;
-	private static final boolean IDBG = DBG;
-	private static final boolean TDBG = false;
+    private String TAG = "SenseLikeLock";
+    private static final boolean DBG = true;
+    private static final boolean IDBG = DBG;
+    private static final boolean TDBG = false;
     private static final boolean VISUAL_DEBUG = false;
-	
+
     private Animation mUnlockAnimation;
     
     // ***********Rotation constants and variables
     /**
      * Either {@link #HORIZONTAL} or {@link #VERTICAL}.
-     */	
-	 private int mOrientation;
+     */
+    private int mOrientation;
 
-	 public static final int HORIZONTAL = 0;
-	 public static final int VERTICAL = 1;
+    public static final int HORIZONTAL = 0;
+    public static final int VERTICAL = 1;
+
+    // ********************* UI Elements
+
+    final Matrix mBgMatrix = new Matrix();
+    private Paint mPaint = new Paint();
+
+    // *** Backgrounds **
+    Bitmap mLowerBackground;
+    Bitmap mShortcutsBackground;
     
-	 
-	 // ********************* UI Elements
-	 
-	   final Matrix mBgMatrix = new Matrix();
-	   private Paint mPaint = new Paint();
+    // ** Unlocker icons **
+    Bitmap mLockIcon;
+    Bitmap mLockAppIcon;
 
-	   
-	   // *** Backgrounds **
-	   Bitmap mLowerBackground;
-	   Bitmap mShortcutsBackground;
-	   
-	   // ** Unlocker icons **
-	   Bitmap mLockIcon;
-	   Bitmap mLockAppIcon;
-	   
-	   // ** Shortcut icons **
-	   Bitmap mShortCutOne;
-	   Bitmap mShortCutTwo;
-	   Bitmap mShortCutThree;
-	   Bitmap mShortCutFour;
-	   
-	   private float mShortCutHeight;
-	   
-	   private int mLockX, mLockY;
-	   private boolean mIsTouchInCircle = false;
-	   private boolean mUsingShortcuts = false;
-	   private boolean mTriggering = false;
-	   
-	   
-	   private Canvas mCanvas;
-	   
-	   private float mDensity;
-	   
-	   // ***************
-	   private OnSenseLikeSelectorTriggerListener mSenseLikeTriggerListener;
-	   private int  mGrabbedState = OnSenseLikeSelectorTriggerListener.ICON_GRABBED_STATE_NONE;
-	 
-	  
-	
-	  
-	private float mDensityScaleFactor = 1;
-	private int mShortCutSelected;
+    // ** Shortcut icons **
+    Bitmap mShortCutOne;
+    Bitmap mShortCutTwo;
+    Bitmap mShortCutThree;
+    Bitmap mShortCutFour;
+
+    private float mShortCutHeight;
+
+    private int mLockX, mLockY;
+    private boolean mIsTouchInCircle = false;
+    private boolean mUsingShortcuts = false;
+    private boolean mTriggering = false;
+
+    private Canvas mCanvas;
+
+    private float mDensity;
+
+    // ***************
+    private OnSenseLikeSelectorTriggerListener mSenseLikeTriggerListener;
+    private int  mGrabbedState = OnSenseLikeSelectorTriggerListener.ICON_GRABBED_STATE_NONE;
+
+    private float mDensityScaleFactor = 1;
+    private int mShortCutSelected;
 
     private Boolean mUseShortcutOne = false;
     private Boolean mUseShortcutTwo = false;
     private Boolean mUseShortcutThree = false;
     private Boolean mUseShortcutFour = false;
     private Boolean mIsInRingMode = false;
-	
-	private enum mSelected {
-		
-		LOCK(1),
-		SHORTCUT(2);
-		
-		private final double value;
 
-		
-		mSelected(int i){
-			this.value = i;
-			
-		}
-	}
-	 
+    private enum mSelected {
+        LOCK(1),
+        SHORTCUT(2);
+
+        private final double value;
+        mSelected(int i){
+            this.value = i;
+        }
+    }
+
     //
     //********************** Constructors**********
-	//
-	public SenseLikeLock(Context context) {
-		this(context,null);
-		
-		// TODO Auto-generated constructor stub
-	}
-	public SenseLikeLock(Context context, AttributeSet attrs) {
-		super(context,attrs);
-		
-            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SlidingTab);
-		    // TODO obtain proper orientaion
-		   
-	        mOrientation = a.getInt(R.styleable.SlidingTab_orientation, VERTICAL);
-	        
-	        Resources r = getResources();
-	        mDensity = r.getDisplayMetrics().density;
-	        int densityDpi = r.getDisplayMetrics().densityDpi;
+    //
+    public SenseLikeLock(Context context) {
+        this(context,null);
+        // TODO Auto-generated constructor stub
+    }
 
-	        /*
-	         * this hack assumes people change build.prop for increasing
-	         * the virtual size of their screen by decreasing dpi in
-	         * build.prop file. this is often done especially for hd
-	         * phones. keep in mind changing build.prop and density
-	         * isnt officially supported, but this should do for most cases
-	         */
-	        if(densityDpi <= 240 && densityDpi >= 180)
-	            mDensityScaleFactor=(float)(240.0 / densityDpi);
-	        if(densityDpi <= 160 && densityDpi >= 120)
-	            mDensityScaleFactor=(float)(160.0 / densityDpi);
+    public SenseLikeLock(Context context, AttributeSet attrs) {
+        super(context,attrs);
 
-	        
-	        
-	        
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SlidingTab);
+        // TODO obtain proper orientaion
 
-	        a.recycle();
-	        
-	        initializeUI();
-		// TODO Auto-generated constructor stub
-	}
-	
+        mOrientation = a.getInt(R.styleable.SlidingTab_orientation, VERTICAL);
+        Resources r = getResources();
+        mDensity = r.getDisplayMetrics().density;
+        int densityDpi = r.getDisplayMetrics().densityDpi;
+
+        /*
+         * this hack assumes people change build.prop for increasing
+         * the virtual size of their screen by decreasing dpi in
+         * build.prop file. this is often done especially for hd
+         * phones. keep in mind changing build.prop and density
+         * isnt officially supported, but this should do for most cases
+         */
+        if(densityDpi <= 320 && densityDpi >= 241)
+            mDensityScaleFactor=(float)(320.0 / densityDpi);
+        if(densityDpi <= 240 && densityDpi >= 180)
+            mDensityScaleFactor=(float)(240.0 / densityDpi);
+        if(densityDpi <= 160 && densityDpi >= 120)
+            mDensityScaleFactor=(float)(160.0 / densityDpi);
+
+        a.recycle();
+
+        initializeUI();
+        // TODO Auto-generated constructor stub
+    }
+
 	//**************** Overridden super methods
-	
+
 	@Override 
 	public boolean onTouchEvent(MotionEvent event){
 		super.onTouchEvent(event);
@@ -237,7 +224,7 @@ public class SenseLikeLock extends View{
             if(mUsingShortcuts){
             
             	int i = OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_ONE_TRIGGERED;
-            	int ar[] = {(width - mLockIcon.getWidth())/2, (height -(2*(mLockIcon.getHeight()/4))) };
+            	int ar[] = {(width - mLockIcon.getWidth())/2, (height -(2*(mLockIcon.getHeight()/3))) };
             
             if((mGrabbedState == OnSenseLikeSelectorTriggerListener.ICON_SHORTCUT_GRABBED_STATE_GRABBED ) && isShortTriggered( eventX, eventY)){
             	Log.d(TAG, "Shortcut Triggered");
@@ -558,29 +545,25 @@ public class SenseLikeLock extends View{
 	
     @Override 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    	   
-		  if (IDBG) log("Measuring the demensions of the view");
-    	   
-		  
-		  final int length = isVertical() ?
-                  MeasureSpec.getSize(widthMeasureSpec) :
-                  MeasureSpec.getSize(heightMeasureSpec);
-                  
-      	final int height = (isVertical() ?
-                      (MeasureSpec.getSize(heightMeasureSpec)) :
-                      MeasureSpec.getSize(widthMeasureSpec)/2);
-		  
-		 
-                
+
+        if (IDBG) log("Measuring the demensions of the view");
 
 
-		  if (DBG) log("The demensions of the view is length:" + length + " and height: " + height );
-           if (isVertical()) {
-               setMeasuredDimension(length, height);
-           } else {
-               setMeasuredDimension(height, length);
-           }
-       }
+        final int length = isVertical() ?
+                MeasureSpec.getSize(widthMeasureSpec) :
+                MeasureSpec.getSize(heightMeasureSpec);
+
+        final int height = (isVertical() ?
+                (MeasureSpec.getSize(heightMeasureSpec)) :
+                MeasureSpec.getSize(widthMeasureSpec)/2);
+
+        if (DBG) log("The demensions of the view is length:" + length + " and height: " + height );
+            if (isVertical()) {
+                setMeasuredDimension(length, height);
+            } else {
+                setMeasuredDimension(height, length);
+            }
+    }
 
     
   
@@ -588,21 +571,12 @@ public class SenseLikeLock extends View{
     // ************* Initilization function
     
     private void initializeUI(){
-        if (isVertical()) {
-            Log.d(TAG, "Initializing user interface");
-            mLockIcon = getBitmapFor(R.drawable.sense_ring);
-            mLowerBackground = getBitmapFor(R.drawable.sense_panel);
-            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
-            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
-            //setShortCutsDrawables(null, null, null, null);
-        } else if (!isVertical()) {
-            Log.d(TAG, "Initializing user interface");
-            mLockIcon = getBitmapFor(R.drawable.sense_ring);
-            mLowerBackground = getBitmapFor(R.drawable.sense_panel_landscape);
-            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
-            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
-            //setShortCutsDrawables(null, null, null, null);
-        }
+        Log.d(TAG, "Initializing user interface");
+        mLockIcon = getBitmapFor(R.drawable.sense_ring);
+        mLowerBackground = getBitmapFor(R.drawable.sense_panel);
+        mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
+        mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
+        //setShortCutsDrawables(null, null, null, null);
     }
     
     

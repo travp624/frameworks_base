@@ -186,7 +186,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="-46dip" />
+                android:layout_marginBottom="-60dip" />
 
             <TextView
                 android:id="@+id/carrier"
