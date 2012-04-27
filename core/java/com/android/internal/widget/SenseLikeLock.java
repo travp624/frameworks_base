@@ -18,9 +18,11 @@
 
 package com.android.internal.widget;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
@@ -112,6 +114,11 @@ public class SenseLikeLock extends View{
 
     private float mDensityScaleFactor = 1;
     private int mShortCutSelected;
+
+    boolean isLandscape = (((Activity) getContext()).getRequestedOrientation()
+                == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    boolean isPortrait = (((Activity) getContext()).getRequestedOrientation()
+                == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
     private Boolean mUseShortcutOne = false;
     private Boolean mUseShortcutTwo = false;
@@ -571,12 +578,22 @@ public class SenseLikeLock extends View{
     // ************* Initilization function
     
     private void initializeUI(){
-        Log.d(TAG, "Initializing user interface");
-        mLockIcon = getBitmapFor(R.drawable.sense_ring);
-        mLowerBackground = getBitmapFor(R.drawable.sense_panel);
-        mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
-        mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
-        //setShortCutsDrawables(null, null, null, null);
+        if (isPortrait) {
+            Log.d(TAG, "Initializing user interface");
+            mLockIcon = getBitmapFor(R.drawable.sense_ring);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel);
+            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
+            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
+            //setShortCutsDrawables(null, null, null, null);
+        }
+        if (isLandscape) {
+            Log.d(TAG, "Initializing user interface");
+            mLockIcon = getBitmapFor(R.drawable.sense_ring);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel_landscape);
+            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
+            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
+            //setShortCutsDrawables(null, null, null, null);
+        }
     }
     
     
