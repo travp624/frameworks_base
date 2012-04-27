@@ -237,7 +237,7 @@ public class SenseLikeLock extends View{
             if(mUsingShortcuts){
             
             	int i = OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_ONE_TRIGGERED;
-            	int ar[] = {(width - mLockIcon.getWidth())/2, (height -(2*(mLockIcon.getHeight()/3))) };
+            	int ar[] = {(width - mLockIcon.getWidth())/2, (height -(2*(mLockIcon.getHeight()/4))) };
             
             if((mGrabbedState == OnSenseLikeSelectorTriggerListener.ICON_SHORTCUT_GRABBED_STATE_GRABBED ) && isShortTriggered( eventX, eventY)){
             	Log.d(TAG, "Shortcut Triggered");
@@ -588,13 +588,21 @@ public class SenseLikeLock extends View{
     // ************* Initilization function
     
     private void initializeUI(){
-    	Log.d(TAG, "Initializing user interface");
-    	mLockIcon = getBitmapFor(R.drawable.sense_ring);
-    	mLowerBackground = getBitmapFor(R.drawable.sense_panel);
-    	mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
-    	mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
-    	//setShortCutsDrawables(null, null, null, null);
-    	
+        if (isVertical()) {
+            Log.d(TAG, "Initializing user interface");
+            mLockIcon = getBitmapFor(R.drawable.sense_ring);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel);
+            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
+            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
+            //setShortCutsDrawables(null, null, null, null);
+        } else if (!isVertical()) {
+            Log.d(TAG, "Initializing user interface");
+            mLockIcon = getBitmapFor(R.drawable.sense_ring);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel_landscape);
+            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
+            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
+            //setShortCutsDrawables(null, null, null, null);
+        }
     }
     
     
@@ -726,8 +734,7 @@ public class SenseLikeLock extends View{
     private boolean isVertical() {
         return (mOrientation == VERTICAL);
     }
-    
-    
+
     private void log(String msg) {
 	    Log.d(TAG, msg);
 	}
