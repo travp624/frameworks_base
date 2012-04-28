@@ -206,11 +206,9 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_rowSpan="10"
                 android:layout_alignParentBottom="true"
-                android:layout_alignLeft="@id/status"
-                android:paddingLeft="20dip"
-                android:layout_marginBottom="-20dip" />
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="-200dip" />
 
             <!-- Music transport control -->
             <include android:id="@+id/transport"

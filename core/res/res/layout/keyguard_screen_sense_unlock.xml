@@ -182,7 +182,9 @@
 
             <com.android.internal.widget.SenseLikeLock
                 android:id="@+id/unlock_widget"
+                android:key="portrait"
                 android:orientation="vertical"
+                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentBottom="true" />
