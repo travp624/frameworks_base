@@ -42,25 +42,24 @@ public class SignalClusterView
     static final String TAG = "SignalClusterView";
     
     private static final int EVENT_SIGNAL_STRENGTH_CHANGED = 200;
-    
+
     NetworkController mNC;
-    
+
     private boolean mWifiVisible = false;
     private int mWifiStrengthId = 0, mWifiActivityId = 0;
     private boolean mMobileVisible = false;
     private int mMobileStrengthId = 0, mMobileActivityId = 0, mMobileTypeId = 0;
     private boolean mIsAirplaneMode = false;
     private String mWifiDescription, mMobileDescription, mMobileTypeDescription;
-   
+
     private boolean showingSignalText = false;
     private boolean showingWifiText = false;
     private boolean mHideSignal = false;
-    
+
     ViewGroup mWifiGroup, mMobileGroup;
     ImageView mWifi, mMobile, mWifiActivity, mMobileActivity, mMobileType;
     TextView mMobileText,mWifiText;
-    View mSpacer;
-    
+
     Handler mHandler;
         
     public SignalClusterView(Context context) {
@@ -91,15 +90,14 @@ public class SignalClusterView
         mMobile         = (ImageView) findViewById(R.id.mobile_signal);
         mMobileActivity = (ImageView) findViewById(R.id.mobile_inout);
         mMobileType     = (ImageView) findViewById(R.id.mobile_type);
-        mMobileText		= (TextView)  findViewById(R.id.signal_text);
+        mMobileText     = (TextView)  findViewById(R.id.signal_text);
         mWifiText       = (TextView)  findViewById(R.id.wifi_signal_text);
-        mSpacer         =             findViewById(R.id.spacer);
-        
+
         mHandler = new Handler();
-        
+
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
-        
+
         apply();
     }
 
@@ -188,9 +186,11 @@ public class SignalClusterView
             mMobileGroup.setVisibility(View.GONE);
         }
         if (mMobileVisible && mWifiVisible && mIsAirplaneMode) {
-            mSpacer.setVisibility(View.INVISIBLE);
+            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6,
+                    getContext().getResources().getDisplayMetrics());
+            mMobileGroup.setPadding((int) px, 0, 0, 0);
         } else {
-            mSpacer.setVisibility(View.GONE);
+            mMobileGroup.setPadding(0, 0, 0, 0);
         }
 
         if (DEBUG) Slog.d(TAG,
@@ -252,5 +252,4 @@ public class SignalClusterView
         }
         apply();
     }
- 
 }
