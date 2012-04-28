@@ -10,9 +10,9 @@
 
     <TextView
         android:id="@+id/event_title"
-        android:ellipsize="marquee"
+        android:ellipsize="middle"
         android:gravity="center"
-        android:layout_width="240dip"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scrollHorizontally="true"
         android:singleLine="true"
@@ -21,7 +21,8 @@
 
     <TextView
         android:id="@+id/event_details"
-        android:layout_width="240dip"
+        android:gravity="center"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
