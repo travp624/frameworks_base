@@ -142,17 +142,17 @@ public class WifiText extends TextView {
         	signal = ((signal / (min - max)) * 100f);
         	mRssi = (signal > 100f ? 100 : Math.round(signal));
             setText(Integer.toString(mRssi));
-			SpannableStringBuilder formatted = new SpannableStringBuilder(
+            SpannableStringBuilder formatted = new SpannableStringBuilder(
                     Integer.toString(mRssi) + "%");
             CharacterStyle style = new RelativeSizeSpan(0.7f); // beautiful
                                                                // formatting
-            if (mRssi < 10) { // level < 10, 2nd char is %
+            if (mRssi < 10) { // mRssi < 10, 2nd char is %
                 formatted.setSpan(style, 1, 2,
                         Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-            } else if (mRssi < 100) { // level 10-99, 3rd char is %
+            } else if (mRssi < 100) { // mRssi 10-99, 3rd char is %
                 formatted.setSpan(style, 2, 3,
                         Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-            } else { // level 100, 4th char is %
+            } else { // mRssi 100, 4th char is %
                 formatted.setSpan(style, 3, 4,
                         Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
             }
