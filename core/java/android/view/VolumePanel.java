@@ -731,10 +731,10 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
     }
 
     public void onStartTrackingTouch(SeekBar seekBar) {
-        updateStates();
     }
 
     public void onStopTrackingTouch(SeekBar seekBar) {
+        updateStates();
     }
 
     public void onClick(View v) {

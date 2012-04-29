@@ -16,6 +16,8 @@
 
 package com.android.internal.widget.multiwaveview;
 
+import java.util.ArrayList;
+
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
@@ -39,9 +41,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
 import com.android.internal.R;
-
-import java.util.ArrayList;
-import java.lang.IndexOutOfBoundsException;
 
 /**
  * A special widget containing a center and outer ring. Moving the center ring to the outer ring
@@ -142,8 +141,8 @@ public class MultiWaveView extends View {
     };
     private int mTargetResourceId;
     private int mTargetDescriptionsResourceId;
-    private int mDirectionDescriptionsResourceId;
     private Drawable[] mTargetDrawableArray;
+    private int mDirectionDescriptionsResourceId;
 
     public MultiWaveView(Context context) {
         this(context, null);
@@ -963,9 +962,8 @@ public class MultiWaveView extends View {
             }
         }
         String s = "";
-        try {
-        	s = mTargetDescriptions.get(index);
-        } catch (IndexOutOfBoundsException e) {
+        try { 
+            s = mTargetDescriptions.get(index);
         } catch (Exception e) {
         }
         return s;
