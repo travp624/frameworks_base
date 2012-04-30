@@ -73,6 +73,7 @@ public class SenseLikeLock extends View{
      * Either {@link #HORIZONTAL} or {@link #VERTICAL}.
      */
     private int mOrientation;
+    private int mOrientation2;
 
     public static final int HORIZONTAL = 0;
     public static final int VERTICAL = 1;
@@ -113,7 +114,6 @@ public class SenseLikeLock extends View{
 
     private float mDensityScaleFactor = 1;
     private int mShortCutSelected;
-    private int mCreationOrientation;
 
     private Boolean mUseShortcutOne = false;
     private Boolean mUseShortcutTwo = false;
@@ -145,6 +145,7 @@ public class SenseLikeLock extends View{
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SlidingTab);
         // TODO obtain proper orientaion
         mOrientation = a.getInt(R.styleable.SlidingTab_orientation, VERTICAL);
+        mOrientation2 = a.getInt(R.styleable.SlidingTab_orientation, HORIZONTAL);
         Resources r = getResources();
         mDensity = r.getDisplayMetrics().density;
         int densityDpi = r.getDisplayMetrics().densityDpi;
@@ -509,18 +510,16 @@ public class SenseLikeLock extends View{
 
     // ************* Initilization function
     private void initializeUI() {
-        boolean isLandscape = (mCreationOrientation == Configuration
-                    .ORIENTATION_LANDSCAPE);
-        Log.d(TAG, "Initializing user interface");
-        if (isLandscape) {
+        if (isVertical()) {
             mLockIcon = getBitmapFor(R.drawable.sense_ring);
-            mLowerBackground = getBitmapFor(R.drawable.sense_panel_landscape);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel);
             mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
             mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
             //setShortCutsDrawables(null, null, null, null);
-        } else {
+        }
+        if (isHorizontal()) {
             mLockIcon = getBitmapFor(R.drawable.sense_ring);
-            mLowerBackground = getBitmapFor(R.drawable.sense_panel);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel_landscape);
             mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
             mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
             //setShortCutsDrawables(null, null, null, null);
@@ -635,6 +634,10 @@ public class SenseLikeLock extends View{
     //************************** Misc Function***********************
     private boolean isVertical() {
         return (mOrientation == VERTICAL);
+    }
+
+    private boolean isHorizontal() {
+        return (mOrientation == HORIZONTAL);
     }
 
     private void log(String msg) {

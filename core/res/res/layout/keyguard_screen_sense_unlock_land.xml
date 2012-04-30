@@ -138,8 +138,8 @@
                 android:layout_below="@id/weather"
                 android:inAnimation="@anim/calendar_fadein"
                 android:outAnimation="@anim/calendar_fadeout"
-                android:layout_gravity="fill"
-                android:gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
                 android:drawablePadding="4dip" />
 
             <TextView
@@ -197,7 +197,7 @@
             <!-- Column 2 -->
             <com.android.internal.widget.SenseLikeLock
                 android:id="@+id/unlock_widget"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="fill_horizontal"
