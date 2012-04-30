@@ -370,7 +370,11 @@ public class SenseLikeLock extends View{
         final int height = getHeight();
         final int halfWidth = width/2;
         final int halfHeight = height/2;
-        mShortCutHeight = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight();
+        if (isVertical()) {
+            mShortCutHeight = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight();
+        } else if (isHorizontal()) {
+            mShortCutHeight = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground2.getHeight();
+        }
         int padding = this.mShortcutsBackground.getWidth()/2;
 
         if (DBG) log("The width of the view is " + width + " and the hieght of the veiw is " + height );
@@ -382,7 +386,11 @@ public class SenseLikeLock extends View{
                 mPaint.setColor(0xffff0000);
                 mPaint.setStyle(Paint.Style.STROKE);
                 canvas.drawRect(0, 0, width-1, height-1 , mPaint);
-                float h = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight()/2;              
+                if (isVertical()) {
+                    float h = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight()/2;
+                } else if (isHorizontal)) {
+                    float h = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground2.getHeight()/2;
+                }
                 canvas.drawRect(0, mShortCutHeight , width, mShortCutHeight + this.mShortcutsBackground.getHeight() , mPaint);
                 canvas.drawLine(halfWidth, height, halfWidth, 0, mPaint);
         }
