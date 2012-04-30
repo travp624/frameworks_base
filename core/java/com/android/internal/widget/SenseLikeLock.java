@@ -113,6 +113,7 @@ public class SenseLikeLock extends View{
 
     private float mDensityScaleFactor = 1;
     private int mShortCutSelected;
+    private int mCreationOrientation;
 
     private Boolean mUseShortcutOne = false;
     private Boolean mUseShortcutTwo = false;
@@ -508,12 +509,22 @@ public class SenseLikeLock extends View{
 
     // ************* Initilization function
     private void initializeUI() {
+        boolean isLandscape = (mCreationOrientation == Configuration
+                    .ORIENTATION_LANDSCAPE);
         Log.d(TAG, "Initializing user interface");
-        mLockIcon = getBitmapFor(R.drawable.sense_ring);
-        mLowerBackground = getBitmapFor(R.drawable.sense_panel_landscape);
-        mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
-        mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
-        //setShortCutsDrawables(null, null, null, null);
+        if (isLandscape) {
+            mLockIcon = getBitmapFor(R.drawable.sense_ring);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel_landscape);
+            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
+            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
+            //setShortCutsDrawables(null, null, null, null);
+        } else {
+            mLockIcon = getBitmapFor(R.drawable.sense_ring);
+            mLowerBackground = getBitmapFor(R.drawable.sense_panel);
+            mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
+            mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
+            //setShortCutsDrawables(null, null, null, null);
+        }
     }
 
     // Lock position function
