@@ -85,6 +85,7 @@ public class SenseLikeLock extends View{
 
     // *** Backgrounds **
     Bitmap mLowerBackground;
+    Bitmap mLowerBackground2;
     Bitmap mShortcutsBackground;
     
     // ** Unlocker icons **
@@ -494,17 +495,28 @@ public class SenseLikeLock extends View{
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (IDBG) log("Measuring the demensions of the view");
 
-        final int length = isVertical() ? MeasureSpec.getSize(widthMeasureSpec) :
+        final int length1 = isVertical() ? MeasureSpec.getSize(widthMeasureSpec) :
                 MeasureSpec.getSize(heightMeasureSpec);
 
-        final int height = (isVertical() ? (MeasureSpec.getSize(heightMeasureSpec)) :
+        final int height1 = (isVertical() ? (MeasureSpec.getSize(heightMeasureSpec)) :
                 MeasureSpec.getSize(widthMeasureSpec)/2);
 
-        if (DBG) log("The demensions of the view is length:" + length + " and height: " + height );
+        final int length2 = isHorizontal() ? MeasureSpec.getSize(widthMeasureSpec) :
+                MeasureSpec.getSize(heightMeasureSpec);
+
+        final int height2 = (isHorizontal() ? (MeasureSpec.getSize(heightMeasureSpec)) :
+                MeasureSpec.getSize(widthMeasureSpec)/2);
+
+        if (DBG) log("The demensions of the view is length:" + length1 + " and height: " + height1 );
             if (isVertical()) {
-                setMeasuredDimension(length, height);
+                setMeasuredDimension(length1, height1);
             } else {
-                setMeasuredDimension(height, length);
+                setMeasuredDimension(height1, length1);
+            }
+            if (isHorizontal()) {
+                setMeasuredDimension(height2, length2);
+            } else {
+                setMeasuredDimension(length2, height2);
             }
     }
 
