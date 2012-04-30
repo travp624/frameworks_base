@@ -370,7 +370,11 @@ public class SenseLikeLock extends View{
         final int height = getHeight();
         final int halfWidth = width/2;
         final int halfHeight = height/2;
-        mShortCutHeight = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight();
+        if (isVertical()) {
+            mShortCutHeight = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight();
+        } else if (isHorizontal()) {
+            mShortCutHeight = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground2.getHeight();
+        }
         int padding = this.mShortcutsBackground.getWidth()/2;
 
         if (DBG) log("The width of the view is " + width + " and the hieght of the veiw is " + height );
@@ -379,15 +383,23 @@ public class SenseLikeLock extends View{
             // draw bounding box around widget
 
             if (IDBG) log("Debugging the widget visibly");
-                mPaint.setColor(0xffff0000);
-                mPaint.setStyle(Paint.Style.STROKE);
-                canvas.drawRect(0, 0, width-1, height-1 , mPaint);
-                float h = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight()/2;              
-                canvas.drawRect(0, mShortCutHeight , width, mShortCutHeight + this.mShortcutsBackground.getHeight() , mPaint);
-                canvas.drawLine(halfWidth, height, halfWidth, 0, mPaint);
+            mPaint.setColor(0xffff0000);
+            mPaint.setStyle(Paint.Style.STROKE);
+            canvas.drawRect(0, 0, width-1, height-1 , mPaint);
+            if (isVertical()) {
+                float h = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight()/2;
+            } else if (isHorizontal()) {
+                float h = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground2.getHeight()/2;
+            }
+            canvas.drawRect(0, mShortCutHeight , width, mShortCutHeight + this.mShortcutsBackground.getHeight() , mPaint);
+            canvas.drawLine(halfWidth, height, halfWidth, 0, mPaint);
         }
 
-        canvas.drawBitmap(this.mLowerBackground,  0, (height -(this.mLowerBackground.getHeight()) ), mPaint);
+        if (isVertical()) {
+            canvas.drawBitmap(this.mLowerBackground,  0, (height -(this.mLowerBackground.getHeight()) ), mPaint);
+        } else if (isHorizontal()) {
+            canvas.drawBitmap(this.mLowerBackground2, 0, (height -(this.mLowerBackground2.getHeight()) ), mPaint);
+        }
 
         if (mIsTouchInCircle && !mIsInRingMode) {
             mLockIcon = getBitmapFor(R.drawable.sense_ring_on_unlock);
@@ -531,7 +543,7 @@ public class SenseLikeLock extends View{
         }
         if (isHorizontal()) {
             mLockIcon = getBitmapFor(R.drawable.sense_ring);
-            mLowerBackground = getBitmapFor(R.drawable.sense_panel_landscape);
+            mLowerBackground2 = getBitmapFor(R.drawable.sense_panel_landscape);
             mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
             mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
             //setShortCutsDrawables(null, null, null, null);
