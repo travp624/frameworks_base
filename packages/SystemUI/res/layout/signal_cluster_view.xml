@@ -66,6 +66,6 @@
             android:id="@+id/signal_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingLeft="8dp" />
+            android:paddingLeft="4dp" />
     </FrameLayout>
 </com.android.systemui.statusbar.SignalClusterView>
