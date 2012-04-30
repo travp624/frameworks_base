@@ -514,10 +514,8 @@ public class SenseLikeLock extends View{
                 MeasureSpec.getSize(widthMeasureSpec)/2);
 
         if (DBG) log("The demensions of the view is length:" + length + " and height: " + height );
-            if (isVertical()) {
+            if ((isVertical()) && (isHorizontal())) {
                 setMeasuredDimension(length, height);
-            } else if (isHorizontal()) {
-                setMeasuredDimension(height, length);
             }
     }
 
