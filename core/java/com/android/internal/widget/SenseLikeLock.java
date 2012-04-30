@@ -387,7 +387,11 @@ public class SenseLikeLock extends View{
                 canvas.drawLine(halfWidth, height, halfWidth, 0, mPaint);
         }
 
-        canvas.drawBitmap(this.mLowerBackground,  0, (height -(this.mLowerBackground.getHeight()) ), mPaint);
+        if (isVertical()) {
+            canvas.drawBitmap(this.mLowerBackground, 0, (height -(this.mLowerBackground.getHeight()) ), mPaint);
+        } else if (isHorizontal()) {
+            canvas.drawBitmap(this.mLowerBackground2, 0, (height -(this.mLowerBackground2.getHeight()) ), mPaint);
+        }
 
         if (mIsTouchInCircle && !mIsInRingMode) {
             mLockIcon = getBitmapFor(R.drawable.sense_ring_on_unlock);
@@ -513,12 +517,11 @@ public class SenseLikeLock extends View{
     private void initializeUI() {
         if (isHorizontal()) {
             mLockIcon = getBitmapFor(R.drawable.sense_ring);
-            mLowerBackground = getBitmapFor(R.drawable.sense_panel_landscape);
+            mLowerBackground2 = getBitmapFor(R.drawable.sense_panel_landscape);
             mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
             mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
             //setShortCutsDrawables(null, null, null, null);
-        }
-        if (isVertical()) {
+        } else if (isVertical()) {
             mLockIcon = getBitmapFor(R.drawable.sense_ring);
             mLowerBackground = getBitmapFor(R.drawable.sense_panel);
             mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
