@@ -577,7 +577,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         Log.d(TAG, "Setting intents");
         if (numTargets != 4) {
-            Log.d(TAG, "Seting defaults");
+            Log.d(TAG, "Setting defaults");
             mCustomApps = senseringselector.setDefaultIntents();
             for (int i = 0; i < 4; i++) {
                 if (mCustomRingAppActivities[i] != null) {
