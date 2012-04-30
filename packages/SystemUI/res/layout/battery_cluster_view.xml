@@ -18,14 +18,13 @@
 		android:id="@+id/battery_combo"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
-		android:paddingLeft="2dp">
+		android:paddingLeft="4dp">
 
 		<ImageView
 			android:id="@+id/battery"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:layout_gravity="right"
-			android:paddingLeft="2dp" />
+			android:layout_gravity="right" />
 		<TextView
 			android:id="@+id/battery_text"
 			style="@style/Battery_Offset"
@@ -36,8 +35,7 @@
 			android:shadowDx="0"
 			android:shadowDy="0"
 			android:shadowRadius="2.5"
-			android:visibility="gone"
-			android:paddingLeft="2dp" />
+			android:visibility="gone" />
 	     <TextView
 			android:id="@+id/battery_text_center"
 			style="@style/Battery_Center"
@@ -48,8 +46,7 @@
 			android:shadowDx="0"
 			android:shadowDy="0"
 			android:shadowRadius="2.5"
-			android:visibility="gone"
-			android:paddingLeft="2dp" />
+			android:visibility="gone" />
 			
 		<TextView
 			android:id="@+id/battery_text_only"
