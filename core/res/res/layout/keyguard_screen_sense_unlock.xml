@@ -129,8 +129,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/weather"
                 android:layout_centerHorizontal="true"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
+                android:layout_gravity="center"
+                android:gravity="center"
                 android:inAnimation="@anim/calendar_fadein"
                 android:outAnimation="@anim/calendar_fadeout"
                 android:drawablePadding="4dip" />
@@ -231,7 +231,7 @@
                 android:layout_column="0"
                 android:layout_rowSpan="6"
                 android:layout_columnSpan="1"
-                android:layout_gravity="fill"
+                android:layout_gravity="top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
