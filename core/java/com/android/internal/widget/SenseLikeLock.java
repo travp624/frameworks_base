@@ -510,6 +510,9 @@ public class SenseLikeLock extends View{
         final int length = isVertical() ? MeasureSpec.getSize(widthMeasureSpec) :
                 MeasureSpec.getSize(heightMeasureSpec);
 
+        final int length1 = isVertical() ? MeasureSpec.getSize(widthMeasureSpec) :
+                MeasureSpec.getSize(heightMeasureSpec)*2;
+
         final int height = (isVertical() ? (MeasureSpec.getSize(heightMeasureSpec)) :
                 MeasureSpec.getSize(widthMeasureSpec)/2);
 
@@ -517,7 +520,7 @@ public class SenseLikeLock extends View{
             if (isVertical()) {
                 setMeasuredDimension(length, height);
             } else if (isHorizontal()) { 
-                setMeasuredDimension(length, height);
+                setMeasuredDimension(length1, height);
             } else {
                 setMeasuredDimension(height, length);
             }
