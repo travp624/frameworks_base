@@ -388,7 +388,7 @@ public class SenseLikeLock extends View{
                 canvas.drawRect(0, 0, width-1, height-1 , mPaint);
                 if (isVertical()) {
                     float h = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight()/2;
-                } else if (isHorizontal)) {
+                } else if (isHorizontal()) {
                     float h = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground2.getHeight()/2;
                 }
                 canvas.drawRect(0, mShortCutHeight , width, mShortCutHeight + this.mShortcutsBackground.getHeight() , mPaint);
