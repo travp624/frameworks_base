@@ -524,18 +524,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
-    private void runActivity(String uri) {
-		try {
-			Intent i = Intent.parseUri(uri, 0);
-			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-					| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-			mContext.startActivity(i);
-			mCallback.goToUnlockScreen();
-		} catch (URISyntaxException e) {
-		} catch (ActivityNotFoundException e) {
-		}
-	}
-
     /**
      * In general, we enable unlocking the insecure key guard with the menu key. However, there are
      * some cases where we wish to disable it, notably when the menu button placement or technology
