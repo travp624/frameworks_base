@@ -487,8 +487,12 @@ class KeyguardStatusViewManager implements OnClickListener {
                     int dateWidth = (int) (findViewById(R.id.time).getWidth() * 1.2);
 
                     for (EventBundle e : mCalendarEvents) {
-                        String title = e.title + (e.dayString.isEmpty() ? "" : ", ");
-                        String details = e.dayString + ((e.allDay) ? "" : " " + DateFormat.format(DateFormat.is24HourFormat(getContext()) ? "kk:mm" : "hh:mm a", e.begin).toString()) + (!e.location.isEmpty() ? " (" + e.location + ")" : "");
+                        String title = e.title + (e.dayString.isEmpty() ? " " : ", ");
+                        String details = e.dayString
+                                + ((e.allDay) ? "" : " " + DateFormat.format(
+                                        DateFormat.is24HourFormat(getContext()) ? "kk:mm"
+                                                : "hh:mm a", e.begin).toString())
+                                + (!e.location.isEmpty() ? " (" + e.location + ")" : "");
                         CalendarEntry cEntry = new CalendarEntry(getContext(), title, details, dateWidth);
                         cEntry.setLayoutParams(new LinearLayout.LayoutParams(dateWidth, -2));
                         if (mCalendarUsingColors)
@@ -573,7 +577,8 @@ class KeyguardStatusViewManager implements OnClickListener {
         CharSequence string = null;
         mLockAlwaysBattery = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.LOCKSCREEN_BATTERY, 0) == 1;
-        mUseOldMusic = Settings.System.getInt(getContext().getContentResolver(), Settings.System.MUSIC_WIDGET_TYPE, 0) == 1;
+        mUseOldMusic = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.MUSIC_WIDGET_TYPE, 0) == 1;
         if (!TextUtils.isEmpty(mInstructionText)) {
             // Instructions only
             string = mInstructionText;

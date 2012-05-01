@@ -1339,4 +1339,16 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             if (DEBUG) Log.d(TAG, "KeyguardStatusViewManager.updateColors() failed: NullPointerException");
         }
     }
+
+	private void runActivity(String uri) {
+		try {
+			Intent i = Intent.parseUri(uri, 0);
+			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+					| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+			mContext.startActivity(i);
+			mCallback.goToUnlockScreen();
+		} catch (URISyntaxException e) {
+		} catch (ActivityNotFoundException e) {
+		}
+	}
 }
