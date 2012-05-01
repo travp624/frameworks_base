@@ -251,6 +251,8 @@ static const KeycodeLabel KEYCODES[] = {
     { "BRIGHTNESS_DOWN", 224 },
     { "BRIGHTNESS_AUTO", 225 },
     { "CAPTURE", 226 },
+    { "ALT_LOCK", 211 },
+    { "VOICE", 212 },
 
     // NOTE: If you add a new keycode here you must also add it to several other files.
     //       Refer to frameworks/base/core/java/android/view/KeyEvent.java for the full list.
