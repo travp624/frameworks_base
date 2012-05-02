@@ -217,7 +217,7 @@
         </LinearLayout>
 
         <!-- Music transport control -->
-        <com.android.internal.policy.impl.LockPatternKeyguardView
+        <include
             android:id="@+id/transport"
             layout="@layout/keyguard_transport_control"
             android:layout_row="0"
@@ -229,7 +229,7 @@
             android:layout_height="0dip" />
 
         <!-- Music transport control 
-        <ccom.android.internal.policy.impl.LockPatternKeyguardView
+        <include
             android:id="@+id/transport2"
             layout="@layout/keyguard_transport_control_old"
             android:layout_rowSpan="4"
