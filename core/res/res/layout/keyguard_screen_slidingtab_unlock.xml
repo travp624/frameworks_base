@@ -223,7 +223,7 @@
             android:layout_width="0dip"
             android:layout_height="0dip" />
 
-        <!-- Music transport control -->
+        <!-- Music transport control 
         <include android:id="@+id/transport2"
             layout="@layout/keyguard_transport_control_old"
             android:layout_rowSpan="4"
@@ -231,7 +231,7 @@
             android:layout_below="@id/status2"
             android:layout_gravity="center_horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" /> -->
 
     </GridLayout>
 
