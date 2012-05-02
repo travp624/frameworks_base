@@ -88,11 +88,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     public static final int LAYOUT_SENSELIKE = 5;
 
     // lockscreen toggles
-    private boolean mLockscreenCustom = (Settings.System.getInt(
+    private boolean mLockscreenCustom = false || (Settings.System.getInt(
         mContext.getContentResolver(),
         Settings.System.LOCKSCREEN_EXTRA_ICONS, 0) == 1);
 
-    private boolean mLockscreen4Tab = (Settings.System.getInt(
+    private boolean mLockscreen4Tab = false || (Settings.System.getInt(
         mContext.getContentResolver(),
         Settings.System.LOCKSCREEN_4TAB, 0) == 1);
 
