@@ -111,9 +111,9 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
             mContext.getContentResolver(),
             Settings.System.SHOW_LOCK_BEFORE_UNLOCK, 0) == 1);
 
-     private boolean mUseOldMusic = false || (Settings.System.getInt(
+     private boolean mUseOldMusic = Settings.System.getInt(
             mContext.getContentResolver(),
-            Settings.System.MUSIC_WIDGET_TYPE, 0) == 1);
+            Settings.System.MUSIC_WIDGET_TYPE, 0) == 1;
 
     // The following were added to support FaceLock
     private IFaceLockInterface mFaceLockService;
