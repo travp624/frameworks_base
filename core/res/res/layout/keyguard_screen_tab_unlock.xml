@@ -112,12 +112,16 @@
             android:drawablePadding="4dip" />
 
         <ViewFlipper
-            android:id="@+id/calendar"
-            android:inAnimation="@anim/calendar_fadein"
-            android:outAnimation="@anim/calendar_fadeout"
-            android:layout_gravity="center"
-            android:layout_marginRight="0dip"
-            android:drawablePadding="4dip" />
+                android:id="@+id/calendar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/weather"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:inAnimation="@anim/calendar_fadein"
+                android:outAnimation="@anim/calendar_fadeout"
+                android:drawablePadding="4dip" />
 
         <TextView
             android:id="@+id/status1"
@@ -225,19 +229,19 @@
             android:layout_rowSpan="6"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
-            android:layout_width="0dip"
-            android:layout_height="0dip" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <!-- Music transport control 
+        <!-- Music transport control -->
         <include
-            android:id="@+id/transport2"
+            android:id="@+id/transport_old"
             layout="@layout/keyguard_transport_control_old"
             android:layout_rowSpan="4"
             android:layout_columnSpan="1"
             android:layout_below="@id/status2"
             android:layout_gravity="center_horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" /> -->
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </GridLayout>
 
