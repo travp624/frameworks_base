@@ -111,10 +111,6 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
             mContext.getContentResolver(),
             Settings.System.SHOW_LOCK_BEFORE_UNLOCK, 0) == 1);
 
-     private boolean mUseOldMusic = Settings.System.getInt(
-            mContext.getContentResolver(),
-            Settings.System.MUSIC_WIDGET_TYPE, 0) == 1;
-
     // The following were added to support FaceLock
     private IFaceLockInterface mFaceLockService;
     private boolean mBoundToFaceLockService = false;
@@ -259,7 +255,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
             // If there's not a bg protection view containing the transport,
             // then show a black
             // background. Otherwise, allow the normal background to show.
-            if ((findViewById(R.id.transport_bg_protect) == null) && !mUseOldMusic) {
+            if (findViewById(R.id.transport_bg_protect) == null) {
                 // TODO: We should disable the wallpaper instead
                 setBackgroundColor(0xff000000);
             } else {
@@ -290,7 +286,6 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
     };
 
     private TransportControlView mTransportControlView;
-    private TransportControlView mTransportControlView2;
 
     private Parcelable mSavedState;
 
@@ -661,37 +656,17 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
     }
 
     private void saveWidgetState() {
-        if (mUseOldMusic) {
-            if (mTransportControlView2 != null) {
-                if (DEBUG)
-                    Log.v(TAG, "Saving widget state");
-                mSavedState = mTransportControlView2.onSaveInstanceState();
-            }
-        } else {
-            if (mTransportControlView != null) {
-                if (DEBUG)
-                    Log.v(TAG, "Saving widget state");
-                mSavedState = mTransportControlView.onSaveInstanceState();
-            }
+        if (mTransportControlView != null) {
+            if (DEBUG) Log.v(TAG, "Saving widget state");
+            mSavedState = mTransportControlView.onSaveInstanceState();
         }
     }
 
     private void restoreWidgetState() {
-        if (mUseOldMusic) {
-            if (mTransportControlView2 != null) {
-                if (DEBUG)
-                    Log.v(TAG, "Restoring widget state");
-                if (mSavedState != null) {
-                    mTransportControlView2.onRestoreInstanceState(mSavedState);
-                }
-            }
-        } else {
-            if (mTransportControlView != null) {
-                if (DEBUG)
-                    Log.v(TAG, "Restoring widget state");
-                if (mSavedState != null) {
-                    mTransportControlView.onRestoreInstanceState(mSavedState);
-                }
+        if (mTransportControlView != null) {
+            if (DEBUG) Log.v(TAG, "Restoring widget state");
+            if (mSavedState != null) {
+                mTransportControlView.onRestoreInstanceState(mSavedState);
             }
         }
     }
@@ -1085,29 +1060,13 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
 
     private void initializeTransportControlView(View view) {
         mTransportControlView = (TransportControlView) view.findViewById(R.id.transport);
-        mTransportControlView2 = (TransportControlView) view.findViewById(R.id.transport2);
-        if (mUseOldMusic) {
-            if (mTransportControlView2 == null) {
-                if (DEBUG)
-                    Log.w(TAG, "Couldn't find transport control widget");
-            } else {
-                mUpdateMonitor.reportClockVisible(true);
-                mTransportControlView2.setVisibility(View.GONE); // hide until it
-                                                                // requests being
-                                                                // shown.
-                mTransportControlView2.setCallback(mWidgetCallback);
-            }
+        if (mTransportControlView == null) {
+            if (DEBUG) Log.w(TAG, "Couldn't find transport control widget");
         } else {
-            if (mTransportControlView == null) {
-                if (DEBUG)
-                    Log.w(TAG, "Couldn't find transport control widget");
-            } else {
-                mUpdateMonitor.reportClockVisible(true);
-                mTransportControlView.setVisibility(View.GONE); // hide until it
-                                                                // requests being
-                                                                // shown.
-                mTransportControlView.setCallback(mWidgetCallback);
-            }
+            mUpdateMonitor.reportClockVisible(true);
+            // hide until it requests being shown.
+            mTransportControlView.setVisibility(View.GONE); 
+            mTransportControlView.setCallback(mWidgetCallback);
         }
     }
 
