@@ -232,7 +232,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Music transport control -->
+        <!-- Music transport control
         <include
             android:id="@+id/transport_old"
             layout="@layout/keyguard_transport_control_old"
@@ -241,7 +241,7 @@
             android:layout_below="@id/status2"
             android:layout_gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" /> -->
 
     </GridLayout>
 
