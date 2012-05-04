@@ -100,7 +100,6 @@ class KeyguardStatusViewManager implements OnClickListener {
     private TextView mOwnerInfoView;
     private TextView mAlarmStatusView;
     private TransportControlView mTransportView;
-    private TransportControlView mTransportViewOld;
     private ViewFlipper mCalendarView;
 
     // Top-level container view for above views
@@ -229,10 +228,6 @@ class KeyguardStatusViewManager implements OnClickListener {
         // Hide transport control view until we know we need to show it.
         if (mTransportView != null) {
             mTransportView.setVisibility(View.GONE);
-        }
-
-        if (mTransportViewOld != null) {
-            mTransportViewOld.setVisibility(View.GONE);
         }
 
         if (mEmergencyCallButton != null) {
