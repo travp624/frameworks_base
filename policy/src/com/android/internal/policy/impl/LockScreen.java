@@ -118,12 +118,16 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private View mUnlockWidget;
 	private View mUnlockWidget2;
 
+    private boolean mUseOldMusic = Settings.System.getInt(
+            mContext.getContentResolver(),
+            Settings.System.MUSIC_WIDGET_TYPE, 0) == 1;
+
     private TextView mCarrier;
     private DigitalClock mDigitalClock;
 
-    private String mCustomAppActivity = 
-            Settings.System.getString(mContext.getContentResolver(),
-                    Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[0]);
+    private String mCustomAppActivity = Settings.System.getString(
+            mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITIES[0]);
 
     // ring lock.
     private String[] mCustomRingAppActivities = new String[] {
@@ -973,56 +977,112 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         boolean landscape = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
 
-        switch (mLockscreenTargets) {
-            default:
-            case LAYOUT_STOCK:
-            case LAYOUT_QUAD:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this,
+        if (mUseOldMusic) {
+            switch (mLockscreenTargets) {
+                default:
+                case LAYOUT_STOCK:
+                case LAYOUT_QUAD:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_tab_unlock_land_oldmusic, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_tab_unlock_oldmusic, this,
+                                true);
+                    break;
+                case LAYOUT_OCTO:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_tab_octounlock_land_oldmusic, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_tab_octounlock_oldmusic, this,
+                                true);
+                    break;
+                case LAYOUT_HONEY:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land_oldmusic, this,
                             true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_tab_unlock, this,
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_oldmusic, this,
                             true);
-                break;
-            case LAYOUT_OCTO:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock_land, this,
+                    break;
+                case LAYOUT_AOSP:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land_oldmusic, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_oldmusic, this,
+                                true);
+                    break;
+                case LAYOUT_RINGSLOCK:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_ring_unlock_land_oldmusic, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_ring_unlock_oldmusic, this,
+                                true);
+                    break;
+                case LAYOUT_SENSELIKE:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_sense_unlock_land_oldmusic, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_sense_unlock_oldmusic, this,
+                                true);
+                    break;
+            }
+        } else {
+            switch (mLockscreenTargets) {
+                default:
+                case LAYOUT_STOCK:
+                case LAYOUT_QUAD:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_tab_unlock, this,
+                                true);
+                    break;
+                case LAYOUT_OCTO:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_tab_octounlock_land, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
+                                true);
+                    break;
+                case LAYOUT_HONEY:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this,
                             true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
                             true);
-                break;
-            case LAYOUT_HONEY:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this,
-                        true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
-                        true);
-                break;
-            case LAYOUT_AOSP:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
-                            true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock, this,
-                            true);
-                break;
-            case LAYOUT_RINGSLOCK:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_ring_unlock_land, this,
-                            true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_ring_unlock, this,
-                            true);
-                break;
-            case LAYOUT_SENSELIKE:
-                if (landscape)
-                    inflater.inflate(R.layout.keyguard_screen_sense_unlock_land, this,
-                            true);
-                else
-                    inflater.inflate(R.layout.keyguard_screen_sense_unlock, this,
-                            true);
+                    break;
+                case LAYOUT_AOSP:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock, this,
+                                true);
+                    break;
+                case LAYOUT_RINGSLOCK:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_ring_unlock_land, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_ring_unlock, this,
+                                true);
+                    break;
+                case LAYOUT_SENSELIKE:
+                    if (landscape)
+                        inflater.inflate(R.layout.keyguard_screen_sense_unlock_land, this,
+                                true);
+                    else
+                        inflater.inflate(R.layout.keyguard_screen_sense_unlock, this,
+                                true);
+                    break;
+            }
         }
 
         mStatusViewManager = new KeyguardStatusViewManager(this, mUpdateMonitor, mLockPatternUtils,
