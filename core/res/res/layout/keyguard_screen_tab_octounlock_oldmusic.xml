@@ -113,12 +113,16 @@
 			/>
 
 		<ViewFlipper
-			android:id="@+id/calendar"
-			android:inAnimation="@anim/calendar_fadein"
-			android:outAnimation="@anim/calendar_fadeout"
-			android:layout_gravity="center"
-			android:layout_marginRight="0dip"
-			android:drawablePadding="4dip" />
+            android:id="@+id/calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/weather"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:inAnimation="@anim/calendar_fadein"
+            android:outAnimation="@anim/calendar_fadeout"
+            android:drawablePadding="4dip" />
 
 		<TextView
 			android:id="@+id/status1"
@@ -139,7 +143,7 @@
             android:ellipsize="marquee"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-            android:drawablePadding="4dip" /> 
+            android:drawablePadding="4dip" />
 
 		<Space android:layout_gravity="fill" />
 
@@ -221,17 +225,17 @@
 
 		</LinearLayout>
 
-		<!-- Music transport control -->
-		<include android:id="@+id/transport"
-			layout="@layout/keyguard_transport_control"
-			android:layout_row="0"
-			android:layout_column="0"
-			android:layout_rowSpan="6"
-			android:layout_columnSpan="1"
-			android:layout_gravity="fill"
-			android:layout_width="0dip"
-			android:layout_height="0dip"
-			/>
+        <!-- Music transport control -->
+        <include
+            android:id="@+id/transport"
+            layout="@layout/keyguard_transport_control_old"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_rowSpan="4"
+            android:layout_columnSpan="1"
+            android:layout_gravity="top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
 	</GridLayout>
 

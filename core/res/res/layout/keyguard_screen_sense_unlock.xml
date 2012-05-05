@@ -235,16 +235,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <!-- Music transport control 
-            <include android:id="@+id/transport2"
-                layout="@layout/keyguard_transport_control_old"
-                android:layout_rowSpan="4"
-                android:layout_columnSpan="1"
-                android:layout_below="@id/status2"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" /> -->
-
         </RelativeLayout>
 
     </GridLayout>

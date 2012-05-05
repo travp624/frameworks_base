@@ -136,13 +136,12 @@
                 android:id="@+id/calendar"
                 android:layout_width="240dip"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="20dip"
                 android:layout_below="@id/weather"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:inAnimation="@anim/calendar_fadein"
                 android:outAnimation="@anim/calendar_fadeout"
-                android:layout_gravity="fill"
-                android:gravity="center"
                 android:drawablePadding="4dip" />
 
             <TextView
@@ -212,16 +211,15 @@
 
             <!-- Music transport control -->
             <include android:id="@+id/transport"
-                layout="@layout/keyguard_transport_control"
+                layout="@layout/keyguard_transport_control_old"
                 android:layout_row="0"
                 android:layout_column="0"
-                android:layout_rowSpan="7"
+                android:layout_rowSpan="4"
                 android:layout_columnSpan="1"
                 android:layout_gravity="fill"
-                android:layout_width="wrap_content" 
+                android:layout_width="300dip"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true" />
+                android:layout_alignParentBottom="true" />
 
         </RelativeLayout>
 
