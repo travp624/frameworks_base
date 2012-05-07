@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
+ * This code has been modified.  Portions copyright (C) 2010, T-Mobile USA, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,24 +177,29 @@ public class RingtoneManager {
      */
     public static final String EXTRA_RINGTONE_PICKED_URI =
             "android.intent.extra.ringtone.PICKED_URI";
+    
+    /**
+     * @hide
+     */
+    public static final String THEME_AUTHORITY = "com.tmobile.thememanager.packageresources";
 
     // Make sure the column ordering and then ..._COLUMN_INDEX are in sync
 
     private static final String[] INTERNAL_COLUMNS = new String[] {
         MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE,
-        "\"" + MediaStore.Audio.Media.INTERNAL_CONTENT_URI + "\"",
+        "\"" + MediaStore.Audio.Media.INTERNAL_CONTENT_URI + "/\" || " + MediaStore.Audio.Media._ID,
         MediaStore.Audio.Media.TITLE_KEY
     };
 
     private static final String[] DRM_COLUMNS = new String[] {
         DrmStore.Audio._ID, DrmStore.Audio.TITLE,
-        "\"" + DrmStore.Audio.CONTENT_URI + "\"",
+        "\"" + DrmStore.Audio.CONTENT_URI + "/\" || " + DrmStore.Audio._ID,
         DrmStore.Audio.TITLE + " AS " + MediaStore.Audio.Media.TITLE_KEY
     };
 
     private static final String[] MEDIA_COLUMNS = new String[] {
         MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE,
-        "\"" + MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "\"",
+        "\"" + MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/\" || " + MediaStore.Audio.Media._ID,
         MediaStore.Audio.Media.TITLE_KEY
     };
 
@@ -367,8 +373,11 @@ public class RingtoneManager {
         final Cursor internalCursor = getInternalRingtones();
         final Cursor drmCursor = mIncludeDrm ? getDrmRingtones() : null;
         final Cursor mediaCursor = getMediaRingtones();
-             
-        return mCursor = new SortCursor(new Cursor[] { internalCursor, drmCursor, mediaCursor },
+        final Cursor themeRegularCursor = getThemeRegularRingtones();
+        final Cursor themeNotifCursor = getThemeNotificationRingtones();
+
+        return mCursor = new SortCursor(new Cursor[] { internalCursor, drmCursor, mediaCursor,
+                themeRegularCursor, themeNotifCursor },
                 MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
     }
 
@@ -405,8 +414,7 @@ public class RingtoneManager {
     }
 
     private static Uri getUriFromCursor(Cursor cursor) {
-        return ContentUris.withAppendedId(Uri.parse(cursor.getString(URI_COLUMN_INDEX)), cursor
-                .getLong(ID_COLUMN_INDEX));
+        return Uri.parse(cursor.getString(URI_COLUMN_INDEX));
     }
 
     /**
@@ -425,26 +433,15 @@ public class RingtoneManager {
         if (!cursor.moveToFirst()) {
             return -1;
         }
-
-        // Only create Uri objects when the actual URI changes
-        Uri currentUri = null;
-        String previousUriString = null;
+        
         for (int i = 0; i < cursorCount; i++) {
-            String uriString = cursor.getString(URI_COLUMN_INDEX);
-            if (currentUri == null || !uriString.equals(previousUriString)) {
-                currentUri = Uri.parse(uriString);
-            }
-
-            if (ringtoneUri.equals(ContentUris.withAppendedId(currentUri, cursor
-                    .getLong(ID_COLUMN_INDEX)))) {
+            if (ringtoneUri.equals(getUriFromCursor(cursor))) {
                 return i;
             }
-
+            
             cursor.move(1);
-
-            previousUriString = uriString;
         }
-
+        
         return -1;
     }
 
@@ -457,29 +454,37 @@ public class RingtoneManager {
      */
     public static Uri getValidRingtoneUri(Context context) {
         final RingtoneManager rm = new RingtoneManager(context);
-
+        
         Uri uri = getValidRingtoneUriFromCursorAndClose(context, rm.getInternalRingtones());
 
         if (uri == null) {
             uri = getValidRingtoneUriFromCursorAndClose(context, rm.getMediaRingtones());
         }
-
+        
         if (uri == null) {
             uri = getValidRingtoneUriFromCursorAndClose(context, rm.getDrmRingtones());
+        }
+        
+        if (uri == null) {
+            uri = getValidRingtoneUriFromCursorAndClose(context, rm.getThemeRegularRingtones());
+        }
+        
+        if (uri == null) {
+            uri = getValidRingtoneUriFromCursorAndClose(context, rm.getThemeNotificationRingtones());
         }
 
         return uri;
     }
-
+    
     private static Uri getValidRingtoneUriFromCursorAndClose(Context context, Cursor cursor) {
         if (cursor != null) {
             Uri uri = null;
-
+            
             if (cursor.moveToFirst()) {
                 uri = getUriFromCursor(cursor);
             }
             cursor.close();
-
+            
             return uri;
         } else {
             return null;
@@ -492,7 +497,7 @@ public class RingtoneManager {
                 constructBooleanTrueWhereClause(mFilterColumns, mIncludeDrm),
                 null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
     }
-
+    
     private Cursor getDrmRingtones() {
         // DRM store does not have any columns to use for filtering 
         return query(
@@ -513,18 +518,50 @@ public class RingtoneManager {
                 : null;
     }
 
+    private String getThemeWhereClause(String uriColumn) {
+        /* Filter out themes with no ringtone and the default theme (which has no package). */
+        String clause = uriColumn + " IS NOT NULL AND LENGTH(theme_package) > 0";
+        if (mIncludeDrm) {
+            return clause;
+        } else {
+            return clause + " AND " + uriColumn + " NOT LIKE '%/assets/%locked%'";
+        }
+    }
+
+    private Cursor getThemeRegularRingtones() {
+        if ((mType & TYPE_RINGTONE) != 0) {
+            return query(Uri.parse("content://com.tmobile.thememanager.themes/themes"),
+                    new String[] { "_id", "ringtone_name AS " + MEDIA_COLUMNS[1], "ringtone_uri",
+                        "ringtone_name_key AS " + MEDIA_COLUMNS[3] },
+                    getThemeWhereClause("ringtone_uri"), null, MEDIA_COLUMNS[3]);
+        } else {
+            return null;
+        }
+    }
+
+    private Cursor getThemeNotificationRingtones() {
+        if ((mType & TYPE_NOTIFICATION) != 0) {
+            return query(Uri.parse("content://com.tmobile.thememanager.themes/themes"),
+                    new String[] { "_id", "notif_ringtone_name AS " + MEDIA_COLUMNS[1], "notif_ringtone_uri",
+                        "notif_ringtone_name_key AS " + MEDIA_COLUMNS[3] },
+                    getThemeWhereClause("notif_ringtone_uri"), null, MEDIA_COLUMNS[3]);
+        } else {
+            return null;
+        }
+    }
+
     private void setFilterColumnsList(int type) {
         List<String> columns = mFilterColumns;
         columns.clear();
-
+        
         if ((type & TYPE_RINGTONE) != 0) {
             columns.add(MediaStore.Audio.AudioColumns.IS_RINGTONE);
         }
-
+        
         if ((type & TYPE_NOTIFICATION) != 0) {
             columns.add(MediaStore.Audio.AudioColumns.IS_NOTIFICATION);
         }
-
+        
         if ((type & TYPE_ALARM) != 0) {
             columns.add(MediaStore.Audio.AudioColumns.IS_ALARM);
         }
@@ -539,7 +576,7 @@ public class RingtoneManager {
      * @return The where clause.
      */
     private static String constructBooleanTrueWhereClause(List<String> columns, boolean includeDrm) {
-
+        
         if (columns == null) return null;
 
         StringBuilder sb = new StringBuilder();
@@ -548,7 +585,7 @@ public class RingtoneManager {
         for (int i = columns.size() - 1; i >= 0; i--) {
             sb.append(columns.get(i)).append("=1 or ");
         }
-
+        
         if (columns.size() > 0) {
             // Remove last ' or '
             sb.setLength(sb.length() - 4);
@@ -563,7 +600,6 @@ public class RingtoneManager {
             sb.append(MediaStore.MediaColumns.IS_DRM);
             sb.append("=0");
         }
-
 
         return sb.toString();
     }
@@ -718,7 +754,7 @@ public class RingtoneManager {
             return -1;
         }
     }
- 
+
     /**
      * Returns the {@link Uri} for the default ringtone of a particular type.
      * Rather than returning the actual ringtone's sound {@link Uri}, this will
@@ -739,5 +775,4 @@ public class RingtoneManager {
             return null;
         }
     }
-    
 }

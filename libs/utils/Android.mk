@@ -29,6 +29,7 @@ commonSources:= \
 	Flattenable.cpp \
 	LinearTransform.cpp \
 	ObbFile.cpp \
+	PackageRedirectionMap.cpp \
 	PropertyMap.cpp \
 	RefBase.cpp \
 	ResourceTypes.cpp \
@@ -49,6 +50,8 @@ commonSources:= \
 	ZipFileCRO.cpp \
 	ZipFileRO.cpp \
 	ZipUtils.cpp \
+	../../tools/aapt/ZipFile.cpp \
+	../../tools/aapt/ZipEntry.cpp \
 	misc.cpp
 
 

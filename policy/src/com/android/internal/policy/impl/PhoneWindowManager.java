@@ -1447,15 +1447,17 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             Context context = mContext;
             //Log.i(TAG, "addStartingWindow " + packageName + ": nonLocalizedLabel="
             //        + nonLocalizedLabel + " theme=" + Integer.toHexString(theme));
-            if (theme != context.getThemeResId() || labelRes != 0) {
-                try {
-                    context = context.createPackageContext(packageName, 0);
-                    context.setTheme(theme);
-                } catch (PackageManager.NameNotFoundException e) {
-                    // Ignore
-                }
-            }
 
+
+            try {
+                context = context.createPackageContext(packageName, 0);
+                if (theme != context.getThemeResId()) {
+                    context.setTheme(theme);
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                // Ignore
+            }
+            
             Window win = PolicyManager.makeNewWindow(context);
             if (win.getWindowStyle().getBoolean(
                     com.android.internal.R.styleable.Window_windowDisablePreview, false)) {

@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
  * Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
+ * This code has been modified.  Portions copyright (C) 2010, T-Mobile USA, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +26,11 @@ import android.content.ContentResolver;
 import android.content.ContentService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.IPackageManager;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
+import android.database.Cursor;
 import android.media.AudioService;
 import android.net.wifi.p2p.WifiP2pService;
 import android.os.Looper;
@@ -38,7 +42,6 @@ import android.os.SystemProperties;
 import android.provider.Settings;
 import android.server.BluetoothA2dpService;
 import android.server.BluetoothService;
-import android.server.PowerSaverService;
 import android.server.search.SearchManagerService;
 import android.util.DisplayMetrics;
 import android.util.EventLog;
@@ -190,6 +193,7 @@ class ServerThread extends Thread {
             ContentService.main(context,
                     factoryTest == SystemServer.FACTORY_TEST_LOW_LEVEL);
 
+
             Slog.i(TAG, "System Content Providers");
             ActivityManagerService.installSystemProviders();
 
@@ -274,7 +278,6 @@ class ServerThread extends Thread {
         LocationManagerService location = null;
         CountryDetectorService countryDetector = null;
         TextServicesManagerService tsms = null;
-        PowerSaverService powerSaver = null;
 
         // Bring up services needed for UI.
         if (factoryTest != SystemServer.FACTORY_TEST_LOW_LEVEL) {
@@ -431,7 +434,8 @@ class ServerThread extends Thread {
                 Slog.e(TAG, "Failure starting Profile Manager", e);
             }
 
-            try { Slog.i(TAG, "Notification Manager");
+            try {
+                Slog.i(TAG, "Notification Manager");
                 notification = new NotificationManagerService(context, statusBar, lights);
                 ServiceManager.addService(Context.NOTIFICATION_SERVICE, notification);
                 networkPolicy.bindNotificationManager(notification);
@@ -585,12 +589,12 @@ class ServerThread extends Thread {
             } catch (Throwable e) {
                 reportWtf("starting NetworkTimeUpdate service", e);
             }
-            
+
             try {
-                Slog.i(TAG, "PowerSaverService");
-                powerSaver = new PowerSaverService(context);
-            } catch(Throwable e) {
-                reportWtf("starting PowerSaver service", e);
+                Slog.i(TAG, "AssetRedirectionManager Service");
+                ServiceManager.addService("assetredirection", new AssetRedirectionManagerService(context));
+            } catch (Throwable e) {
+                Slog.e(TAG, "Failure starting AssetRedirectionManager Service", e);
             }
         }
 
@@ -652,6 +656,15 @@ class ServerThread extends Thread {
             reportWtf("making Package Manager Service ready", e);
         }
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_APP_LAUNCH_FAILURE);
+        filter.addAction(Intent.ACTION_APP_LAUNCH_FAILURE_RESET);
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addCategory(Intent.CATEGORY_THEME_PACKAGE_INSTALLED_STATE_CHANGE);
+        filter.addDataScheme("package");
+        context.registerReceiver(new AppsLaunchFailureReceiver(), filter);
+
         // These are needed to propagate to the runnable below.
         final Context contextF = context;
         final BatteryService batteryF = battery;
@@ -672,7 +685,6 @@ class ServerThread extends Thread {
         final NetworkTimeUpdateService networkTimeUpdaterF = networkTimeUpdater;
         final TextServicesManagerService textServiceManagerServiceF = tsms;
         final StatusBarManagerService statusBarF = statusBar;
-        final PowerSaverService powerSaverF = powerSaver;
 
         // We now tell the activity manager it is okay to run third party
         // code.  It will call back into us once it has gotten to the state
@@ -773,11 +785,6 @@ class ServerThread extends Thread {
                     if (textServiceManagerServiceF != null) textServiceManagerServiceF.systemReady();
                 } catch (Throwable e) {
                     reportWtf("making Text Services Manager Service ready", e);
-                }
-                try {
-                    if(powerSaverF != null) powerSaverF.systemReady();
-                }catch (Throwable e) {
-                    reportWtf("making PowerSaverService ready", e);
                 }
             }
         });
