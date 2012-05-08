@@ -62,7 +62,7 @@
            	            android:id="@+id/high_temp"
            	            android:textSize="10.0sp"
            	            android:textStyle="normal"
-           	            android:textColor="#ff33b5e5"
+           	            android:textColor="@android:color/holo_blue_light"
            	            android:layout_width="wrap_content"
            	            android:layout_height="wrap_content" />
 
@@ -72,7 +72,7 @@
            	            android:paddingLeft="1dp"
            	            android:paddingRight="1dp"
            	            android:textStyle="normal"
-           	            android:textColor="#ffefefef"
+           	            android:textColor="@android:color/holo_blue_light"
            	            android:layout_width="wrap_content"
            	            android:layout_height="wrap_content" />
 
@@ -80,7 +80,7 @@
            	            android:id="@+id/low_temp"
            	            android:textSize="10.0sp"
            	            android:textStyle="normal"
-           	            android:textColor="#ff33b5e5"
+           	            android:textColor="@android:color/holo_blue_light"
            	            android:layout_width="wrap_content"
            	            android:layout_height="wrap_content" />
 
@@ -132,7 +132,7 @@
    	                    <TextView
    	                        android:id="@+id/city"
    	                        android:textAppearance="@style/TextAppearance.StatusBar.Date"
-   	                        android:textColor="#ff33b5e5"
+   	                        android:textColor="@android:color/holo_blue_light"
    	                        android:paddingRight="3dip"
    	                        android:singleLine="true"
    	                        android:layout_width="wrap_content"
@@ -141,7 +141,7 @@
    	                    <TextView
    	                        android:id="@+id/current_temp"
    	                        android:textAppearance="@style/TextAppearance.StatusBar.Date"
-   	                        android:textColor="#ff33b5e5"
+   	                        android:textColor="@android:color/holo_blue_light"
    	                        android:paddingLeft="3dip"
    	                        android:singleLine="true"
    	                        android:layout_width="wrap_content"
@@ -153,7 +153,7 @@
    	                    android:id="@+id/condition"
    	                    android:textSize="14.0sp"
    	                    android:textStyle="normal"
-   	                    android:textColor="#ff33b5e5"
+   	                    android:textColor="@android:color/holo_blue_light"
    	                    android:singleLine="true"
    	                    android:paddingTop="4dp"
    	                    android:paddingBottom="4dp"
