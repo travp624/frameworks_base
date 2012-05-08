@@ -603,11 +603,18 @@ public class PhoneStatusBar extends StatusBar {
         // Provide RecentsPanelView with a temporary parent to allow layout
         // params to work.
         LinearLayout tmpRoot = new LinearLayout(mContext);
-        if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.HORIZONTAL_RECENTS_TASK_PANEL, 0) == 1) {
+        int recent_style = Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.RECENT_APP_SWITCHER,0);
+
+        if (recent_style == 1) {
             mRecentsPanel = (RecentsPanelView) LayoutInflater.from(mContext).inflate(
                     R.layout.status_bar_recent_panel_webaokp, tmpRoot, false);
-        } else {
+        }
+        else if (recent_style == 2) {
+            mRecentsPanel = (RecentsPanelView) LayoutInflater.from(mContext).inflate(
+                    R.layout.status_bar_recent_panel_sense4, tmpRoot, false);
+        }
+        else {
             mRecentsPanel = (RecentsPanelView) LayoutInflater.from(mContext).inflate(
                     R.layout.status_bar_recent_panel, tmpRoot, false);
         }
