@@ -135,7 +135,7 @@ public class WifiToggle extends Toggle {
         } else {
             setIcon(R.drawable.toggle_wifi_off);
         }
-        return mToggle.isChecked();;
+        return mToggle.isChecked();
     }
 
     @Override
