@@ -2931,7 +2931,7 @@ public final class Settings {
          * 
          * @hide
          */
-        public static final String RECENTS_APP_SWITCHER = "recents_app_switcher";
+        public static final String RECENT_APP_SWITCHER = "recent_app_switcher";
 
         /**
          * thickness of the batteyr bar (in dp)

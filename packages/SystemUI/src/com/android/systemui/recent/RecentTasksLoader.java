@@ -92,7 +92,7 @@ public class RecentTasksLoader {
         int color;
         
         if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.RECENTS_APP_SWITCHER, 0) == 2) {
+                Settings.System.RECENT_APP_SWITCHER, 0) == 2) {
             color = res.getColor(R.drawable.status_bar_recents_app_thumbnail_background_sense4);
         } 
         else {
