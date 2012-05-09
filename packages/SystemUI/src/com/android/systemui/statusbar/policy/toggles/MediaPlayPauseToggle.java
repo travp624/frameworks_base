@@ -67,13 +67,12 @@ public class MediaPlayPauseToggle extends Toggle {
             mToggle.setChecked(true);
             setLabel(R.string.toggle_media_pause); 
             setIcon(R.drawable.toggle_media_pause);
-            return true;
         } else {
             mToggle.setChecked(true);
             setLabel(R.string.toggle_media_play);
             setIcon(R.drawable.toggle_media_play);
-            return false;
         }
+        return isMusicActive();
     }
 
     @Override
