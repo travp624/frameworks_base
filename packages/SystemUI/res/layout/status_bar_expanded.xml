@@ -131,7 +131,6 @@
 
    	                    <TextView
    	                        android:id="@+id/city"
-   	                        android:textAppearance="@style/TextAppearance.StatusBar.Date"
    	                        android:textAppearance="@style/Text"
    	                        android:paddingRight="3dip"
    	                        android:singleLine="true"
@@ -140,7 +139,6 @@
 
    	                    <TextView
    	                        android:id="@+id/current_temp"
-   	                        android:textAppearance="@style/TextAppearance.StatusBar.Date"
    	                        android:textAppearance="@style/Text"
    	                        android:paddingLeft="3dip"
    	                        android:singleLine="true"
