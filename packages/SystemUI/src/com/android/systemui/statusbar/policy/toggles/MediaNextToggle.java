@@ -42,6 +42,7 @@ public class MediaNextToggle extends Toggle {
         mToggle.setChecked(true);
         setLabel(R.string.toggle_media_next);
         setIcon(R.drawable.toggle_media_next);
+        return false;
     }
 
     @Override

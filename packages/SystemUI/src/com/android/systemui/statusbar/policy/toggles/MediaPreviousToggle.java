@@ -42,6 +42,7 @@ public class MediaPreviousToggle extends Toggle {
         mToggle.setChecked(true);
         setLabel(R.string.toggle_media_previous);
         setIcon(R.drawable.toggle_media_previous);
+        return false;
     }
 
     @Override
