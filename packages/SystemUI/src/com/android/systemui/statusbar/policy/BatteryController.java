@@ -68,7 +68,7 @@ public class BatteryController extends LinearLayout {
     public static final int STYLE_HIDE = 5;
 
     protected int mBatteryChargeTextColor = 0xFF99CC00;
-    protected int mBatteryTextColor = 0xFF33B5E5;
+    protected int mBatteryTextColor;
 
     public BatteryController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -182,11 +182,13 @@ public class BatteryController extends LinearLayout {
             } else if (level < 16) {
                 mBatteryTextOnly.setTextColor(Color.RED);
             } else {
+                int defaultColor = getResources().getColor(
+                        com.android.internal.R.color.holo_blue_light);
                 mBatteryTextColor = Settings.System.getInt(cr, Settings.System.STATUSBAR_BATTERY_TEXT_COLOR,
-                0xFF33B5E5);
+                defaultColor);
                 if (mBatteryTextColor == Integer.MIN_VALUE) {
                     // flag to reset the color
-                    mBatteryTextColor = 0xFF33B5E5;
+                    mBatteryTextColor = defaultColor;
                 }
                 mBatteryTextOnly.setTextColor(mBatteryTextColor);
             }

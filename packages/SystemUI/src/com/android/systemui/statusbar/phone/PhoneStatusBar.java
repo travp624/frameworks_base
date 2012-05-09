@@ -21,7 +21,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.jar.Attributes;
 
-import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.Dialog;
@@ -2955,7 +2954,13 @@ public class PhoneStatusBar extends StatusBar {
         if (newTheme != null &&
                 (mCurrentTheme == null || !mCurrentTheme.equals(newTheme))) {
             mCurrentTheme = (CustomTheme)newTheme.clone();
+            StatusBar.resetColors(mContext);
+            if(mNavigationBarView != null)
+                mNavigationBarView.updateSettings();
             recreateStatusBar();
+            Intent weatherintent = new Intent("com.blackice.control.INTENT_WEATHER_REQUEST");
+            weatherintent.putExtra(android.content.Intent.EXTRA_TEXT, "updateweather");
+            mContext.sendBroadcast(weatherintent);
         } else {
 
             if (mClearButton instanceof TextView) {

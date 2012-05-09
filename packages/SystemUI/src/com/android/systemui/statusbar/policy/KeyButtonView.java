@@ -66,7 +66,7 @@ public class KeyButtonView extends ImageView {
 
     int durationSpeedOn = 500;
     int durationSpeedOff = 50;
-    int mGlowBGColor = 0;
+    int mGlowBGColor = Integer.MIN_VALUE;
 
     Runnable mCheckLongPress = new Runnable() {
         public void run() {
@@ -152,8 +152,13 @@ public class KeyButtonView extends ImageView {
     public void setGlowBackground(int id) {
         mGlowBG = getResources().getDrawable(id);
         if (mGlowBG != null) {
-            if (mGlowBGColor != Integer.MIN_VALUE)
-                mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
+            int defaultColor = mContext.getResources().getColor(
+                    com.android.internal.R.color.holo_blue_light);
+            if (mGlowBGColor == Integer.MIN_VALUE) {
+                mGlowBGColor = defaultColor;
+            }
+            mGlowBG.setColorFilter(null);
+            mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
 
             mDrawingAlpha = BUTTON_QUIESCENT_ALPHA;
         }
@@ -372,22 +377,19 @@ public class KeyButtonView extends ImageView {
                 0.6f);
         setDrawingAlpha(BUTTON_QUIESCENT_ALPHA);
 
-        try {
-            mGlowBGColor = Settings.System.getInt(resolver,
-                    Settings.System.NAVIGATION_BAR_GLOW_TINT);
-            if (mGlowBG != null) {
-                if (mGlowBGColor == Integer.MIN_VALUE) {
-                    mGlowBG.setColorFilter(null);
-                } else {
-                    mGlowBG.setColorFilter(null);
-                    mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
-                }
-            }
-        } catch (SettingNotFoundException e1) {
-            mGlowBGColor = Integer.MIN_VALUE;
-        }
+        if (mGlowBG != null) {
+            int defaultColor = mContext.getResources().getColor(
+                    com.android.internal.R.color.holo_blue_light);
 
-        invalidate();
+            mGlowBGColor = Settings.System.getInt(resolver,
+                    Settings.System.NAVIGATION_BAR_GLOW_TINT, defaultColor);
+
+            if (mGlowBGColor == Integer.MIN_VALUE) {
+                mGlowBGColor = defaultColor;
+            }
+            mGlowBG.setColorFilter(null);
+            mGlowBG.setColorFilter(mGlowBGColor, PorterDuff.Mode.SRC_ATOP);
+        }
 
         try {
             int color = Settings.System.getInt(resolver,

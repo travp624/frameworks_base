@@ -16,10 +16,10 @@ public class MediaPreviousToggle extends Toggle {
 
     public MediaPreviousToggle(Context context) {
         super(context);
-        updateState();
         mToggle.setChecked(true);
         setLabel(R.string.toggle_media_previous);
         setIcon(R.drawable.toggle_media_previous);
+        updateState();
     }
 
     protected void sendMediaKeyEvent(int code) {
@@ -38,7 +38,7 @@ public class MediaPreviousToggle extends Toggle {
     }
 
     @Override
-    protected void updateInternalToggleState() {
+    protected boolean updateInternalToggleState() {
         mToggle.setChecked(true);
         setLabel(R.string.toggle_media_previous);
         setIcon(R.drawable.toggle_media_previous);
