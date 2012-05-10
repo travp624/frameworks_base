@@ -26,15 +26,6 @@ public class MediaPlayPauseToggle extends Toggle {
     public MediaPlayPauseToggle(Context context) {
         super(context);
         updateState();
-        if (isMusicActive()) {
-            mToggle.setChecked(true);
-            setLabel(R.string.toggle_media_pause); 
-            setIcon(R.drawable.toggle_media_pause);
-        } else {
-            mToggle.setChecked(true);
-            setLabel(R.string.toggle_media_play);
-            setIcon(R.drawable.toggle_media_play);
-        }
     }
 
     protected void sendMediaKeyEvent(int code) {
@@ -63,31 +54,27 @@ public class MediaPlayPauseToggle extends Toggle {
     @Override
     protected boolean updateInternalToggleState() {
         mCurrentState = (isMusicActive() ? MEDIA_STATE_INACTIVE : MEDIA_STATE_ACTIVE);
+        boolean isPlaying = (mCurrentState == MEDIA_STATE_ACTIVE);
+        boolean notPlaying = (mCurrentState == MEDIA_STATE_INACTIVE);
         if (isMusicActive()) {
             mToggle.setChecked(true);
+            mToggle.setEnabled(true);
             setLabel(R.string.toggle_media_pause); 
             setIcon(R.drawable.toggle_media_pause);
+            return isPlaying;
         } else {
             mToggle.setChecked(true);
+            mToggle.setEnabled(true);
             setLabel(R.string.toggle_media_play);
             setIcon(R.drawable.toggle_media_play);
+            return notPlaying;
         }
-        return isMusicActive();
     }
 
     @Override
-    protected void onCheckChanged(boolean isMusicActive) {
+    protected void onCheckChanged(boolean isChecked) {
         sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-        mCurrentState = (isMusicActive() ? MEDIA_STATE_INACTIVE : MEDIA_STATE_ACTIVE);
-        if (isMusicActive()) {
-            mToggle.setChecked(true);
-            setLabel(R.string.toggle_media_pause); 
-            setIcon(R.drawable.toggle_media_pause);
-        } else {
-            mToggle.setChecked(true);
-            setLabel(R.string.toggle_media_play);
-            setIcon(R.drawable.toggle_media_play);
-        }
+        updateState();
     }
 
     @Override
