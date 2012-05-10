@@ -15,74 +15,74 @@
     android:orientation="vertical"
     android:focusable="true"
     android:descendantFocusability="afterDescendants">
-    
-	<View
-       	android:id="@+id/drawer_header_hr2"
-       	android:layout_width="match_parent"
-       	android:layout_height="2dp"
-       	android:background="@drawable/status_bar_hr" />
 
-   	<RelativeLayout
-       	android:id="@+id/drawer_header"
-       	android:layout_width="match_parent"
-       	android:layout_height="wrap_content"
-       	android:paddingTop="3dp"
-       	android:paddingBottom="5dp"
-       	android:paddingRight="3dp"
-       	android:background="@drawable/notification_header_bg">
+    <View
+        android:id="@+id/drawer_header_hr2"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@drawable/status_bar_hr" />
 
-       	<com.android.systemui.statusbar.policy.WeatherPanel
-       	    android:id="@+id/wp1"
-       	    android:layout_width="wrap_content"
-       	    android:layout_height="wrap_content"
-       	    android:visibility="gone"
-       	    android:paddingLeft="2dp"
-       	    android:layout_alignParentLeft="true">
-	
-       	    <LinearLayout
-       	        android:layout_width="wrap_content"
-           	    android:layout_height="wrap_content"
-           	    android:orientation="vertical">
+    <RelativeLayout
+        android:id="@+id/drawer_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="3dp"
+        android:paddingBottom="5dp"
+        android:paddingRight="3dp"
+        android:background="@drawable/notification_header_bg">
 
-           	    <ImageView
-           	        android:id="@+id/condition_image"
-           	        android:layout_width="wrap_content"
-           	        android:layout_height="wrap_content"
-           	        android:paddingTop="1dp"
-           	        android:gravity="top|center_horizontal" />
-	
-           	    <LinearLayout
-           	        android:orientation="horizontal"
-           	        android:layout_width="match_parent"
-           	        android:layout_height="wrap_content"
-           	        android:paddingBottom="4dp"
-           	        android:gravity="bottom|center_horizontal">
-	
-           	        <TextView
-           	            android:id="@+id/high_temp"
-           	            android:textSize="10.0sp"
-           	            android:textStyle="normal"
-           	            android:textAppearance="@style/Text"
-           	            android:layout_width="wrap_content"
-           	            android:layout_height="wrap_content" />
+        <com.android.systemui.statusbar.policy.WeatherPanel
+            android:id="@+id/wp1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:paddingLeft="2dp"
+            android:layout_alignParentLeft="true">
 
-           	        <TextView
-           	            android:text="@string/weatherpanel_slash"
-           	            android:textSize="10.0sp"
-           	            android:paddingLeft="1dp"
-           	            android:paddingRight="1dp"
-           	            android:textStyle="normal"
-           	            android:textAppearance="@style/Text"
-           	            android:layout_width="wrap_content"
-           	            android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-           	        <TextView
-           	            android:id="@+id/low_temp"
-           	            android:textSize="10.0sp"
-           	            android:textStyle="normal"
-           	            android:textAppearance="@style/Text"
-           	            android:layout_width="wrap_content"
-           	            android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/condition_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="1dp"
+                    android:gravity="top|center_horizontal" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="4dp"
+                    android:gravity="bottom|center_horizontal">
+
+                    <TextView
+                        android:id="@+id/high_temp"
+                        android:textSize="14.0sp"
+                        android:textStyle="normal"
+                        android:textAppearance="@style/Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:text="@string/weatherpanel_slash"
+                        android:textSize="14.0sp"
+                        android:paddingLeft="1dp"
+                        android:paddingRight="1dp"
+                        android:textStyle="normal"
+                        android:textAppearance="@style/Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/low_temp"
+                        android:textSize="14.0sp"
+                        android:textStyle="normal"
+                        android:textAppearance="@style/Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
@@ -91,7 +91,7 @@
 
         </com.android.systemui.statusbar.policy.WeatherPanel>
 
-		<LinearLayout
+        <LinearLayout
             android:id="@+id/txtlayout"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -115,49 +115,51 @@
                 android:paddingTop="2dp"
                 android:gravity="center"
                 android:visibility="gone">
-	
+
                 <LinearLayout
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-	
+
                     <LinearLayout
                         android:id="@+id/cityandtemp"
-   	                    android:orientation="horizontal"
+                        android:orientation="horizontal"
                         android:gravity="center"
-   	                    android:layout_width="wrap_content"
-   	                    android:layout_height="wrap_content">
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
-   	                    <TextView
-   	                        android:id="@+id/city"
-   	                        android:textAppearance="@style/Text"
-   	                        android:paddingRight="3dip"
-   	                        android:singleLine="true"
-   	                        android:layout_width="wrap_content"
-   	                        android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@+id/city"
+                            android:textSize="14.0sp"
+                            android:textAppearance="@style/Text"
+                            android:paddingRight="3dip"
+                            android:singleLine="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
-   	                    <TextView
-   	                        android:id="@+id/current_temp"
-   	                        android:textAppearance="@style/Text"
-   	                        android:paddingLeft="3dip"
-   	                        android:singleLine="true"
-   	                        android:layout_width="wrap_content"
-   	                        android:layout_height="wrap_content" />
-	
-   	                </LinearLayout>
+                        <TextView
+                            android:id="@+id/current_temp"
+                            android:textSize="14.0sp"
+                            android:textAppearance="@style/Text"
+                            android:paddingLeft="3dip"
+                            android:singleLine="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
-   	                <TextView
-   	                    android:id="@+id/condition"
-   	                    android:textSize="14.0sp"
-   	                    android:textStyle="normal"
-   	                    android:textAppearance="@style/Text"
-   	                    android:singleLine="true"
-   	                    android:paddingTop="4dp"
-   	                    android:paddingBottom="4dp"
-   	                    android:gravity="center"
-   	                    android:layout_width="wrap_content"
-   	                    android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/condition"
+                        android:textSize="14.0sp"
+                        android:textStyle="normal"
+                        android:textAppearance="@style/Text"
+                        android:singleLine="true"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
@@ -169,7 +171,7 @@
                 android:paddingBottom="1dp" android:paddingLeft="4dp" android:textAppearance="?android:attr/textAppearanceLarge" 
                 android:textColor="?android:attr/textColorSecondary" /> -->
 
-		</LinearLayout>
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/settings_button"
@@ -213,8 +215,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1">
-        
-		<TextView
+
+        <TextView
             android:id="@+id/noNotificationsTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -236,7 +238,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-				<com.android.systemui.statusbar.policy.NotificationRowLayout
+                <com.android.systemui.statusbar.policy.NotificationRowLayout
                     android:id="@+id/latestItems"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
