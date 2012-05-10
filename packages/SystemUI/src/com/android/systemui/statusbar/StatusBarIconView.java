@@ -318,9 +318,13 @@ public class StatusBarIconView extends AnimatedImageView {
     
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
+        int defaultColor = getResources().getColor(
+                com.android.internal.R.color.holo_blue_light);
 
-        float alpha = Settings.System.getFloat(resolver, Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.55f);
-        int color = Settings.System.getInt(resolver, Settings.System.STATUSBAR_NOTIFICATION_COLOR, 0xFFFFFFFF);
+        float alpha = Settings.System.getFloat(resolver,
+                Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.55f);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_NOTIFICATION_COLOR, defaultColor);
 
         setAlpha(alpha);
         setColorFilter(color, SCREEN_MODE);
