@@ -59,6 +59,8 @@ public class StatusBarIconView extends AnimatedImageView {
 
     private static final Mode SCREEN_MODE = Mode.MULTIPLY;
 
+    int color = Integer.MIN_VALUE;
+
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
         final Resources res = context.getResources();
@@ -323,8 +325,12 @@ public class StatusBarIconView extends AnimatedImageView {
 
         float alpha = Settings.System.getFloat(resolver,
                 Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.55f);
-        int color = Settings.System.getInt(resolver,
+        color = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_NOTIFICATION_COLOR, defaultColor);
+
+        if (color == Integer.MIN_VALUE) {
+            color = defaultColor;
+        }
 
         setAlpha(alpha);
         setColorFilter(color, SCREEN_MODE);
