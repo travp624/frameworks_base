@@ -182,10 +182,14 @@ status_t Layer::setBuffers( uint32_t w, uint32_t h,
     mSurfaceTexture->setDefaultBufferSize(w, h);
     mSurfaceTexture->setDefaultBufferFormat(format);
 
-    // we use the red index
-    int displayRedSize = displayInfo.getSize(PixelFormatInfo::INDEX_RED);
-    int layerRedsize = info.getSize(PixelFormatInfo::INDEX_RED);
-    mNeedsDithering = layerRedsize > displayRedSize;
+    if (mFlinger->getUseDithering()) {
+        // we use the red index
+        int displayRedSize = displayInfo.getSize(PixelFormatInfo::INDEX_RED);
+        int layerRedsize = info.getSize(PixelFormatInfo::INDEX_RED);
+        mNeedsDithering = layerRedsize > displayRedSize;
+    } else {
+        mNeedsDithering = false;
+    }
 
     return NO_ERROR;
 }
@@ -500,6 +504,13 @@ void Layer::lockPageFlip(bool& recomputeVisibleRegions)
 #endif
         // update the active buffer
         mActiveBuffer = mSurfaceTexture->getCurrentBuffer();
+
+#ifdef QCOM_HARDWARE
+        //Buffer validity changed. Reset HWC geometry flags.
+        if(oldActiveBuffer == NULL && mActiveBuffer != NULL) {
+            mFlinger->invalidateHwcGeometry();
+        }
+#endif
 
         const Rect crop(mSurfaceTexture->getCurrentCrop());
         const uint32_t transform(mSurfaceTexture->getCurrentTransform());
