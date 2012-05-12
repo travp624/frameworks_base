@@ -198,6 +198,18 @@ static void setBooleanField(JNIEnv* env, jobject obj, const char* path, jfieldID
     env->SetBooleanField(obj, fieldID, value);
 }
 
+static void setIntField(JNIEnv* env, jobject obj, const char* path, jfieldID fieldID)
+{
+    const int SIZE = 128;
+    char buf[SIZE];
+    
+    jint value = 0;
+    if (readFromFile(path, buf, SIZE) > 0) {
+        value = atoi(buf);
+    }
+    env->SetIntField(obj, fieldID, value);
+}
+
 // FIXME-HASH: Check for a max value (used in mBatteryLevel)
 static void setIntFieldMax(JNIEnv* env, jobject obj, const char* path, jfieldID fieldID, int maxValue)
 {
