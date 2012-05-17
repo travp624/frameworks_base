@@ -102,6 +102,7 @@ public class LegacyUsbDeviceManager extends UsbDeviceManager {
     private boolean mUseUsbNotification;
     private boolean mAdbEnabled;
     private boolean mLegacy = false;
+    private boolean mHasUsbService = false;
 
     private class AdbSettingsObserver extends ContentObserver {
         public AdbSettingsObserver() {
@@ -128,12 +129,12 @@ public class LegacyUsbDeviceManager extends UsbDeviceManager {
             String state = event.get("SWITCH_STATE");
 
             if (name != null && state != null) {
-                if (mLegacy) {
+                if (mLegacy && !mHasUsbService) {
                     if ("usb_mass_storage".equals(name)) {
                         mConnected  = "online".equals(state);
                         mConfigured = "online".equals(state);
                     }
-                } else {
+                } else if (!mHasUsbService) {
                     if ("usb_connected".equals(name))
                         mConnected = "1".equals(state);
                     else if ("usb_configuration".equals(name))
@@ -176,9 +177,15 @@ public class LegacyUsbDeviceManager extends UsbDeviceManager {
         StorageManager storageManager = (StorageManager)
                 mContext.getSystemService(Context.STORAGE_SERVICE);
         StorageVolume[] volumes = storageManager.getVolumeList();
+
         if (volumes.length > 0) {
-            massStorageSupported = volumes[0].allowMassStorage();
+            if (Settings.Secure.getInt(mContentResolver, Settings.Secure.USB_MASS_STORAGE_ENABLED, 0) == 1 ) {
+                massStorageSupported = volumes[0].allowMassStorage();
+            } else {
+                massStorageSupported = false;
+            }
         }
+
         mUseUsbNotification = !massStorageSupported;
 
         // make sure the ADB_ENABLED setting value matches the current state
@@ -238,16 +245,43 @@ public class LegacyUsbDeviceManager extends UsbDeviceManager {
         private int mUsbNotificationId;
         private boolean mAdbNotificationShown;
 
-         final BroadcastReceiver mBootCompletedReceiver = new BroadcastReceiver() {
+        final BroadcastReceiver mBootCompletedReceiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
                 if (DEBUG) Slog.d(TAG, "boot completed");
                 mHandler.sendEmptyMessage(MSG_BOOT_COMPLETED);
             }
         };
 
+        final BroadcastReceiver mUsbReconfiguredReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                final String state;
+
+                if (intent.getBooleanExtra("connected", false)) {
+                    if (intent.getBooleanExtra("configured", false)) {
+                        state = "CONFIGURED";
+                    } else {
+                        state = "CONNECTED";
+                    }
+                } else {
+                    state = "DISCONNECTED";
+                }
+                if (intent.hasExtra("functions")) {
+                    mCurrentFunctions = intent.getStringExtra("functions");
+                }
+
+                if (DEBUG) {
+                    Slog.d(TAG, "Got USB reconfiguration event, state = " +
+                            state + ", functions = " + mCurrentFunctions);
+                }
+                updateState(state);
+            }
+        };
+
         public LegacyUsbHandler(Looper looper) {
             super(looper);
             char[] buffer = new char[1024];
+
+            mHasUsbService = SystemProperties.getInt("ro.usb.use_custom_service", 0) != 0;
 
             try {
                 // persist.sys.usb.config should never be unset.  But if it is, set it to "adb"
@@ -308,12 +342,17 @@ public class LegacyUsbDeviceManager extends UsbDeviceManager {
                 }
 
                 // register observer to listen for settings changes
-                mContentResolver.registerContentObserver(
-                    Settings.Secure.getUriFor(Settings.Secure.ADB_ENABLED),
-                    false, new AdbSettingsObserver());
+                if (!mHasUsbService) {
+                    mContentResolver.registerContentObserver(
+                        Settings.Secure.getUriFor(Settings.Secure.ADB_ENABLED),
+                        false, new AdbSettingsObserver());
+                }
 
                 // Watch for USB configuration changes
-                if (mLegacy) {
+                if (mHasUsbService) {
+                    mContext.registerReceiver(mUsbReconfiguredReceiver,
+                            new IntentFilter("com.android.internal.usb.reconfigured"));
+                } else if (mLegacy) {
                     mUEventObserver.startObserving(USB_LEGACY_MATCH);
                 } else {
                     mUEventObserver.startObserving(USB_CONNECTED_MATCH);
@@ -413,11 +452,19 @@ public class LegacyUsbDeviceManager extends UsbDeviceManager {
                 setEnabledFunctions(mDefaultFunctions, true);
                 updateAdbNotification();
             }
-            SystemProperties.set("persist.service.adb.enable", enable ? "1":"0");
+        SystemProperties.set("persist.service.adb.enable", enable ? "1":"0");
         }
 
         private void setEnabledFunctions(String functions, boolean makeDefault) {
-            if (functions != null && makeDefault) {
+            if (mHasUsbService) {
+                if (mBootCompleted) {
+                    Intent i = new Intent("com.android.internal.usb.request_reconfigure");
+                    i.putExtra("functions", functions);
+                    i.putExtra("permanent", makeDefault);
+                    i.putExtra("enable_adb", mAdbEnabled);
+                    mContext.sendBroadcast(i);
+                }
+            } else if (functions != null && makeDefault) {
                 if (mAdbEnabled) {
                     functions = addFunction(functions, UsbManager.USB_FUNCTION_ADB);
                 } else {
@@ -543,10 +590,10 @@ public class LegacyUsbDeviceManager extends UsbDeviceManager {
                     id = com.android.internal.R.string.usb_mtp_notification_title;
                 } else if (containsFunction(mCurrentFunctions, UsbManager.USB_FUNCTION_PTP)) {
                     id = com.android.internal.R.string.usb_ptp_notification_title;
-                } else if (containsFunction(mCurrentFunctions,
-                        UsbManager.USB_FUNCTION_MASS_STORAGE)) {
-                    id = com.android.internal.R.string.usb_cd_installer_notification_title;
-                } else if (containsFunction(mCurrentFunctions, UsbManager.USB_FUNCTION_ACCESSORY)) {
+                } /* else if (containsFunction(mCurrentFunctions, 
+                        UsbManager.USB_FUNCTION_MASS_STORAGE)) { // Disable this as it causes double USB settings menues when in UMS mode.
+                        id = com.android.internal.R.string.usb_cd_installer_notification_title; 
+                } */ else if (containsFunction(mCurrentFunctions, UsbManager.USB_FUNCTION_ACCESSORY)) {
                     id = com.android.internal.R.string.usb_accessory_notification_title;
                 } else {
                     // There is a different notification for USB tethering so we don't need one here
@@ -639,5 +686,11 @@ public class LegacyUsbDeviceManager extends UsbDeviceManager {
                 pw.println("IOException: " + e);
             }
         }
+    }
+
+    @Override
+    public void setCurrentFunction(String function, boolean makeDefault) {
+        if (DEBUG) Slog.d(TAG, "setCurrentFunction(" + function + ") default: " + makeDefault);
+        mHandler.sendMessage(MSG_SET_CURRENT_FUNCTION, function, makeDefault);
     }
 }
