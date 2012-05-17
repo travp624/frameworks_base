@@ -42,7 +42,6 @@ import android.os.ServiceManager;
 import android.os.SystemProperties;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
-import android.server.PowerSaverService;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
@@ -84,7 +83,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private SilentModeAction mSilentModeAction;
     private ToggleAction mAirplaneModeOn;
-    private ToggleAction mPowerSaverOn;
     private ToggleAction mTorchToggle;
     private NavBarAction mNavBarHideToggle;
     private Profile mChosenProfile;
@@ -95,7 +93,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mDeviceProvisioned = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
     private boolean mIsWaitingForEcmExit = false;
-    private boolean mEnablePowerSaverToggle = true;
     private boolean mEnableScreenshotToggle = false;
     private boolean mEnableTorchToggle = true;
     private boolean mEnableAirplaneToggle = true;
@@ -165,9 +162,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
      * @return A new dialog.
      */
     private AlertDialog createDialog() {
-        mEnablePowerSaverToggle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_DIALOG_SHOW_POWER_SAVER, 1) == 1;
-        
         mEnableScreenshotToggle = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_SCREENSHOT, 0) == 1;  
         
@@ -214,29 +208,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     mState = buttonOn ? State.TurningOn : State.TurningOff;
                     mAirplaneState = mState;
                 }
-            }
-
-            public boolean showDuringKeyguard() {
-                return true;
-            }
-
-            public boolean showBeforeProvisioning() {
-                return false;
-            }
-        };
-        
-        mPowerSaverOn = new ToggleAction(
-                R.drawable.ic_lock_power_saver,
-                R.drawable.ic_lock_power_saver,
-                R.string.global_actions_toggle_power_saver,
-                R.string.global_actions_power_saver_on_status,
-                R.string.global_actions_power_saver_off_status) {
-
-            void onToggle(boolean on) {
-                Settings.Secure.putInt(mContext.getContentResolver(),
-                        Settings.Secure.POWER_SAVER_MODE,
-                         on ? PowerSaverService.POWER_SAVER_MODE_ON
-                                : PowerSaverService.POWER_SAVER_MODE_OFF);
             }
 
             public boolean showDuringKeyguard() {
@@ -345,23 +316,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         } else {
             Slog.e(TAG, "not adding AirplaneToggle");
         }
-        
-        // next: power saver
-        try {
-            Settings.Secure.getInt(mContext.getContentResolver(),
-                    Settings.Secure.POWER_SAVER_MODE);
-            if(mEnablePowerSaverToggle) {
-                Slog.e(TAG, "Adding powersaver");
-                mItems.add(mPowerSaverOn); 
-            } else {
-                Slog.e(TAG, "not adding power saver");
-            }
-        } catch (SettingNotFoundException e) {
-            //Power Saver hasn't yet been initialized so we don't want to make it easy for the user without
-            //  them reading any warnings that could be presented by enabling the power saver through ROM Control
-        }
-       
-        
+
         // next: screenshot
         if (mEnableScreenshotToggle) {
             Slog.e(TAG, "Adding screenshot");
@@ -563,9 +518,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mContext.registerReceiver(mRingerModeReceiver, filter);
             mReceiverRegistered = true;
         }
-        final boolean powerSaverOn = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.POWER_SAVER_MODE, PowerSaverService.POWER_SAVER_MODE_OFF) == PowerSaverService.POWER_SAVER_MODE_ON;
-        mPowerSaverOn.updateState(powerSaverOn ? ToggleAction.State.On : ToggleAction.State.Off);
     }
 
 

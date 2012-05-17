@@ -23,7 +23,6 @@ import android.database.ContentObserver;
 import android.os.Handler;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
-import android.server.PowerSaverService;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -97,12 +96,6 @@ public class LteToggle extends Toggle {
             Log.e(TAG, "Phone CDMA status: " + isCdma);
             return;
         }
-
-        Log.i(TAG, "Sending request to change phone network mode to: "
-                + newState);
-        Intent i = new Intent(PowerSaverService.ACTION_MODIFY_NETWORK_MODE);
-        i.putExtra(PowerSaverService.EXTRA_NETWORK_MODE, newState);
-        mContext.sendBroadcast(i);
     }
 
     private boolean isValidNetwork(int networkType) {
