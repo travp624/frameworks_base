@@ -63,24 +63,14 @@ LOCAL_SHARED_LIBRARIES := \
 	libskia \
 	libbinder
 
-ifeq ($(BOARD_OVERLAY_BASED_CAMERA_HAL),true)
-       LOCAL_CFLAGS += -DUSE_OVERLAY_CPP
-       LOCAL_SRC_FILES += Overlay.cpp
-endif
-
-ifdef BOARD_EGL_GRALLOC_USAGE_FILTER
-	LOCAL_CFLAGS += -DBOARD_EGL_GRALLOC_USAGE_FILTER=$(BOARD_EGL_GRALLOC_USAGE_FILTER)
-endif
-
 LOCAL_C_INCLUDES := \
     external/skia/include/core
 
 ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
     LOCAL_SRC_FILES+= OverlayHtc.cpp
 endif
-
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-LOCAL_CFLAGS += -DQCOM_HARDWARE
+ifneq ($(TARGET_BOARD_PLATFORM),msm7x30)
+    LOCAL_SRC_FILES+= Overlay.cpp
 endif
 
 LOCAL_MODULE:= libui

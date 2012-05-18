@@ -29,8 +29,8 @@ commonSources:= \
 	Flattenable.cpp \
 	LinearTransform.cpp \
 	ObbFile.cpp \
-	PackageRedirectionMap.cpp \
 	PropertyMap.cpp \
+	PackageRedirectionMap.cpp \
 	RefBase.cpp \
 	ResourceTypes.cpp \
 	SharedBuffer.cpp \
