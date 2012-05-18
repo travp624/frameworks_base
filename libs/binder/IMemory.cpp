@@ -115,9 +115,6 @@ private:
 #endif
     mutable bool        mRealHeap;
     mutable Mutex       mLock;
-#ifdef QCOM_HARDWARE
-    mutable int         mIonFd;
-#endif
 };
 
 // ----------------------------------------------------------------------------
@@ -244,9 +241,6 @@ BpMemoryHeap::BpMemoryHeap(const sp<IBinder>& impl)
 #endif
         mRealHeap(false)
 {
-#ifdef QCOM_HARDWARE
-    mIonFd = open("/dev/ion", O_RDONLY);
-#endif
 }
 
 BpMemoryHeap::~BpMemoryHeap() {
@@ -273,10 +267,6 @@ BpMemoryHeap::~BpMemoryHeap() {
             free_heap(binder);
         }
     }
-#ifdef QCOM_HARDWARE
-    if (mIonFd > 0)
-        close(mIonFd);
-#endif
 }
 
 void BpMemoryHeap::assertMapped() const

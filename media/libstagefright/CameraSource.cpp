@@ -87,10 +87,6 @@ void CameraSourceListener::postDataTimestamp(
 }
 
 static int32_t getColorFormat(const char* colorFormat) {
-#ifdef QCOM_HARDWARE
-    return OMX_COLOR_FormatYUV420SemiPlanar;
-#endif
-
     if (!strcmp(colorFormat, CameraParameters::PIXEL_FORMAT_YUV420P)) {
        return OMX_COLOR_FormatYUV420Planar;
     }
@@ -271,8 +267,12 @@ static void getSupportedVideoSizes(
  */
 status_t CameraSource::isCameraColorFormatSupported(
         const CameraParameters& params) {
-    mColorFormat = getColorFormat(params.get(
-            CameraParameters::KEY_VIDEO_FRAME_FORMAT));
+    const char* fmt = params.get(CameraParameters::KEY_VIDEO_FRAME_FORMAT);
+    if (!fmt) {
+        LOGE("Missing parameter %s!", CameraParameters::KEY_VIDEO_FRAME_FORMAT);
+        return BAD_VALUE;
+    }
+    mColorFormat = getColorFormat(fmt);
     if (mColorFormat == -1) {
         return BAD_VALUE;
     }
@@ -428,7 +428,6 @@ status_t CameraSource::checkFrameRate(
 
     LOGV("checkFrameRate");
     int32_t frameRateActual = params.getPreviewFrameRate();
-    LOGE("CameraSource frameRateActual %d", frameRateActual);
     if (frameRateActual < 0) {
         LOGE("Failed to retrieve preview frame rate (%d)", frameRateActual);
         return UNKNOWN_ERROR;
@@ -436,13 +435,7 @@ status_t CameraSource::checkFrameRate(
 
     // Check the actual video frame rate against the target/requested
     // video frame rate.
-    int32_t frameRateDiff = frameRateActual - frameRate;
-#ifdef QCOM_HARDWARE
-    //HTC Cameras incorrectly report 31 fps instead of 30.
-    frameRateDiff = frameRateDiff > 1 ? frameRateDiff : 0;
-#endif
-    LOGE("CameraSource frameRate %d", frameRate);
-    if (frameRate != -1 && (frameRateDiff) != 0) {
+    if (frameRate != -1 && (frameRateActual - frameRate) != 0) {
         LOGE("Failed to set preview frame rate to %d fps. The actual "
                 "frame rate is %d", frameRate, frameRateActual);
         return UNKNOWN_ERROR;
@@ -539,18 +532,6 @@ status_t CameraSource::initWithCameraAccess(
         }
     }
 
-#ifdef QCOM_HARDWARE
-    const char *hfr_str = params.get("video-hfr");
-    int32_t hfr = -1;
-    if ( hfr_str != NULL ) {
-      hfr = atoi(hfr_str);
-    }
-    if(hfr < 0) {
-      LOGW("Invalid hfr value(%d) set from app. Disabling HFR.", hfr);
-      hfr = 0;
-    }
-#endif
-
     int64_t glitchDurationUs = (1000000LL / mVideoFrameRate);
     if (glitchDurationUs > mGlitchDurationThresholdUs) {
         mGlitchDurationThresholdUs = glitchDurationUs;
@@ -566,9 +547,6 @@ status_t CameraSource::initWithCameraAccess(
     mMeta->setInt32(kKeyStride,      mVideoSize.width);
     mMeta->setInt32(kKeySliceHeight, mVideoSize.height);
     mMeta->setInt32(kKeyFrameRate,   mVideoFrameRate);
-#ifdef QCOM_HARDWARE
-    mMeta->setInt32(kKeyHFR, hfr);
-#endif
     return OK;
 }
 

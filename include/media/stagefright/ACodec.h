@@ -22,9 +22,6 @@
 #include <android/native_window.h>
 #include <media/IOMX.h>
 #include <media/stagefright/foundation/AHierarchicalStateMachine.h>
-#ifdef QCOM_HARDWARE
-#include <OMX_Component.h>
-#endif
 
 namespace android {
 
@@ -63,9 +60,6 @@ private:
     struct ExecutingToIdleState;
     struct IdleToLoadedState;
     struct FlushingState;
-#ifdef QCOM_HARDWARE
-    struct FlushingOutputState;
-#endif
 
     enum {
         kWhatSetup                   = 'setu',
@@ -109,9 +103,6 @@ private:
     sp<ExecutingToIdleState> mExecutingToIdleState;
     sp<IdleToLoadedState> mIdleToLoadedState;
     sp<FlushingState> mFlushingState;
-#ifdef QCOM_HARDWARE
-    sp<FlushingOutputState> mFlushingOutputState;
-#endif
 
     AString mComponentName;
     sp<IOMX> mOMX;
@@ -136,10 +127,6 @@ private:
     status_t cancelBufferToNativeWindow(BufferInfo *info);
     status_t freeOutputBuffersNotOwnedByComponent();
     BufferInfo *dequeueBufferFromNativeWindow();
-
-#ifdef SAMSUNG_CODEC_SUPPORT
-    void setNativeWindowColorFormat(OMX_COLOR_FORMATTYPE &eNativeColorFormat);
-#endif
 
     BufferInfo *findBufferByID(
             uint32_t portIndex, IOMX::buffer_id bufferID,
@@ -187,13 +174,6 @@ private:
     void sendFormatChange();
 
     void signalError(OMX_ERRORTYPE error = OMX_ErrorUndefined);
-
-#ifdef QCOM_HARDWARE
-    //Smooth streaming related
-    status_t InitSmoothStreaming();
-    OMX_PARAM_PORTDEFINITIONTYPE mOutputPortDef;
-    bool mSmoothStreaming;
-#endif
 
     DISALLOW_EVIL_CONSTRUCTORS(ACodec);
 };

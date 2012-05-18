@@ -46,7 +46,6 @@ using namespace android;
     #ifdef HAVE_ARM_TLS_REGISTER
         #define GET_TLS(reg) \
             "mrc p15, 0, " #reg ", c13, c0, 3 \n"
-            MUNGE_TLS(reg)
     #else
         #define GET_TLS(reg) \
             "mov   " #reg ", #0xFFFF0FFF      \n"  \

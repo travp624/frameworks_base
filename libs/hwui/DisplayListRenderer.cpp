@@ -96,13 +96,6 @@ DisplayList::~DisplayList() {
     clearResources();
 }
 
-void DisplayList::destroyDisplayListDeferred(DisplayList* displayList) {
-    if (displayList) {
-        DISPLAY_LIST_LOGD("Deferring display list destruction");
-        Caches::getInstance().deleteDisplayListDeferred(displayList);
-    }
-}
-
 void DisplayList::clearResources() {
     sk_free((void*) mReader.base());
 

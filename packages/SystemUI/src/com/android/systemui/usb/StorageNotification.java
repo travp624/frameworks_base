@@ -27,13 +27,15 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.storage.StorageEventListener;
 import android.os.storage.StorageManager;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.util.Slog;
 
 public class StorageNotification extends StorageEventListener {
     private static final String TAG = "StorageNotification";
 
-    private static final boolean POP_UMS_ACTIVITY_ON_CONNECT = true;
+    private static final boolean POP_UMS_ACTIVITY_ON_CONNECT =
+        (SystemProperties.getInt("ro.usb.use_custom_service", 0) == 0);
 
     /**
      * Binder context for this service
@@ -126,8 +128,9 @@ public class StorageNotification extends StorageEventListener {
     }
 
     private void onStorageStateChangedAsync(String path, String oldState, String newState) {
+        boolean isPrimary = Environment.getExternalStorageDirectory().getPath().equals(path);
         Slog.i(TAG, String.format(
-                "Media {%s} state changed from {%s} -> {%s}", path, oldState, newState));
+                "Media {%s} state changed from {%s} -> {%s} (primary = %b)", path, oldState, newState, isPrimary));
         if (newState.equals(Environment.MEDIA_SHARED)) {
             /*
              * Storage is now shared. Modify the UMS notification
@@ -227,25 +230,25 @@ public class StorageNotification extends StorageEventListener {
         } else if (newState.equals(Environment.MEDIA_REMOVED)) {
             /*
              * Storage has been removed. Show nomedia media notification,
-             * and disable UMS notification regardless of connection state.
+             * and disable UMS notification if the removed storage is the primary storage.
              */
             setMediaStorageNotification(
                     com.android.internal.R.string.ext_media_nomedia_notification_title,
                     com.android.internal.R.string.ext_media_nomedia_notification_message,
                     com.android.internal.R.drawable.stat_notify_sdcard_usb,
-                    true, false, null);
-            updateUsbMassStorageNotification(false);
+                    true, !isPrimary, null);
+            updateUsbMassStorageNotification(isPrimary ? false : mUmsAvailable);
         } else if (newState.equals(Environment.MEDIA_BAD_REMOVAL)) {
             /*
              * Storage has been removed unsafely. Show bad removal media notification,
-             * and disable UMS notification regardless of connection state.
+             * and disable UMS notification if the removed storage is the primary storage.
              */
             setMediaStorageNotification(
                     com.android.internal.R.string.ext_media_badremoval_notification_title,
                     com.android.internal.R.string.ext_media_badremoval_notification_message,
                     com.android.internal.R.drawable.stat_sys_warning,
                     true, true, null);
-            updateUsbMassStorageNotification(false);
+            updateUsbMassStorageNotification(isPrimary ? false : mUmsAvailable);
         } else {
             Slog.w(TAG, String.format("Ignoring unknown state {%s}", newState));
         }
@@ -256,7 +259,7 @@ public class StorageNotification extends StorageEventListener {
      */
     void updateUsbMassStorageNotification(boolean available) {
 
-        if (available) {
+        if (available && SystemProperties.getInt("ro.usb.use_custom_service", 0) == 0) {
             Intent intent = new Intent();
             intent.setClass(mContext, com.android.systemui.usb.UsbStorageActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -281,6 +284,10 @@ public class StorageNotification extends StorageEventListener {
         visible = visible && POP_UMS_ACTIVITY_ON_CONNECT;
 
         if (!visible && mUsbStorageNotification == null) {
+            return;
+        }
+
+        if (SystemProperties.getInt("ro.usb.use_custom_service", 0) == 1) {
             return;
         }
 
@@ -414,4 +421,5 @@ public class StorageNotification extends StorageEventListener {
             notificationManager.cancel(notificationId);
         }
     }
+
 }

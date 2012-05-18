@@ -138,12 +138,6 @@ void rsdGLShutdown(const Context *rsc) {
         if (dc->gl.egl.surface != EGL_NO_SURFACE) {
             RSD_CALL_GL(eglDestroySurface, dc->gl.egl.display, dc->gl.egl.surface);
         }
-#ifdef QCOM_HARDWARE
-        if (dc->gl.wndSurface != NULL) {
-            dc->gl.wndSurface->decStrong(NULL);
-            dc->gl.wndSurface = NULL;
-        }
-#endif
         RSD_CALL_GL(eglDestroyContext, dc->gl.egl.display, dc->gl.egl.context);
         checkEglError("eglDestroyContext");
     }

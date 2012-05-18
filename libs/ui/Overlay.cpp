@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 The Android Open Source Project
+ * Copyright (C) 2012 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,115 +14,290 @@
  * limitations under the License.
  */
 
+//#define LOG_NDEBUG 0
 #define LOG_TAG "Overlay"
 
 #include <binder/IMemory.h>
 #include <binder/Parcel.h>
 #include <utils/Errors.h>
 #include <binder/MemoryHeapBase.h>
+#include <cutils/ashmem.h>
 
 #include <ui/Overlay.h>
 
 namespace android {
 
-Overlay::Overlay(overlay_set_fd_hook set_fd,
-        overlay_set_crop_hook set_crop,
-        overlay_queue_buffer_hook queue_buffer,
-        void *data)
-    : mStatus(NO_INIT)
+int Overlay::getBppFromFormat(const Format format)
 {
-    set_fd_hook = set_fd;
-    set_crop_hook = set_crop;
-    queue_buffer_hook = queue_buffer;
-    hook_data = data;
+    switch(format) {
+    case FORMAT_RGBA8888:
+        return 32;
+    case FORMAT_RGB565:
+    case FORMAT_YUV422I:
+    case FORMAT_YUV422SP:
+        return 16;
+    case FORMAT_YUV420SP:
+    case FORMAT_YUV420P:
+        return 12;
+    default:
+        LOGW("%s: unhandled color format %d", __FUNCTION__, format);
+    }
+    return 32;
+}
+
+Overlay::Format Overlay::getFormatFromString(const char* name)
+{
+    if (strcmp(name, "yuv422sp") == 0) {
+        return FORMAT_YUV422SP;
+    } else if (strcmp(name, "yuv420sp") == 0) {
+        return FORMAT_YUV420SP;
+    } else if (strcmp(name, "yuv422i-yuyv") == 0) {
+        return FORMAT_YUV422I;
+    } else if (strcmp(name, "yuv420p") == 0) {
+        return FORMAT_YUV420P;
+    } else if (strcmp(name, "rgb565") == 0) {
+        return FORMAT_RGB565;
+    } else if (strcmp(name, "rgba8888") == 0) {
+        return FORMAT_RGBA8888;
+    }
+
+    return FORMAT_UNKNOWN;
+}
+
+Overlay::Overlay(uint32_t width, uint32_t height, Format format, QueueBufferHook queueBufferHook, void *data) :
+    mQueueBufferHook(queueBufferHook),
+    mHookData(data),
+    mNumFreeBuffers(0),
+    mStatus(NO_INIT),
+    mWidth(width),
+    mHeight(height),
+    mFormat(format)
+{
+    LOGD("%s: Init overlay", __FUNCTION__);
+
+    int bpp = getBppFromFormat(format);
+    /* round up to next multiple of 8 */
+    if (bpp & 7) {
+        bpp = (bpp & ~7) + 8;
+    }
+
+    const int requiredMem = width * height * bpp;
+    const int bufferSize = (requiredMem + PAGE_SIZE - 1) & (~(PAGE_SIZE - 1));
+
+    int fd = ashmem_create_region("Overlay_buffer_region", NUM_BUFFERS * bufferSize);
+    if (fd < 0) {
+        LOGE("%s: Cannot create ashmem region", __FUNCTION__);
+        return;
+    }
+
+    LOGV("%s: allocated ashmem region for %d buffers of size %d", __FUNCTION__, NUM_BUFFERS, bufferSize);
+
+    for (uint32_t i = 0; i < NUM_BUFFERS; i++) {
+        mBuffers[i].fd = fd;
+        mBuffers[i].length = bufferSize;
+        mBuffers[i].offset = bufferSize * i;
+        LOGV("%s: mBuffers[%d].offset = 0x%x", __FUNCTION__, i, mBuffers[i].offset);
+        mBuffers[i].ptr = mmap(NULL, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, bufferSize * i);
+        if (mBuffers[i].ptr == MAP_FAILED) {
+            LOGE("%s: Failed to mmap buffer %d", __FUNCTION__, i);
+            mBuffers[i].ptr = NULL;
+            continue;
+        }
+        mQueued[i] = false;
+    }
+
+    pthread_mutex_init(&mQueueMutex, NULL);
+
+    LOGD("%s: Init overlay complete", __FUNCTION__);
+
     mStatus = NO_ERROR;
 }
 
 Overlay::~Overlay() {
+    if (mBuffers != NULL) {
+        LOGW("%s: Destructor called without freeing buffers...", __FUNCTION__);
+    }
 }
 
-status_t Overlay::dequeueBuffer(void** buffer)
+status_t Overlay::dequeueBuffer(overlay_buffer_t* buffer)
 {
-    return mStatus;
+    LOGV("%s", __FUNCTION__);
+    int rv = NO_ERROR;
+
+    pthread_mutex_lock(&mQueueMutex);
+
+    if (mNumFreeBuffers < NUM_MIN_FREE_BUFFERS) {
+        LOGV("%s: No free buffers", __FUNCTION__);
+        rv = NO_MEMORY;
+    } else {
+        int index = -1;
+
+        for (uint32_t i = 0; i < NUM_BUFFERS; i++) {
+            if (mQueued[i]) {
+                mQueued[i] = false;
+                index = i;
+                break;
+            }
+        }
+
+        if (index >= 0) {
+            int *intBuffer = (int *) buffer;
+            *intBuffer = index;
+            mNumFreeBuffers--;
+            LOGV("%s: dequeued buffer %d", __FUNCTION__, index);
+        } else {
+            LOGE("%s: inconsistent queue state", __FUNCTION__);
+            rv = NO_MEMORY;
+        }
+    }
+
+    pthread_mutex_unlock(&mQueueMutex);
+    return rv;
 }
 
-status_t Overlay::queueBuffer(void* buffer)
+status_t Overlay::queueBuffer(overlay_buffer_t buffer)
 {
-    if (queue_buffer_hook)
-        queue_buffer_hook(hook_data, buffer);
-    return mStatus;
+    uint32_t index = (uint32_t) buffer;
+    int rv;
+
+    LOGV("%s: %d", __FUNCTION__, index);
+    if (index > NUM_BUFFERS) {
+        LOGE("%s: invalid buffer index %d", __FUNCTION__, index);
+        return INVALID_OPERATION;
+    }
+
+    if (mQueueBufferHook) {
+        mQueueBufferHook(mHookData, mBuffers[index].ptr, mBuffers[index].length);
+    }
+
+    pthread_mutex_lock(&mQueueMutex);
+
+    if (mNumFreeBuffers < NUM_BUFFERS) {
+        mNumFreeBuffers++;
+        mQueued[index] = true;
+        rv = NO_ERROR;
+    } else {
+        LOGW("%s: Attempt to queue more buffers than we have", __FUNCTION__);
+        rv = INVALID_OPERATION;
+    }
+
+    pthread_mutex_unlock(&mQueueMutex);
+
+    return mStatus; 
 }
 
 status_t Overlay::resizeInput(uint32_t width, uint32_t height)
 {
+    LOGV("%s: %d, %d", __FUNCTION__, width, height);
     return mStatus;
 }
 
 status_t Overlay::setParameter(int param, int value)
 {
+    LOGV("%s: %d, %d", __FUNCTION__, param, value);
     return mStatus;
 }
 
 status_t Overlay::setCrop(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
-    if (set_crop_hook)
-        set_crop_hook(hook_data, x, y, w, h);
+    LOGV("%s: x=%d, y=%d, w=%d, h=%d", __FUNCTION__, x, y, w, h);
     return mStatus;
 }
 
 status_t Overlay::getCrop(uint32_t* x, uint32_t* y, uint32_t* w, uint32_t* h)
 {
+    LOGV("%s", __FUNCTION__);
     return mStatus;
 }
 
 status_t Overlay::setFd(int fd)
 {
-    if (set_fd_hook)
-        set_fd_hook(hook_data, fd);
+    LOGV("%s: fd=%d", __FUNCTION__, fd);
     return mStatus;
 }
 
 int32_t Overlay::getBufferCount() const
 {
-    return 0;
+    LOGV("%s: %d", __FUNCTION__, NUM_BUFFERS);
+    return NUM_BUFFERS;
 }
 
-void* Overlay::getBufferAddress(void* buffer)
+void* Overlay::getBufferAddress(overlay_buffer_t buffer)
 {
-    return 0;
+    uint32_t index = (uint32_t) buffer;
+
+    LOGV("%s: %d", __FUNCTION__, index);
+    if (index >= NUM_BUFFERS) {
+        index = index % NUM_BUFFERS;
+    }
+
+    //LOGD("%s: fd=%d, length=%d. offset=%d, ptr=%p", __FUNCTION__, mBuffers[index].fd,
+    //        mBuffers[index].length, mBuffers[index].offset, mBuffers[index].ptr);
+
+    return &mBuffers[index];
 }
 
-void Overlay::destroy() {  
+void Overlay::destroy()
+{
+    int fd = 0;
+
+    LOGV("%s", __FUNCTION__);
+
+    for (uint32_t i = 0; i < NUM_BUFFERS; i++) {
+        if (mBuffers[i].ptr != NULL && munmap(mBuffers[i].ptr, mBuffers[i].length) < 0) {
+            LOGW("%s: unmap of buffer %d failed", __FUNCTION__, i);
+        }
+        if (mBuffers[i].fd > 0) {
+            fd = mBuffers[i].fd;
+        }
+    }
+    if (fd > 0) {
+        close(fd);
+    }
+
+    pthread_mutex_destroy(&mQueueMutex);
 }
 
-status_t Overlay::getStatus() const {
+status_t Overlay::getStatus() const
+{
+    LOGV("%s", __FUNCTION__);
     return mStatus;
 }
 
-void* Overlay::getHandleRef() const {
+overlay_handle_t Overlay::getHandleRef() const
+{
+    LOGV("%s", __FUNCTION__);
     return 0;
 }
 
-uint32_t Overlay::getWidth() const {
-    return 0;
+uint32_t Overlay::getWidth() const
+{
+    LOGV("%s", __FUNCTION__);
+    return mWidth;
 }
 
-uint32_t Overlay::getHeight() const {
-    return 0;
+uint32_t Overlay::getHeight() const
+{
+    LOGV("%s", __FUNCTION__);
+    return mHeight;
 }
 
-int32_t Overlay::getFormat() const {
-    return 0;
+int32_t Overlay::getFormat() const
+{
+    LOGV("%s", __FUNCTION__);
+    return mFormat;
 }
 
-int32_t Overlay::getWidthStride() const {
-    return 0;
+int32_t Overlay::getWidthStride() const
+{
+    LOGV("%s", __FUNCTION__);
+    return mWidth;
 }
 
-int32_t Overlay::getHeightStride() const {
-    return 0;
+int32_t Overlay::getHeightStride() const
+{
+    LOGV("%s", __FUNCTION__);
+    return mHeight;
 }
-
-// ----------------------------------------------------------------------------
 
 }; // namespace android

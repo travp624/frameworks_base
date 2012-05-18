@@ -368,10 +368,6 @@ FontRenderer::~FontRenderer() {
         delete[] mTextTexture;
     }
 
-    if (mIndexBufferID) {
-        glDeleteBuffers(1, &mIndexBufferID);
-    }
-
     if (mTextureId) {
         glDeleteTextures(1, &mTextureId);
     }
