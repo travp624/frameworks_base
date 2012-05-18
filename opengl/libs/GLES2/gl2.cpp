@@ -43,17 +43,9 @@ using namespace android;
 
 #if USE_FAST_TLS_KEY
 
-    #ifdef HAVE_TEGRA_ERRATA_657451
-        #define MUNGE_TLS(_tls) \
-            "bfi " #_tls ", " #_tls ", #20, #1 \n" \
-            "bic " #_tls ", " #_tls ", #1 \n"
-    #else
-        #define MUNGE_TLS(_tls) "\n"
-    #endif
-
     #ifdef HAVE_ARM_TLS_REGISTER
         #define GET_TLS(reg) \
-            "mrc p15, 0, " #reg ", c13, c0, 3 \n" \
+            "mrc p15, 0, " #reg ", c13, c0, 3 \n"
             MUNGE_TLS(reg)
     #else
         #define GET_TLS(reg) \
@@ -125,12 +117,178 @@ extern "C" {
  * informations before they can execute.
  */
 
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+//extern "C" const GLubyte* __glGetString(GLenum name);
+extern "C" void __glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length);
+extern "C" void __glEnable(GLenum cap);
+extern "C" void __glDisable(GLenum cap);
+extern "C" void __glTexParameterf(GLenum target, GLenum pname, GLfloat param);
+extern "C" void __glTexParameterfv(GLenum target, GLenum pname, const GLfloat* params);
+extern "C" void __glTexParameteri(GLenum target, GLenum pname, GLint param);
+extern "C" void __glTexParameteriv(GLenum target, GLenum pname, const GLint* params);
+extern "C" void __glBindTexture(GLenum target, GLuint texture);
+#endif
 extern "C" void __glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image);
 extern "C" void __glEGLImageTargetRenderbufferStorageOES(GLenum target, GLeglImageOES image);
 
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+/*
+const GLubyte* glGetString(GLenum name)
+{
+    if (name == GL_EXTENSIONS) {
+        char *exts = (char *)__glGetString(GL_EXTENSIONS);
+        char *extensions;
+        extensions = new char[850];
+        strcpy(extensions, exts);
+        strcat(extensions, "GL_OES_EGL_image_external ");
+        LOGW("glGetString(GL_EXTENSIONS): GL_OES_EGL_image_external added");
+        return (GLubyte*)extensions;
+    }
+    return __glGetString(name);
+}
+*/
+
+void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length)
+{
+    bool needRewrite = false;
+
+    LOGW("Shader source dump:");
+    for (GLsizei i = 0; i < count; i++) {
+        LOGW("%s", string[i]);
+        if (strstr(string[i], "GL_OES_EGL_image_external")) {
+            needRewrite = true;
+        }
+    }
+
+/* TODO
+The following code (made to replace "samplerExternalOES" with "sampler2D")
+is currently very dumb:
+- it assumes that "#extension GL_OES_EGL_image_external : require"
+  is present and appears before the first newline in the shader source
+  (the first line is then replaced with an empty one)
+- it assumes only one appearence of "samplerExternalOES" in the shader code
+  (and replaces this first appearence with "sampler2D")
+
+Despite the mentioned limitations, it seems to capture
+all real cases encountered so far.
+*/
+
+    if (!needRewrite) {
+        __glShaderSource(shader, count, string, length);
+        return;
+    }
+
+    LOGW("Shader source rewrite:");
+
+    GLchar **newStrings = new GLchar*[count];
+    const GLchar *start, *pos;
+
+    for (GLsizei i = 0; i < count; i++) {
+        start = strstr(string[i], "\n");
+        if (!start) {
+            start = string[i];
+        } else {
+            /* skip '\n' */
+            start++;
+        }
+
+        newStrings[i] = new GLchar[strlen(start) + 1];
+        pos = strstr(start, "samplerExternalOES");
+        if (pos) {
+            /* copy part before 'samplerExternalOES' */
+            strncpy(newStrings[i], start, pos - start);
+            /* ensure NUL termination */
+            newStrings[i][pos - start] = '\0';
+            strcat(newStrings[i], "sampler2D");
+            /* copy remainder */
+            pos += strlen("samplerExternalOES");
+            strcat(newStrings[i], pos);
+        } else {
+            strcpy(newStrings[i], start);
+        }
+        LOGW("%s", newStrings[i]);
+    }
+
+    __glShaderSource(shader, count, const_cast<const GLchar **>(newStrings), length);
+
+    for (GLsizei i = 0; i < count; i++) {
+        delete [] newStrings[i];
+    }
+    delete [] newStrings;
+}
+
+void glTexParameterf(GLenum target, GLenum pname, GLfloat param)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glTexParameterf: EXTERNAL_OES > 2D");
+    }
+    __glTexParameterf(target, pname, param);
+}
+
+void glTexParameterfv(GLenum target, GLenum pname, const GLfloat* params)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glTexParameterfv: EXTERNAL_OES > 2D");
+    }
+    __glTexParameterfv(target, pname, params);
+}
+
+void glTexParameteri(GLenum target, GLenum pname, GLint param)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glTexParameteri: EXTERNAL_OES > 2D");
+    }
+    __glTexParameteri(target, pname, param);
+}
+
+void glTexParameteriv(GLenum target, GLenum pname, const GLint* params)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glTexParameteriv: EXTERNAL_OES > 2D");
+    }
+    __glTexParameteriv(target, pname, params);
+}
+
+void glEnable(GLenum cap)
+{
+    if (cap == GL_TEXTURE_EXTERNAL_OES) {
+        cap = GL_TEXTURE_2D;
+//        LOGW("glEnable: EXTERNAL_OES > 2D");
+    }
+    __glEnable(cap);
+}
+
+void glDisable(GLenum cap)
+{
+    if (cap == GL_TEXTURE_EXTERNAL_OES) {
+        cap = GL_TEXTURE_2D;
+//        LOGW("glDisable: EXTERNAL_OES > 2D");
+    }
+    __glDisable(cap);
+}
+
+void glBindTexture(GLenum target, GLuint texture)
+{
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glBindTexture: EXTERNAL_OES > 2D");
+    }
+    __glBindTexture(target, texture);
+}
+#endif // HOOK_MISSING_EGL_EXTERNAL_IMAGE
 
 void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)
 {
+#ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
+    if (target == GL_TEXTURE_EXTERNAL_OES) {
+        target = GL_TEXTURE_2D;
+//        LOGW("glEGLImageTargetTexture2DOES: EXTERNAL_OES > 2D");
+    }
+#endif
     GLeglImageOES implImage = 
         (GLeglImageOES)egl_get_image_for_current_context((EGLImageKHR)image);
     __glEGLImageTargetTexture2DOES(target, implImage);
