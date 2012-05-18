@@ -130,9 +130,9 @@ class BatteryService extends Binder {
     private int mDischargeStartLevel;
 
     private Led mLed;
+    private boolean mLedPulseEnabled;
 
     private boolean mSentLowBatteryBroadcast = false;
-    private Handler mHandler;
 
     public BatteryService(Context context, LightsService lights) {
         mContext = context;
@@ -156,30 +156,11 @@ class BatteryService extends Binder {
             mInvalidChargerObserver.startObserving("DEVPATH=/devices/virtual/switch/invalid_charger");
         }
 
-        mHandler = new Handler();
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
+        SettingsObserver observer = new SettingsObserver(new Handler());
+        observer.observe();
 
         // set initial status
         update();
-    }
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(
-                Settings.System.getUriFor(Settings.System.BATTERY_PERCENTAGES), false, this);
-            resolver.registerContentObserver(
-                Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
     }
 
     final boolean isPowered() {
@@ -582,6 +563,10 @@ class BatteryService extends Binder {
         }
     }
 
+    private synchronized void updateLedPulse() {
+        mLed.updateLightsLocked();
+    }
+
     class Led {
         private LightsService mLightsService;
         private LightsService.Light mBatteryLight;
@@ -622,10 +607,13 @@ class BatteryService extends Binder {
                 if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
                     // Solid red when battery is charging
                     mBatteryLight.setColor(mBatteryLowARGB);
-                } else {
+                } else if (mLedPulseEnabled) {
                     // Flash red when battery is low and not charging
                     mBatteryLight.setFlashing(mBatteryLowARGB, LightsService.LIGHT_FLASH_TIMED,
                             mBatteryLedOn, mBatteryLedOff);
+                } else {
+                    // "Pulse low battery light" is disabled, no lights.
+                    mBatteryLight.turnOff();
                 }
             } else if (status == BatteryManager.BATTERY_STATUS_CHARGING
                     || status == BatteryManager.BATTERY_STATUS_FULL) {
@@ -643,8 +631,31 @@ class BatteryService extends Binder {
         }
     }
 
-    private void updateSettings() {
-        sendIntent();
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.BATTERY_LIGHT_PULSE), false, this);
+            update();
+        }
+
+        @Override public void onChange(boolean selfChange) {
+            update();
+        }
+
+        public void update() {
+            ContentResolver resolver = mContext.getContentResolver();
+            boolean pulseEnabled = Settings.System.getInt(resolver,
+                        Settings.System.BATTERY_LIGHT_PULSE, 1) != 0;
+            if (mLedPulseEnabled != pulseEnabled) {
+                mLedPulseEnabled = pulseEnabled;
+                updateLedPulse();
+            }
+        }
     }
 }
 
