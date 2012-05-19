@@ -29,6 +29,9 @@ ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
     LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
 endif
 # we need to access the private Bionic header <bionic_tls.h>
+ifeq ($(TARGET_HAVE_TEGRA_ERRATA_657451),true)
+    LOCAL_CFLAGS += -DHAVE_TEGRA_ERRATA_657451
+endif
 LOCAL_C_INCLUDES += bionic/libc/private
 
 LOCAL_CFLAGS += -DLOG_TAG=\"libEGL\"
@@ -36,20 +39,12 @@ LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
 LOCAL_CFLAGS += -fvisibility=hidden
 LOCAL_CFLAGS += -DEGL_TRACE=1
 
-ifeq ($(TARGET_BOARD_PLATFORM),msm7k)
-LOCAL_CFLAGS += -DADRENO130=1
-endif
-
 ifneq ($(MAX_EGL_CACHE_ENTRY_SIZE),)
   LOCAL_CFLAGS += -DMAX_EGL_CACHE_ENTRY_SIZE=$(MAX_EGL_CACHE_ENTRY_SIZE)
 endif
 
 ifneq ($(MAX_EGL_CACHE_SIZE),)
   LOCAL_CFLAGS += -DMAX_EGL_CACHE_SIZE=$(MAX_EGL_CACHE_SIZE)
-endif
-
-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-    LOCAL_CFLAGS += -DQCOM_HARDWARE
 endif
 
 include $(BUILD_SHARED_LIBRARY)
@@ -88,6 +83,9 @@ LOCAL_SHARED_LIBRARIES += libdl
 ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
     LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
 endif
+ifeq ($(TARGET_HAVE_TEGRA_ERRATA_657451),true)
+    LOCAL_CFLAGS += -DHAVE_TEGRA_ERRATA_657451
+endif
 LOCAL_C_INCLUDES += bionic/libc/private
 
 LOCAL_CFLAGS += -DLOG_TAG=\"libGLESv1\"
@@ -117,6 +115,9 @@ LOCAL_SHARED_LIBRARIES += libdl
 # we need to access the private Bionic header <bionic_tls.h>
 ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
     LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
+endif
+ifeq ($(TARGET_HAVE_TEGRA_ERRATA_657451),true)
+    LOCAL_CFLAGS += -DHAVE_TEGRA_ERRATA_657451
 endif
 LOCAL_C_INCLUDES += bionic/libc/private
 

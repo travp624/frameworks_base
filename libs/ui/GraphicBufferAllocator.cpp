@@ -97,7 +97,7 @@ status_t GraphicBufferAllocator::alloc(uint32_t w, uint32_t h, PixelFormat forma
         w = h = 1;
 
     // we have a h/w allocator and h/w buffer is requested
-    status_t err; 
+    status_t err;
 
 #ifdef MISSING_EGL_PIXEL_FORMAT_YV12
     if (format == HAL_PIXEL_FORMAT_YV12) {
@@ -111,7 +111,7 @@ status_t GraphicBufferAllocator::alloc(uint32_t w, uint32_t h, PixelFormat forma
         usage |= GRALLOC_USAGE_SW_WRITE_RARELY;
     }
     if (usage & GRALLOC_USAGE_EXTERNAL_DISP) {
-	usage ^= GRALLOC_USAGE_EXTERNAL_DISP;
+        usage &= ~GRALLOC_USAGE_EXTERNAL_DISP;
     }
 #endif
 
