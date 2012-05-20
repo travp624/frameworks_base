@@ -17,6 +17,7 @@
 package com.android.systemui.statusbar.phone;
 
 import java.io.FileDescriptor;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.jar.Attributes;
@@ -103,8 +104,8 @@ import com.android.systemui.statusbar.policy.DateView;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
-import com.android.systemui.statusbar.policy.toggles.TogglesView;
 import com.android.systemui.statusbar.policy.WeatherPanel;
+import com.android.systemui.statusbar.policy.toggles.TogglesView;
 
 public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
@@ -2772,10 +2773,9 @@ public class PhoneStatusBar extends StatusBar {
         } catch (RemoteException ex) {
             // no window manager? good luck with that
         }
-       reDrawHeader();
-
+        reDrawHeader();
     }
-    
+
     private void reDrawHeader() {
         if (mWeatherPanelEnabled) {
             mTxtParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
@@ -2894,50 +2894,6 @@ public class PhoneStatusBar extends StatusBar {
         }
     }
 
-    private void recreateStatusBar() {
-        mRecreating = true;
-        mStatusBarContainer.removeAllViews();
-
-        // extract icons from the soon-to-be recreated viewgroup.
-        int nIcons = mStatusIcons.getChildCount();
-        ArrayList<StatusBarIcon> icons = new ArrayList<StatusBarIcon>(nIcons);
-        ArrayList<String> iconSlots = new ArrayList<String>(nIcons);
-        for (int i = 0; i < nIcons; i++) {
-            StatusBarIconView iconView = (StatusBarIconView)mStatusIcons.getChildAt(i);
-            icons.add(iconView.getStatusBarIcon());
-            iconSlots.add(iconView.getStatusBarSlot());
-        }
-
-        // extract notifications.
-        int nNotifs = mNotificationData.size();
-        ArrayList<Pair<IBinder, StatusBarNotification>> notifications =
-                new ArrayList<Pair<IBinder, StatusBarNotification>>(nNotifs);
-        copyNotifications(notifications, mNotificationData);
-        mNotificationData.clear();
-
-        View newStatusBarView = makeStatusBarView();
-
-        // recreate StatusBarIconViews.
-        for (int i = 0; i < nIcons; i++) {
-            StatusBarIcon icon = icons.get(i);
-            String slot = iconSlots.get(i);
-            addIcon(slot, i, i, icon);
-        }
-
-        // recreate notifications.
-        for (int i = 0; i < nNotifs; i++) {
-            Pair<IBinder, StatusBarNotification> notifData = notifications.get(i);
-            addNotificationViews(notifData.first, notifData.second);
-        }
-
-        setAreThereNotifications();
-
-        mStatusBarContainer.addView(newStatusBarView);
-
-        updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
-        mRecreating = false;
-    }
-
     /**
      * Reload some of our resources when the configuration changes.
      *
@@ -2955,12 +2911,14 @@ public class PhoneStatusBar extends StatusBar {
                 (mCurrentTheme == null || !mCurrentTheme.equals(newTheme))) {
             mCurrentTheme = (CustomTheme)newTheme.clone();
             StatusBar.resetColors(mContext);
-            if(mNavigationBarView != null)
-                mNavigationBarView.updateSettings();
-            recreateStatusBar();
-            Intent weatherintent = new Intent("com.blackice.control.INTENT_WEATHER_REQUEST");
-            weatherintent.putExtra(android.content.Intent.EXTRA_TEXT, "updateweather");
-            mContext.sendBroadcast(weatherintent);
+
+            // restart system ui on theme change
+            try {
+                Runtime.getRuntime().exec("pkill -TERM -f  com.android.systemui");
+            } catch (IOException e) {
+                // we're screwed here fellas
+            }
+
         } else {
 
             if (mClearButton instanceof TextView) {
