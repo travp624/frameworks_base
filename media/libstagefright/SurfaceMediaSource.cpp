@@ -33,6 +33,7 @@
 #include <utils/String8.h>
 
 #ifdef QCOM_HARDWARE
+#include <cutils/properties.h>
 #include <gralloc_priv.h>
 #endif
 
