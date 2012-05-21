@@ -19,7 +19,7 @@
 <shape android:shape="rectangle" xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient name="status_bar_recents_background"
         android:type="radial"
-        android:startColor="#6e2a2a2a"
+        android:startColor="#b42a2a2a"
         android:endColor="#7d080808"
         android:gradientRadius="400"
         />
