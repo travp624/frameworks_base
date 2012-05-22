@@ -26,7 +26,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.database.ContentObserver;
@@ -38,7 +37,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ServiceManager;
 import android.provider.Settings;
-import android.provider.Settings.System;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Slog;
@@ -61,7 +59,6 @@ import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.buttons.ExtensibleKeyButtonView;
 
 public class NavigationBarView extends LinearLayout {
-
     final static boolean DEBUG = false;
     final static String TAG = "PhoneStatusBar/NavigationBarView";
 
@@ -242,6 +239,7 @@ public class NavigationBarView extends LinearLayout {
                     addButton(navButtonLayout, separator, landscape);
                     addLightsOutButton(lightsOut, separator, landscape, true);
                 }
+
             }
 
             // add right menu
@@ -387,8 +385,9 @@ public class NavigationBarView extends LinearLayout {
         padding[2] = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
                 .getDisplayMetrics());
         // bottom
-        padding[3] = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources()
-                .getDisplayMetrics());
+        padding[3] = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                getResources()
+                        .getDisplayMetrics());
         return padding;
     }
 
@@ -621,6 +620,10 @@ public class NavigationBarView extends LinearLayout {
             group.setMotionEventSplittingEnabled(false);
         }
         mCurrentView = mRotatedViews[Surface.ROTATION_0];
+        
+        // this takes care of making the buttons
+        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+        settingsObserver.observe();
 
     }
 
@@ -681,6 +684,7 @@ public class NavigationBarView extends LinearLayout {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS_QTY), false,
                     this);
+
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_GLOW_TINT), false,
                     this);
@@ -737,6 +741,7 @@ public class NavigationBarView extends LinearLayout {
                 Settings.System.putString(resolver,
                     Settings.System.NAVIGATION_CUSTOM_ACTIVITIES[j], mClickActions[j]);
             }
+
             mLongpressActions[j] = Settings.System.getString(resolver,
                     Settings.System.NAVIGATION_LONGPRESS_ACTIVITIES[j]);
             if (mLongpressActions[j] == null) {
@@ -753,6 +758,7 @@ public class NavigationBarView extends LinearLayout {
             }
         }
         makeBar();
+
     }
 
     private Drawable getNavbarIconImage(boolean landscape, String uri) {
@@ -787,4 +793,5 @@ public class NavigationBarView extends LinearLayout {
 
         return getResources().getDrawable(R.drawable.ic_sysbar_null);
     }
+
 }
