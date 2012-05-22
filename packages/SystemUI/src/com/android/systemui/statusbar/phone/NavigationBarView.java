@@ -371,7 +371,7 @@ public class NavigationBarView extends LinearLayout {
         }
 
         v.setGlowBackground(landscape ? R.drawable.ic_sysbar_highlight_land
-                : R.drawable.ic_sysbar_highlight)
+                : R.drawable.ic_sysbar_highlight);
         return v;
     }
 
