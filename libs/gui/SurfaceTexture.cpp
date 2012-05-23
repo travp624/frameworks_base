@@ -36,6 +36,10 @@
 #include <utils/Log.h>
 #include <utils/String8.h>
 
+#ifdef QCOM_HARDWARE
+#include <qcom_ui.h>
+#endif
+
 // This compile option causes SurfaceTexture to return the buffer that is currently
 // attached to the GL texture from dequeueBuffer when no other buffers are
 // available.  It requires the drivers (Gralloc, GL, OMX IL, and Camera) to do
@@ -138,6 +142,9 @@ SurfaceTexture::SurfaceTexture(GLuint tex, bool allowSynchronousMode,
     mUseFenceSync(false),
 #endif
     mTexTarget(texTarget),
+#ifdef QCOM_HARDWARE
+    mS3DFormat(0),
+#endif
     mFrameCounter(0) {
     // Choose a name using the PID and a process-unique ID.
     mName = String8::format("unnamed-%d-%d", getpid(), createProcessUniqueId());
@@ -148,6 +155,11 @@ SurfaceTexture::SurfaceTexture(GLuint tex, bool allowSynchronousMode,
     mNextCrop.makeInvalid();
     memcpy(mCurrentTransformMatrix, mtxIdentity,
             sizeof(mCurrentTransformMatrix));
+#ifdef QCOM_HARDWARE
+    mNextBufferInfo.width = 0;
+    mNextBufferInfo.height = 0;
+    mNextBufferInfo.format = 0;
+#endif
 }
 
 SurfaceTexture::~SurfaceTexture() {
@@ -293,6 +305,9 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
         int foundSync = -1;
         int dequeuedCount = 0;
         bool tryAgain = true;
+#ifdef MISSING_GRALLOC_BUFFERS
+        int dequeueRetries = 5;
+#endif
         while (tryAgain) {
             if (mAbandoned) {
                 ST_LOGE("dequeueBuffer: SurfaceTexture has been abandoned!");
@@ -382,8 +397,22 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
             // clients are not allowed to dequeue more than one buffer
             // if they didn't set a buffer count.
             if (!mClientBufferCount && dequeuedCount) {
+#ifdef MISSING_GRALLOC_BUFFERS
+                if (--dequeueRetries) {
+                    LOGD("SurfaceTexture::dequeue: Not allowed to dequeue more "
+                            "than a buffer SLEEPING\n");
+                    usleep(10000);
+                } else {
+                    mClientBufferCount = mServerBufferCount;
+                    LOGD("SurfaceTexture::dequeue: Not allowed to dequeue more "
+                            "than a buffer RETRY mBufferCount:%d mServerBufferCount:%d\n",
+                            mBufferCount, mServerBufferCount);
+                }
+                continue;
+#else
                 ST_LOGE("dequeueBuffer: can't dequeue multiple buffers without "
                         "setting the buffer count");
+#endif
                 return -EINVAL;
             }
 
@@ -396,6 +425,15 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
                 // than allowed.
                 const int avail = mBufferCount - (dequeuedCount+1);
                 if (avail < (MIN_UNDEQUEUED_BUFFERS-int(mSynchronousMode))) {
+#ifdef MISSING_GRALLOC_BUFFERS
+                    if (mClientBufferCount != 0) {
+                        mBufferCount++;
+                        mClientBufferCount = mServerBufferCount = mBufferCount;
+                        LOGD("SurfaceTexture::dequeuebuffer: MIN EXCEEDED "
+                                "mBuffer:%d bumped\n", mBufferCount);
+                        continue;
+                    }
+#endif
                     ST_LOGE("dequeueBuffer: MIN_UNDEQUEUED_BUFFERS=%d exceeded "
                             "(dequeued=%d)",
                             MIN_UNDEQUEUED_BUFFERS-int(mSynchronousMode),
@@ -431,7 +469,6 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
             // use the default size
             w = mDefaultWidth;
             h = mDefaultHeight;
-            ST_LOGV("dequeueBuffer: using default size %dx%d", w, h);
         }
 
         const bool updateFormat = (format != 0);
@@ -445,12 +482,30 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
         mSlots[buf].mBufferState = BufferSlot::DEQUEUED;
 
         const sp<GraphicBuffer>& buffer(mSlots[buf].mGraphicBuffer);
-        if ((buffer == NULL) ||
-            (uint32_t(buffer->width)  != w) ||
-            (uint32_t(buffer->height) != h) ||
-            (uint32_t(buffer->format) != format) ||
-            ((uint32_t(buffer->usage) & usage) != usage))
-        {
+#ifdef QCOM_HARDWARE
+	qBufGeometry currentGeometry;
+	if (buffer != NULL)
+	   currentGeometry.set(buffer->width, buffer->height, buffer->format);
+ 	else
+	   currentGeometry.set(0, 0, 0);
+ 
+	qBufGeometry requiredGeometry;
+	requiredGeometry.set(w, h, format);
+ 
+	qBufGeometry updatedGeometry;
+	updatedGeometry.set(mNextBufferInfo.width, mNextBufferInfo.height,
+				mNextBufferInfo.format);
+#endif
+	if ((buffer == NULL) ||
+#ifdef QCOM_HARDWARE
+	   needNewBuffer(currentGeometry, requiredGeometry, updatedGeometry) ||
+#else
+	   (uint32_t(buffer->width)  != w) ||
+	   (uint32_t(buffer->height) != h) ||
+	   (uint32_t(buffer->format) != format) ||
+#endif
+	   ((uint32_t(buffer->usage) & usage) != usage))
+	{
             usage |= GraphicBuffer::USAGE_HW_TEXTURE;
             status_t error;
             sp<GraphicBuffer> graphicBuffer(
@@ -465,12 +520,6 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
                 mPixelFormat = format;
             }
 
-            if (mPixelFormat != format) {
-                LOGW("dequeueBuffer: mPixelFormat %d != format %d", mPixelFormat, format);
-            }
-            if (mPixelFormat != 1 && mPixelFormat != 4 && mPixelFormat != 5) {
-                LOGW("dequeueBuffer: non standard pixel format: %d.", mPixelFormat);
-            }
             mSlots[buf].mGraphicBuffer = graphicBuffer;
             mSlots[buf].mRequestBufferCalled = false;
             mSlots[buf].mFence = EGL_NO_SYNC_KHR;
@@ -605,6 +654,16 @@ status_t SurfaceTexture::queueBuffer(int buf, int64_t timestamp,
         mFrameCounter++;
         mSlots[buf].mFrameNumber = mFrameCounter;
 
+#ifdef QCOM_HARDWARE
+        // Update the buffer Geometry if required
+        qBufGeometry updatedGeometry;
+        updatedGeometry.set(mNextBufferInfo.width,
+                            mNextBufferInfo.height, mNextBufferInfo.format);
+        updateBufferGeometry(mSlots[buf].mGraphicBuffer, updatedGeometry);
+        updateBufferS3DFormat(mSlots[buf].mGraphicBuffer, mS3DFormat);
+        sp<GraphicBuffer> buffer = mSlots[buf].mGraphicBuffer;
+#endif
+
         mDequeueCondition.signal();
 
         *outWidth = mDefaultWidth;
@@ -722,6 +781,13 @@ status_t SurfaceTexture::disconnect(int api) {
                 mNextCrop.makeInvalid();
                 mNextScalingMode = NATIVE_WINDOW_SCALING_MODE_FREEZE;
                 mNextTransform = 0;
+#ifdef QCOM_HARDWARE
+                memcpy(mCurrentTransformMatrix, mtxIdentity,
+                       sizeof(mCurrentTransformMatrix));
+                mNextBufferInfo.width = 0;
+                mNextBufferInfo.height = 0;
+                mNextBufferInfo.format = 0;
+#endif
                 mDequeueCondition.signal();
             } else {
                 ST_LOGE("disconnect: connected to another api (cur=%d, req=%d)",
@@ -736,6 +802,30 @@ status_t SurfaceTexture::disconnect(int api) {
     }
     return err;
 }
+
+#ifdef QCOM_HARDWARE
+status_t SurfaceTexture::performQcomOperation(int operation, int arg1, int arg2, int arg3)
+{
+    ST_LOGV("SurfaceTexture::performQcomOperation operation=%d", operation);
+
+    switch(operation) {
+        case NATIVE_WINDOW_SET_BUFFERS_SIZE: {
+            int size = arg1;
+            mGraphicBufferAlloc->setGraphicBufferSize(size);
+        } break;
+        case NATIVE_WINDOW_UPDATE_BUFFERS_GEOMETRY: {
+            mNextBufferInfo.width = arg1;
+            mNextBufferInfo.height = arg2;
+            mNextBufferInfo.format = arg3;
+        } break;
+        case NATIVE_WINDOW_SET_S3D_FORMAT:
+            mS3DFormat = arg1;
+            break;
+        default: return BAD_VALUE;
+     };
+     return OK;
+}
+#endif
 
 status_t SurfaceTexture::setScalingMode(int mode) {
     ST_LOGV("setScalingMode: mode=%d", mode);
@@ -754,7 +844,7 @@ status_t SurfaceTexture::setScalingMode(int mode) {
     return OK;
 }
 
-status_t SurfaceTexture::updateTexImage() {
+status_t SurfaceTexture::updateTexImage(bool isComposition) {
     ST_LOGV("updateTexImage");
     Mutex::Autolock lock(mMutex);
 
@@ -772,6 +862,9 @@ status_t SurfaceTexture::updateTexImage() {
         // Update the GL texture object.
         EGLImageKHR image = mSlots[buf].mEglImage;
         EGLDisplay dpy = eglGetCurrentDisplay();
+#ifdef QCOM_HARDWARE
+        if (isGPUSupportedFormat(mSlots[buf].mGraphicBuffer->format)) {
+#endif
         if (image == EGL_NO_IMAGE_KHR) {
             if (mSlots[buf].mGraphicBuffer == 0) {
                 ST_LOGE("buffer at slot %d is null", buf);
@@ -780,6 +873,18 @@ status_t SurfaceTexture::updateTexImage() {
             image = createImage(dpy, mSlots[buf].mGraphicBuffer);
             mSlots[buf].mEglImage = image;
             mSlots[buf].mEglDisplay = dpy;
+
+#ifdef DECIDE_TEXTURE_TARGET
+            // GPU is not efficient in handling GL_TEXTURE_EXTERNAL_OES
+            // texture target. Depending on the image format, decide,
+            // the texture target to be used
+
+            if (isComposition) {
+                mTexTarget =
+                   decideTextureTarget (mSlots[buf].mGraphicBuffer->format);
+            }
+#endif
+
             if (image == EGL_NO_IMAGE_KHR) {
                 // NOTE: if dpy was invalid, createImage() is guaranteed to
                 // fail. so we'd end up here.
@@ -804,7 +909,9 @@ status_t SurfaceTexture::updateTexImage() {
         if (failed) {
             return -EINVAL;
         }
-
+#ifdef QCOM_HARDWARE
+        }
+#endif
         if (mCurrentTexture != INVALID_BUFFER_SLOT) {
             if (mUseFenceSync) {
                 EGLSyncKHR fence = eglCreateSyncKHR(dpy, EGL_SYNC_FENCE_KHR,
@@ -863,17 +970,13 @@ bool SurfaceTexture::isExternalFormat(uint32_t format)
     case HAL_PIXEL_FORMAT_YCbCr_422_SP:
     case HAL_PIXEL_FORMAT_YCrCb_420_SP:
     case HAL_PIXEL_FORMAT_YCbCr_422_I:
-        LOGD("%s: format=%u true", __FUNCTION__, format);
         return true;
     }
 
     // Any OEM format needs to be considered
-    if (format>=0x100 && format<=0x1FF) {
-        LOGD("%s: format=%u true", __FUNCTION__, format);
+    if (format>=0x100 && format<=0x1FF)
         return true;
-    }
 
-    LOGD("%s: format=%u false", __FUNCTION__, format);
     return false;
 }
 
@@ -887,7 +990,7 @@ void SurfaceTexture::getTransformMatrix(float mtx[16]) {
 }
 
 void SurfaceTexture::computeCurrentTransformMatrix() {
-    ST_LOGV("%s: mCurrentTransform=0x%x", __FUNCTION__, mCurrentTransform);
+    ST_LOGV("computeCurrentTransformMatrix");
 
     float xform[16];
     for (int i = 0; i < 16; i++) {
@@ -1008,27 +1111,28 @@ void SurfaceTexture::freeAllBuffersLocked() {
     for (int i = 0; i < NUM_BUFFER_SLOTS; i++) {
         freeBufferLocked(i);
     }
+#ifdef QCOM_HARDWARE
+    mGraphicBufferAlloc->freeAllGraphicBuffersExcept(-1);
+#endif
 }
 
 void SurfaceTexture::freeAllBuffersExceptHeadLocked() {
     LOGW_IF(!mQueue.isEmpty(),
             "freeAllBuffersExceptCurrentLocked called but mQueue is not empty");
-    int head = INVALID_BUFFER_SLOT;
+    int head = -1;
     if (!mQueue.empty()) {
         Fifo::iterator front(mQueue.begin());
         head = *front;
     }
-    mCurrentTexture = head;
+    mCurrentTexture = INVALID_BUFFER_SLOT;
     for (int i = 0; i < NUM_BUFFER_SLOTS; i++) {
         if (i != head) {
             freeBufferLocked(i);
         }
     }
-}
-
-void SurfaceTexture::freeAllBuffersExceptCurrentLocked() {
-    LOGW("freeAllBuffersExceptCurrentLocked is deprecated !");
-    freeAllBuffersExceptHeadLocked();
+#ifdef QCOM_HARDWARE
+    mGraphicBufferAlloc->freeAllGraphicBuffersExcept(head);
+#endif
 }
 
 status_t SurfaceTexture::drainQueueLocked() {
@@ -1123,6 +1227,11 @@ int SurfaceTexture::query(int what, int* outValue)
         value = mSynchronousMode ?
                 (MIN_UNDEQUEUED_BUFFERS-1) : MIN_UNDEQUEUED_BUFFERS;
         break;
+#ifdef QCOM_HARDWARE
+    case NATIVE_WINDOW_NUM_BUFFERS:
+        value = mBufferCount;
+        break;
+#endif
     default:
         return BAD_VALUE;
     }
