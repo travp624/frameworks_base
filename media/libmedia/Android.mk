@@ -9,6 +9,7 @@ else
 LOCAL_SRC_FILES:= \
     AudioParameter.cpp
 endif
+
 LOCAL_MODULE:= libmedia_helper
 LOCAL_MODULE_TAGS := optional
 
@@ -57,19 +58,20 @@ ifeq ($(BOARD_USES_AUDIO_LEGACY),true)
         AudioParameter.cpp
 
     LOCAL_CFLAGS += -DUSES_AUDIO_LEGACY
-    ifeq ($(BOARD_USE_KINETO_COMPATIBILITY),true)
-        LOCAL_CFLAGS += -DUSE_KINETO_COMPATIBILITY
-    endif
 endif
 
-ifeq ($(BOARD_USE_YAMAHAPLAYER),true)
-    LOCAL_CFLAGS += -DYAMAHAPLAYER
+ifeq ($(BOARD_USE_KINETO_COMPATIBILITY),true)
+    LOCAL_CFLAGS += -DUSE_KINETO_COMPATIBILITY
+endif
+
+ifeq ($(BOARD_USE_SAMSUNG_SEPARATEDSTREAM),true)
+    LOCAL_CFLAGS += -DUSE_SAMSUNG_SEPARATEDSTREAM
 endif
 
 LOCAL_SHARED_LIBRARIES := \
-	libui libcutils libutils libbinder libsonivox libicuuc libexpat \
-        libcamera_client libstagefright_foundation \
-        libgui libdl
+    libui libcutils libutils libbinder libsonivox libicuuc libexpat \
+    libcamera_client libstagefright_foundation \
+    libgui libdl
 
 
 LOCAL_WHOLE_STATIC_LIBRARY := libmedia_helper

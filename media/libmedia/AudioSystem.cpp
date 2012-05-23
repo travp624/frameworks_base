@@ -921,7 +921,7 @@ extern "C" bool _ZN7android11AudioSystem20isBluetoothScoDeviceENS0_13audio_devic
 
 extern "C" status_t _ZN7android11AudioSystem24setDeviceConnectionStateENS0_13audio_devicesENS0_23device_connection_stateEPKc(audio_devices_t device,
                                                audio_policy_dev_state_t state,
-                                               const char *device_address) 
+                                               const char *device_address)
 {
     return AudioSystem::setDeviceConnectionState(device, state, device_address);
 }
@@ -930,7 +930,7 @@ extern "C" audio_io_handle_t _ZN7android11AudioSystem9getOutputENS0_11stream_typ
                                     uint32_t samplingRate,
                                     uint32_t format,
                                     uint32_t channels,
-                                    audio_policy_output_flags_t flags) 
+                                    audio_policy_output_flags_t flags)
 {
    return AudioSystem::getOutput(stream,samplingRate,format,channels>>2,flags);
 }
@@ -954,7 +954,7 @@ extern "C" bool _ZN7android11AudioSystem15isLowVisibilityENS0_11stream_typeE(aud
 
 #endif /* USES_AUDIO_LEGACY */
 
-#ifdef YAMAHAPLAYER
+#ifdef USE_SAMSUNG_SEPARATEDSTREAM
 extern "C" bool _ZN7android11AudioSystem17isSeparatedStreamE19audio_stream_type_t(audio_stream_type_t stream)
 {
     LOGD("android::AudioSystem::isSeparatedStream(audio_stream_type_t) called!");
@@ -972,6 +972,6 @@ extern "C" bool _ZN7android11AudioSystem17isSeparatedStreamE19audio_stream_type_
     LOGD("isSeparatedStream: false");
     return false;
 }
-#endif // YAMAHAPLAYER
+#endif // USE_SAMSUNG_SEPARATEDSTREAM
 
 }; // namespace android

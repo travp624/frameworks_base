@@ -38,8 +38,6 @@
 #include <utils/Errors.h>
 #include <utils/Log.h>
 #include <utils/String16.h>
-#include <cutils/properties.h>
-
 #include <system/camera.h>
 #include "CameraService.h"
 #include "CameraHardwareInterface.h"
@@ -69,6 +67,23 @@ static int getCallingUid() {
 }
 
 // ----------------------------------------------------------------------------
+
+#if defined(BOARD_HAVE_HTC_FFC)
+#define HTC_SWITCH_CAMERA_FILE_PATH "/sys/android_camera2/htcwc"
+static void htcCameraSwitch(int cameraId)
+{
+    char buffer[16];
+    int fd;
+
+    if (access(HTC_SWITCH_CAMERA_FILE_PATH, W_OK) == 0) {
+        snprintf(buffer, sizeof(buffer), "%d", cameraId);
+
+        fd = open(HTC_SWITCH_CAMERA_FILE_PATH, O_WRONLY);
+        write(fd, buffer, strlen(buffer));
+        close(fd);
+    }
+}
+#endif
 
 // This is ugly and only safe if we never re-create the CameraService, but
 // should be ok for now.
@@ -160,6 +175,10 @@ sp<ICamera> CameraService::connect(
         LOGI("Camera is disabled. connect X (pid %d) rejected", callingPid);
         return NULL;
     }
+
+#if defined(BOARD_HAVE_HTC_FFC)
+    htcCameraSwitch(cameraId);
+#endif
 
     Mutex::Autolock lock(mServiceLock);
     if (mClient[cameraId] != 0) {
@@ -303,17 +322,8 @@ void CameraService::loadSound() {
     LOG1("CameraService::loadSound ref=%d", mSoundRef);
     if (mSoundRef++) return;
 
-    char value[PROPERTY_VALUE_MAX];
-    property_get("persist.sys.camera-sound", value, "1");
-    int enableSound = atoi(value);
-
-    if(enableSound) {
-        mSoundPlayer[SOUND_SHUTTER] = newMediaPlayer("/system/media/audio/ui/camera_click.ogg");
-        mSoundPlayer[SOUND_RECORDING] = newMediaPlayer("/system/media/audio/ui/VideoRecord.ogg");
-    } else {
-        mSoundPlayer[SOUND_SHUTTER] = NULL;
-        mSoundPlayer[SOUND_RECORDING] = NULL;
-    }
+    mSoundPlayer[SOUND_SHUTTER] = newMediaPlayer("/system/media/audio/ui/camera_click.ogg");
+    mSoundPlayer[SOUND_RECORDING] = newMediaPlayer("/system/media/audio/ui/VideoRecord.ogg");
 }
 
 void CameraService::releaseSound() {
@@ -355,6 +365,7 @@ CameraService::Client::Client(const sp<CameraService>& cameraService,
     mCameraFacing = cameraFacing;
     mClientPid = clientPid;
     mMsgEnabled = 0;
+    mburstCnt = 0;
     mSurface = 0;
     mPreviewWindow = 0;
     mHardware->setCallbacks(notifyCallback,
@@ -612,6 +623,7 @@ void CameraService::Client::setPreviewCallbackFlag(int callback_flag) {
 // start preview mode
 status_t CameraService::Client::startPreview() {
     LOG1("startPreview (pid %d)", getCallingPid());
+    enableMsgType(CAMERA_MSG_PREVIEW_METADATA);
     return startCameraMode(CAMERA_PREVIEW_MODE);
 }
 
@@ -697,6 +709,7 @@ status_t CameraService::Client::startRecordingMode() {
 // stop preview mode
 void CameraService::Client::stopPreview() {
     LOG1("stopPreview (pid %d)", getCallingPid());
+    disableMsgType(CAMERA_MSG_PREVIEW_METADATA);
     Mutex::Autolock lock(mLock);
     if (checkPidAndHardware() != NO_ERROR) return;
 
@@ -796,9 +809,11 @@ status_t CameraService::Client::takePicture(int msgType) {
                            CAMERA_MSG_RAW_IMAGE |
                            CAMERA_MSG_RAW_IMAGE_NOTIFY |
                            CAMERA_MSG_COMPRESSED_IMAGE);
-
+    disableMsgType(CAMERA_MSG_PREVIEW_METADATA);
     enableMsgType(picMsgType);
-
+    mburstCnt = mHardware->getParameters().getInt("num-snaps-per-shutter");
+    if(mburstCnt <= 0) mburstCnt = 1;
+    LOG1("mburstCnt = %d", mburstCnt);
     return mHardware->takePicture();
 }
 
@@ -888,6 +903,13 @@ status_t CameraService::Client::sendCommand(int32_t cmd, int32_t arg1, int32_t a
     } else if (cmd == CAMERA_CMD_PLAY_RECORDING_SOUND) {
         mCameraService->playSound(SOUND_RECORDING);
     }
+    else if (cmd == CAMERA_CMD_HISTOGRAM_ON ) {
+        enableMsgType(CAMERA_MSG_STATS_DATA);
+    }
+    else if (cmd ==  CAMERA_CMD_HISTOGRAM_OFF) {
+        disableMsgType(CAMERA_MSG_STATS_DATA);
+    }
+
 
     return mHardware->sendCommand(cmd, arg1, arg2);
 }
@@ -1003,7 +1025,7 @@ void CameraService::Client::dataCallback(int32_t msgType,
 
     if (dataPtr == 0 && metadata == NULL) {
         LOGE("Null data returned in data callback");
-        client->handleGenericNotify(CAMERA_MSG_ERROR, UNKNOWN_ERROR, 0);
+        client->handleGenericNotify(CAMERA_MSG_ERROR, CAMERA_ERROR_UNKNOWN, 0);
         return;
     }
 
@@ -1134,8 +1156,12 @@ void CameraService::Client::handleRawPicture(const sp<IMemory>& mem) {
 
 // picture callback - compressed picture ready
 void CameraService::Client::handleCompressedPicture(const sp<IMemory>& mem) {
-    disableMsgType(CAMERA_MSG_COMPRESSED_IMAGE);
+    if (mburstCnt) mburstCnt--;
 
+    if (!mburstCnt) {
+        LOG1("mburstCnt = %d", mburstCnt);
+        disableMsgType(CAMERA_MSG_COMPRESSED_IMAGE);
+    }
     sp<ICameraClient> c = mCameraClient;
     mLock.unlock();
     if (c != 0) {

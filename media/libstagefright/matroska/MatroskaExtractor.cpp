@@ -319,6 +319,10 @@ void BlockIterator::seek(int64_t seekTimeUs, bool seekToKeyFrame) {
         while (!eos() && !mBlockEntry->GetBlock()->IsKey()) {
             advance_l();
         }
+    } else {
+        while (!eos() && blockTimeUs() < seekTimeUs) {
+	    advance_l();
+        }
     }
 }
 
@@ -371,7 +375,7 @@ status_t MatroskaSource::readBlock() {
     int64_t timeUs = mBlockIter.blockTimeUs();
     int frameCount = block->GetFrameCount();
 
-    for (int i = 0; i < block->GetFrameCount(); ++i) {
+    for (int i = 0; i < frameCount; ++i) {
         const mkvparser::Block::Frame &frame = block->GetFrame(i);
 
         MediaBuffer *mbuf = new MediaBuffer(frame.len);

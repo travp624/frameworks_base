@@ -30,7 +30,7 @@ commonSources:= \
 	LinearTransform.cpp \
 	ObbFile.cpp \
 	PropertyMap.cpp \
-    PackageRedirectionMap.cpp \
+	PackageRedirectionMap.cpp \
 	RefBase.cpp \
 	ResourceTypes.cpp \
 	SharedBuffer.cpp \
@@ -54,41 +54,30 @@ commonSources:= \
 	../../tools/aapt/ZipEntry.cpp \
 	misc.cpp
 
-host_commonCflags := -DLIBUTILS_NATIVE=1 $(TOOL_CFLAGS)
+
+# For the host
+# =====================================================
+
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES:= $(commonSources)
+
+LOCAL_MODULE:= libutils
+
+LOCAL_CFLAGS += -DLIBUTILS_NATIVE=1 $(TOOL_CFLAGS)
+LOCAL_C_INCLUDES += external/zlib
 
 ifeq ($(HOST_OS),windows)
 ifeq ($(strip $(USE_CYGWIN),),)
 # Under MinGW, ctype.h doesn't need multi-byte support
-host_commonCflags += -DMB_CUR_MAX=1
+LOCAL_CFLAGS += -DMB_CUR_MAX=1
 endif
 endif
-
-host_commonLdlibs :=
 
 ifeq ($(TARGET_OS),linux)
-host_commonLdlibs += -lrt -ldl
+LOCAL_LDLIBS += -lrt -ldl
 endif
 
-
-# For the host
-# =====================================================
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES:= $(commonSources)
-LOCAL_MODULE:= libutils
-LOCAL_CFLAGS += $(host_commonCflags)
-LOCAL_LDLIBS += $(host_commonLdlibs)
-LOCAL_C_INCLUDES += external/zlib
-include $(BUILD_HOST_STATIC_LIBRARY)
-
-
-# For the host, 64-bit
-# =====================================================
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES:= $(commonSources)
-LOCAL_MODULE:= lib64utils
-LOCAL_CFLAGS += $(host_commonCflags) -m64
-LOCAL_LDLIBS += $(host_commonLdlibs)
-LOCAL_C_INCLUDES += external/zlib
 include $(BUILD_HOST_STATIC_LIBRARY)
 
 

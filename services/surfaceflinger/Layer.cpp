@@ -41,10 +41,10 @@
 
 #ifdef QCOM_HARDWARE
 #include <qcom_ui.h>
+#define SHIFT_SRC_TRANSFORM 4
 #endif
 
 #define DEBUG_RESIZE    0
-
 
 namespace android {
 
@@ -93,7 +93,11 @@ void Layer::onFirstRef()
     mSurfaceTexture = new SurfaceTextureLayer(mTextureName, this);
     mSurfaceTexture->setFrameAvailableListener(new FrameQueuedListener(this));
     mSurfaceTexture->setSynchronousMode(true);
+#ifdef QCOM_HARDWARE
+    mSurfaceTexture->setBufferCountServer(BUFFER_COUNT_SERVER);
+#else
     mSurfaceTexture->setBufferCountServer(2);
+#endif
 }
 
 Layer::~Layer()
@@ -178,10 +182,14 @@ status_t Layer::setBuffers( uint32_t w, uint32_t h,
     mSurfaceTexture->setDefaultBufferSize(w, h);
     mSurfaceTexture->setDefaultBufferFormat(format);
 
-    // we use the red index
-    int displayRedSize = displayInfo.getSize(PixelFormatInfo::INDEX_RED);
-    int layerRedsize = info.getSize(PixelFormatInfo::INDEX_RED);
-    mNeedsDithering = layerRedsize > displayRedSize;
+    if (mFlinger->getUseDithering()) {
+        // we use the red index
+        int displayRedSize = displayInfo.getSize(PixelFormatInfo::INDEX_RED);
+        int layerRedsize = info.getSize(PixelFormatInfo::INDEX_RED);
+        mNeedsDithering = layerRedsize > displayRedSize;
+    } else {
+        mNeedsDithering = false;
+    }
 
     return NO_ERROR;
 }
@@ -231,6 +239,12 @@ void Layer::setGeometry(hwc_layer_t* hwcl)
         hwcl->flags = HWC_SKIP_LAYER;
     } else {
         hwcl->transform = finalTransform;
+#ifdef QCOM_HARDWARE
+        //mBufferTransform will have the srcTransform
+        //include src and final transform in the hwcl->transform
+        hwcl->transform = (( bufferOrientation.getOrientation() <<
+                                       SHIFT_SRC_TRANSFORM) | hwcl->transform);
+#endif
     }
 
     if (isCropped()) {
@@ -264,6 +278,7 @@ void Layer::setPerFrameData(hwc_layer_t* hwcl) {
         hwcl->handle = buffer->handle;
     }
 #ifdef QCOM_HARDWARE
+    updateLayerQcomFlags(LAYER_ASYNCHRONOUS_STATUS, !mSurfaceTexture->isSynchronousMode(), mLayerQcomFlags);
     hwcl->flags = getPerFrameFlags(hwcl->flags, mLayerQcomFlags);
 #endif
 }
@@ -293,7 +308,11 @@ void Layer::onDraw(const Region& clip) const
         // if not everything below us is covered, we plug the holes!
         Region holes(clip.subtract(under));
         if (!holes.isEmpty()) {
+#ifdef SAMSUNG_CODEC_SUPPORT
+            clearWithOpenGL(holes, 0, 0, 0, 0);
+#else
             clearWithOpenGL(holes, 0, 0, 0, 1);
+#endif
         }
         return;
     }
@@ -353,10 +372,27 @@ void Layer::onDraw(const Region& clip) const
 #endif
     }
 
+#ifdef QCOM_HARDWARE
+    if(needsDithering()) {
+        glEnable(GL_DITHER);
+    }
+
+    int composeS3DFormat = mQCLayer->needsS3DCompose();
+    if (composeS3DFormat)
+        drawS3DUIWithOpenGL(clip);
+    else
+        drawWithOpenGL(clip);
+#else
     drawWithOpenGL(clip);
+#endif
 
     glDisable(GL_TEXTURE_EXTERNAL_OES);
     glDisable(GL_TEXTURE_2D);
+#ifdef QCOM_HARDWARE
+    if(needsDithering()) {
+        glDisable(GL_DITHER);
+    }
+#endif
 }
 
 // As documented in libhardware header, formats in the range
@@ -485,6 +521,13 @@ void Layer::lockPageFlip(bool& recomputeVisibleRegions)
 #endif
         // update the active buffer
         mActiveBuffer = mSurfaceTexture->getCurrentBuffer();
+
+#ifdef QCOM_HARDWARE
+        //Buffer validity changed. Reset HWC geometry flags.
+        if(oldActiveBuffer == NULL && mActiveBuffer != NULL) {
+            mFlinger->invalidateHwcGeometry();
+        }
+#endif
 
         const Rect crop(mSurfaceTexture->getCurrentCrop());
         const uint32_t transform(mSurfaceTexture->getCurrentTransform());

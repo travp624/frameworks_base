@@ -174,6 +174,18 @@ public:
         }
         return result != 0;
     }
+
+#ifdef QCOM_HDMI_OUT
+    virtual void enableExternalDisplay(int disp_type, int enable)
+    {
+        Parcel data, reply;
+        data.writeInterfaceToken(ISurfaceComposer::getInterfaceDescriptor());
+        data.writeInt32(disp_type);
+        data.writeInt32(enable);
+        remote()->transact(BnSurfaceComposer::EXTERNAL_DISPLAY, data, &reply);
+    }
+#endif
+
 };
 
 IMPLEMENT_META_INTERFACE(SurfaceComposer, "android.ui.ISurfaceComposer");
@@ -254,6 +266,14 @@ status_t BnSurfaceComposer::onTransact(
             int32_t result = authenticateSurfaceTexture(surfaceTexture) ? 1 : 0;
             reply->writeInt32(result);
         } break;
+#ifdef QCOM_HDMI_OUT
+        case EXTERNAL_DISPLAY: {
+            CHECK_INTERFACE(ISurfaceComposer, data, reply);
+            int disp_type = data.readInt32();
+            int enable = data.readInt32();
+            enableExternalDisplay(disp_type, enable);
+        } break;
+#endif
         default:
             return BBinder::onTransact(code, data, reply, flags);
     }

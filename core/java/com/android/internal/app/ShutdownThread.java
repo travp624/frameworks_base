@@ -364,6 +364,47 @@ public final class ShutdownThread extends Thread {
         }
 
         SystemProperties.set(RADIO_SHUTDOWN_PROPERTY, "true");
+
+        if (SystemProperties.QCOM_HARDWARE) {
+            Log.i(TAG, "Waiting for radio file system sync to complete ...");
+
+            // Wait a max of 8 seconds
+            for (int i = 0; i < MAX_NUM_PHONE_STATE_READS; i++) {
+                if (!msmEfsSyncDone) {
+                    try {
+                        FileInputStream fis = new FileInputStream(SYSFS_MSM_EFS_SYNC_COMPLETE);
+                        int result = fis.read();
+                        fis.close();
+                        if (result == '1') {
+                            msmEfsSyncDone = true;
+                        }
+                    } catch (Exception ex) {
+                        Log.e(TAG, "Exception during msmEfsSyncDone", ex);
+                        msmEfsSyncDone = true;
+                    }
+                }
+                if (!mdmEfsSyncDone) {
+                    try {
+                        FileInputStream fis = new FileInputStream(SYSFS_MDM_EFS_SYNC_COMPLETE);
+                        int result = fis.read();
+                        fis.close();
+                        if (result == '1') {
+                            mdmEfsSyncDone = true;
+                        }
+                    } catch (Exception ex) {
+                        Log.e(TAG, "Exception during mdmEfsSyncDone", ex);
+                        mdmEfsSyncDone = true;
+                    }
+                }
+                if (msmEfsSyncDone && mdmEfsSyncDone) {
+                    Log.i(TAG, "Radio file system sync complete.");
+                    break;
+                }
+                Log.i(TAG, "Radio file system sync incomplete - retry.");
+                SystemClock.sleep(PHONE_STATE_POLL_SLEEP_MSEC);
+            }
+        }
+
         Log.i(TAG, "Waiting for Bluetooth and Radio...");
         
         // Wait a max of 32 seconds for clean shutdown

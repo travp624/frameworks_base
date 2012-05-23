@@ -2776,7 +2776,12 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
         return 0;
     }
     Mutex::Autolock _l(mLock);
-    mBuffers.add(graphicBuffer);
+    if (-1 != mFreedIndex) {
+        mBuffers.insertAt(graphicBuffer, mFreedIndex);
+        mFreedIndex = -1;
+    } else {
+        mBuffers.add(graphicBuffer);
+    }
 #endif
     return graphicBuffer;
 }
