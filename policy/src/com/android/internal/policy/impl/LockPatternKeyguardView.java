@@ -265,7 +265,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
             // If there's not a bg protection view containing the transport,
             // then show a black
             // background. Otherwise, allow the normal background to show.
-            if (findViewById(R.id.transport_bg_protect) == null) {
+            if ((findViewById(R.id.transport_bg_protect) == null) && !mUseOldMusic) {
                 // TODO: We should disable the wallpaper instead
                 setBackgroundColor(0xff000000);
             } else {
