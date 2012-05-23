@@ -22,11 +22,10 @@ import com.android.internal.database.SortCursor;
 import android.annotation.SdkConstant;
 import android.annotation.SdkConstant.SdkConstantType;
 import android.app.Activity;
+import android.content.ContentUris;
 import android.app.ProfileGroup;
 import android.app.ProfileManager;
-import android.content.ContentUris;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
@@ -78,7 +77,7 @@ public class RingtoneManager {
      * All types of sounds.
      */
     public static final int TYPE_ALL = TYPE_RINGTONE | TYPE_NOTIFICATION | TYPE_ALARM;
-
+    
     // </attr>
 
     /**
@@ -103,7 +102,7 @@ public class RingtoneManager {
      */
     public static final String EXTRA_RINGTONE_SHOW_DEFAULT =
             "android.intent.extra.ringtone.SHOW_DEFAULT";
-
+    
     /**
      * Given to the ringtone picker as a boolean. Whether to show an item for
      * "Silent". If the "Silent" item is picked,
@@ -119,7 +118,7 @@ public class RingtoneManager {
      */
     public static final String EXTRA_RINGTONE_INCLUDE_DRM =
             "android.intent.extra.ringtone.INCLUDE_DRM";
-
+    
     /**
      * Given to the ringtone picker as a {@link Uri}. The {@link Uri} of the
      * current ringtone, which will be used to show a checkmark next to the item
@@ -162,7 +161,7 @@ public class RingtoneManager {
      * in most cases.
      */
     public static final String EXTRA_RINGTONE_TITLE = "android.intent.extra.ringtone.TITLE";
-
+    
     /**
      * Returned from the ringtone picker as a {@link Uri}.
      * <p>
@@ -184,7 +183,7 @@ public class RingtoneManager {
     public static final String THEME_AUTHORITY = "com.tmobile.thememanager.packageresources";
 
     // Make sure the column ordering and then ..._COLUMN_INDEX are in sync
-
+    
     private static final String[] INTERNAL_COLUMNS = new String[] {
         MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE,
         "\"" + MediaStore.Audio.Media.INTERNAL_CONTENT_URI + "/\" || " + MediaStore.Audio.Media._ID,
@@ -223,7 +222,7 @@ public class RingtoneManager {
 
     private Activity mActivity;
     private Context mContext;
-    
+
     private Cursor mCursor;
 
     private int mType = TYPE_RINGTONE;
@@ -233,7 +232,7 @@ public class RingtoneManager {
      * be true (value of 1) for the row to be returned.
      */
     private List<String> mFilterColumns = new ArrayList<String>();
-
+    
     private boolean mStopPreviousRingtone = true;
     private Ringtone mPreviousRingtone;
 
@@ -369,7 +368,7 @@ public class RingtoneManager {
         if (mCursor != null && mCursor.requery()) {
             return mCursor;
         }
-
+        
         final Cursor internalCursor = getInternalRingtones();
         final Cursor drmCursor = mIncludeDrm ? getDrmRingtones() : null;
         final Cursor mediaCursor = getMediaRingtones();
@@ -392,7 +391,7 @@ public class RingtoneManager {
         if (mStopPreviousRingtone && mPreviousRingtone != null) {
             mPreviousRingtone.stop();
         }
-
+        
         mPreviousRingtone = getRingtone(mContext, getRingtoneUri(position), inferStreamType());
         return mPreviousRingtone;
     }
@@ -424,12 +423,12 @@ public class RingtoneManager {
      * @return The position of the {@link Uri}, or -1 if it cannot be found.
      */
     public int getRingtonePosition(Uri ringtoneUri) {
-
+        
         if (ringtoneUri == null) return -1;
         
         final Cursor cursor = getCursor();
         final int cursorCount = cursor.getCount();
-
+        
         if (!cursor.moveToFirst()) {
             return -1;
         }
