@@ -180,40 +180,34 @@
                 android:text="@*android:string/lockscreen_emergency_call"
                 android:visibility="gone" />
 
-            <RelativeLayout
+            <com.android.internal.widget.SlidingTab
+                android:id="@+id/unlock_widget2"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="302dip">
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="155dip" />
 
-                <com.android.internal.widget.SlidingTab
-                    android:id="@+id/unlock_widget2"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="155dip" />
+            <com.android.internal.widget.SlidingTab
+                android:id="@+id/unlock_widget"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="60dip" />
 
-                <com.android.internal.widget.SlidingTab
-                    android:id="@+id/unlock_widget"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="60dip" />
-
-                <TextView
-                    android:id="@+id/carrier"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="12dip"
-                    android:gravity="center_horizontal"
-                    android:singleLine="true"
-                    android:ellipsize="marquee"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-                    android:textColor="?android:attr/textColorSecondary" />
-
-            </RelativeLayout>
+            <TextView
+                android:id="@+id/carrier"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="12dip"
+                android:gravity="center_horizontal"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+                android:textColor="?android:attr/textColorSecondary" />
 
             <LinearLayout
                 android:orientation="horizontal"

@@ -180,44 +180,38 @@
                 android:text="@*android:string/lockscreen_emergency_call"
                 android:visibility="gone" />
 
-            <RelativeLayout
+            <com.android.internal.widget.multiwaveview.MultiWaveView
+                android:id="@+id/unlock_widget"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="302dip">
+                android:layout_height="302dip"
+                android:layout_alignParentBottom="true"
+                android:targetDrawables="@array/lockscreen_targets_with_camera"
+                android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
+                android:directionDescriptions="@array/lockscreen_direction_descriptions"
+                android:handleDrawable="@drawable/ic_lockscreen_handle"
+                android:waveDrawable="@drawable/ic_lockscreen_outerring"
+                android:outerRadius="@dimen/multiwaveview_target_placement_radius"
+                android:snapMargin="@dimen/multiwaveview_snap_margin"
+                android:hitRadius="@dimen/multiwaveview_hit_radius"
+                android:rightChevronDrawable="@drawable/ic_lockscreen_chevron_right"
+                android:horizontalOffset="0dip"
+                android:verticalOffset="60dip"
+                android:feedbackCount="3"
+                android:vibrationDuration="20" />
 
-                <com.android.internal.widget.multiwaveview.MultiWaveView
-                    android:id="@+id/unlock_widget"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentBottom="true"
-                    android:targetDrawables="@array/lockscreen_targets_with_camera"
-                    android:targetDescriptions="@array/lockscreen_target_descriptions_with_camera"
-                    android:directionDescriptions="@array/lockscreen_direction_descriptions"
-                    android:handleDrawable="@drawable/ic_lockscreen_handle"
-                    android:waveDrawable="@drawable/ic_lockscreen_outerring"
-                    android:outerRadius="@dimen/multiwaveview_target_placement_radius"
-                    android:snapMargin="@dimen/multiwaveview_snap_margin"
-                    android:hitRadius="@dimen/multiwaveview_hit_radius"
-                    android:rightChevronDrawable="@drawable/ic_lockscreen_chevron_right"
-                    android:horizontalOffset="0dip"
-                    android:verticalOffset="60dip"
-                    android:feedbackCount="3"
-                    android:vibrationDuration="20" />
-
-                <TextView
-                    android:id="@+id/carrier"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="12dip"
-                    android:gravity="center_horizontal"
-                    android:singleLine="true"
-                    android:ellipsize="marquee"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-                    android:textColor="?android:attr/textColorSecondary" />
-
-            </RelativeLayout>
+            <TextView
+                android:id="@+id/carrier"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="12dip"
+                android:gravity="center_horizontal"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
+                android:textColor="?android:attr/textColorSecondary" />
 
             <LinearLayout
                 android:orientation="horizontal"
