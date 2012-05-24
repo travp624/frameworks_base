@@ -812,4 +812,7 @@
     <!-- Configure ring lockscreen center secondary ring(s) offset -->
     <integer name="config_ringSecCenterOffsetDIP">30</integer>
 
+    <!-- Always show the mobile signal drawables -->
+    <bool name="config_hideMobileSignalOnWifi">false</bool>
+
 </resources>
