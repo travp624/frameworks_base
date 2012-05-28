@@ -101,7 +101,7 @@
 
     <!-- Label in system panel saying the device will use the orientation sensor to rotate [CHAR LIMIT=30] -->
     <string name="status_bar_settings_auto_rotation">Auto-rotate screen</string>
-    
+
     <!-- Label in drop down to identify brightness slider -->
     <string name="brightness_label">Brightness</string>
 
@@ -395,7 +395,7 @@
     <string name="weatherpanel_slash">/</string>
     
     <string name="toggle_navbar">Toggle NavBar</string>
-
+    
 	<!-- Title for the pseudo-notification shown when notifications are disabled (do-not-disturb
          mode) -->
     <string name="notifications_off_title">Notifications off</string>
