@@ -1358,7 +1358,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     }
 
     private Drawable resize(Drawable image) {
-        int size = 50;
+        int size = 40;
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());
 
         Bitmap d = ((BitmapDrawable) image).getBitmap();
