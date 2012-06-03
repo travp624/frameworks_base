@@ -26,8 +26,12 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.R;
 
-public class ExtensibleKeyButtonView extends KeyButtonView {
 
+import com.android.systemui.statusbar.phone.NavigationBarView;
+import com.android.systemui.statusbar.policy.KeyButtonView;
+
+public class ExtensibleKeyButtonView extends KeyButtonView {
+	
 	final static String ACTION_HOME = "**home**";
 	final static String ACTION_BACK = "**back**";
 	final static String ACTION_SEARCH = "**search**";
@@ -36,15 +40,16 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
 	final static String ACTION_RECENTS = "**recents**";
 	final static String ACTION_KILL = "**kill**";
 	final static String ACTION_NULL = "**null**";
+	final static String ACTION_WIDGETS = "**widgets**";
 
     private static final String TAG = "Key.Ext";
 
     IStatusBarService mBarService;
-
+    
     public String mClickAction, mLongpress;
-
+    
     public Handler mHandler;
-
+    
     public int mInjectKeycode;
 
     public ExtensibleKeyButtonView(Context context, AttributeSet attrs) {
@@ -53,7 +58,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
 
     public ExtensibleKeyButtonView(Context context, AttributeSet attrs, String ClickAction, String Longpress) {
         super(context, attrs);
-
+        
         mHandler = new Handler();
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
@@ -75,7 +80,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         		setId(R.id.menu_big);
         	} else if (ClickAction.equals(ACTION_POWER)) {
         		setCode (KeyEvent.KEYCODE_POWER);
-        	} else { // the remaining options need to be handled by OnClick;
+            } else { // the remaining options need to be handled by OnClick;
         		setOnClickListener(mClickListener);
         		if (ClickAction.equals(ACTION_RECENTS))
         			setId(R.id.recent_apps);
@@ -90,7 +95,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         		setOnLongClickListener(mLongPressListener);
         	}
     }
-
+        
     public void injectKeyDelayed(int keycode){
         mInjectKeycode = keycode;
         mHandler.removeCallbacks(onInjectKeyDelayed);
@@ -107,7 +112,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         	}
         }
     };
-
+ 
     Runnable mKillTask = new Runnable() {
         public void run() {
             try {
@@ -133,30 +138,34 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
             }
         }
     };
-
+    
     private OnClickListener mClickListener = new OnClickListener() {
 
         @Override
         public void onClick(View v) {
         	// the other consts were handled by keycode.  
-
+        	
         	if (mClickAction.equals(ACTION_NULL)) {
         		// who would set a button with no ClickAction?  
         		// Stranger things have happened.
         		return;
-
+        		
         	} else if (mClickAction.equals(ACTION_RECENTS)) {
         		try {
                     mBarService.toggleRecentApps();
                 } catch (RemoteException e) {            	
                 }
                 return;
-
+        		
         	} else if (mClickAction.equals(ACTION_KILL)) {
-
+        		
         		mHandler.postDelayed(mKillTask, ViewConfiguration.getGlobalActionKeyTimeout());
         		return;
-
+        		
+        	} else if (mClickAction.equals(ACTION_WIDGETS)) {
+        		Intent toggleWidgets = new Intent(
+                        NavigationBarView.WidgetReceiver.ACTION_TOGGLE_WIDGETS);
+                mContext.sendBroadcast(toggleWidgets);
         	} else {  // we must have a custom uri
         		 try {
                      Intent intent = Intent.parseUri(mClickAction, 0);
@@ -171,7 +180,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
             return;
         }
     };
-
+    
     private OnLongClickListener mLongPressListener = new OnLongClickListener() {
 
         @Override
@@ -182,7 +191,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         	if (mLongpress.equals(ACTION_NULL)) {
         		// attempt to keep long press functionality of 'keys' if
         		// they haven't been overridden.
-        		return true;
+                return true;
         	} else if (mLongpress.equals(ACTION_HOME)) {
         		injectKeyDelayed(KeyEvent.KEYCODE_HOME);
         		return true;
@@ -201,6 +210,11 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
         	} else if (mLongpress.equals(ACTION_KILL)) {
         		mHandler.postDelayed(mKillTask, 0);  
         		return true;
+            } else if (mLongpress.equals(ACTION_WIDGETS)) {
+                Intent toggleWidgets = new Intent(
+                        NavigationBarView.WidgetReceiver.ACTION_TOGGLE_WIDGETS);
+                mContext.sendBroadcast(toggleWidgets);
+                return true;
         	} else if (mLongpress.equals(ACTION_RECENTS)) {
         		try {
                     mBarService.toggleRecentApps();
