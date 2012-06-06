@@ -39,17 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dip">
 
-            <include layout="@layout/keyguard_screen_status_land"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dip"
-                android:layout_marginTop="50dip"
-                android:layout_marginBottom="50dip"
-                android:layout_marginRight="64dip"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"/>
-
-            <!-- Music transport control -->
+            <!-- Music transport control underneath -->
             <include android:id="@+id/transport"
                 layout="@layout/keyguard_transport_control"
                 android:layout_row="0"
@@ -60,6 +50,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="512dip"
                 />
+
+            <include layout="@layout/keyguard_screen_status_land"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dip"
+                android:layout_marginTop="50dip"
+                android:layout_marginBottom="50dip"
+                android:layout_marginRight="64dip"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"/>
 
         </RelativeLayout>
 
