@@ -29,6 +29,9 @@ ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
     LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
 endif
 # we need to access the private Bionic header <bionic_tls.h>
+ifeq ($(TARGET_HAVE_TEGRA_ERRATA_657451),true)
+    LOCAL_CFLAGS += -DHAVE_TEGRA_ERRATA_657451
+endif
 LOCAL_C_INCLUDES += bionic/libc/private
 
 LOCAL_CFLAGS += -DLOG_TAG=\"libEGL\"
@@ -62,10 +65,6 @@ LOCAL_MODULE_PATH := $(TARGET_OUT)/lib/egl
 LOCAL_SRC_FILES := ../../../../$(BOARD_EGL_CFG)
 include $(BUILD_PREBUILT)
 
-
-
-ifdef OMAP_ENHANCEMENT
-
 ifeq ($(TARGET_BOARD_PLATFORM), omap4)
    # Only applicable for omap4 at the moment:
    # Do not install egl.cfg to system/lib/egl/egl.cfg
@@ -74,14 +73,9 @@ ifeq ($(TARGET_BOARD_PLATFORM), omap4)
    $(shell mkdir -p $(ANDROID_PRODUCT_OUT)/system/lib/egl/)
    $(shell ln -f -s /sys/egl/egl.cfg $(ANDROID_PRODUCT_OUT)/system/lib/egl/egl.cfg)
 else
-   # make sure we depend on egl.cfg, so it gets installed
-   $(installed_libEGL): | egl.cfg
-endif #omap4
-
-else
   # make sure we depend on egl.cfg, so it gets installed
   $(installed_libEGL): | egl.cfg
-endif #OMAP_ENHANCEMENT
+endif #omap4
 
 endif
 
@@ -101,6 +95,9 @@ LOCAL_SHARED_LIBRARIES += libdl
 # we need to access the private Bionic header <bionic_tls.h>
 ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
     LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
+endif
+ifeq ($(TARGET_HAVE_TEGRA_ERRATA_657451),true)
+    LOCAL_CFLAGS += -DHAVE_TEGRA_ERRATA_657451
 endif
 LOCAL_C_INCLUDES += bionic/libc/private
 
@@ -131,6 +128,9 @@ LOCAL_SHARED_LIBRARIES += libdl
 # we need to access the private Bionic header <bionic_tls.h>
 ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
     LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
+endif
+ifeq ($(TARGET_HAVE_TEGRA_ERRATA_657451),true)
+    LOCAL_CFLAGS += -DHAVE_TEGRA_ERRATA_657451
 endif
 LOCAL_C_INCLUDES += bionic/libc/private
 
