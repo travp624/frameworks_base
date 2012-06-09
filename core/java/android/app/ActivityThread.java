@@ -3900,12 +3900,9 @@ public final class ActivityThread {
         Process.setArgV0(data.processName);
         android.ddm.DdmHandleAppName.setAppName(data.processName);
 
-        // hwui.whitelist allows to restrict the hw renderer usage
-        // only to certain processes (0 - any)
         // hwui.blacklist allows to disable the hw renderer usage
         // for certain processes
-        String hwuiWhitelist = SystemProperties.get("hwui.whitelist", "0");
-        String hwuiBlacklist = SystemProperties.get("hwui.blacklist", "0");
+        String hwuiBlacklist = null;
 
         if (data.persistent) {
             // Persistent processes on low-memory devices do not get to
@@ -3915,12 +3912,17 @@ public final class ActivityThread {
             if (!ActivityManager.isHighEndGfx(display)) {
                 HardwareRenderer.disable(false);
             }
-        } else if ((!hwuiWhitelist.equals("0") && !hwuiWhitelist.contains(data.processName))
-                    || hwuiBlacklist.contains(data.processName)
-                    || data.processName.contains("com.android.systemui")
-                    || data.processName.contains("launcher")
-                    || data.processName.contains("trebuchet")) {
-            HardwareRenderer.disable(false);
+        }
+
+        // hwui.blacklist override
+        if (HardwareRenderer.sRendererDisabled) {
+            Slog.d(TAG, "hwui is disabled, skipping blacklist check");
+        } else {
+            hwuiBlacklist = SystemProperties.get("hwui.blacklist", "0");
+            if (hwuiBlacklist.equals("0") || hwuiBlacklist.contains(data.processName)) {
+                Slog.d(TAG, "hwui is blacklisted for " + data.processName);
+                HardwareRenderer.disable(false);
+            }
         }
         
         if (mProfiler.profileFd != null) {
