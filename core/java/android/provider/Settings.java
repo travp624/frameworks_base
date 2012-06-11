@@ -2985,7 +2985,11 @@ public final class Settings {
 
         /** 
          * the type of recent switcher
-         * 
+         *
+         * 0 = Stock
+         * 1 = WebAOKP
+         * 2 = Sense 4
+         *
          * @hide
          */
         public static final String RECENT_APP_SWITCHER = "recent_app_switcher";
@@ -3472,6 +3476,12 @@ public final class Settings {
          * @hide
          */
         public static final String LED_SCREEN_ON = "led_screen_on";
+
+        /**
+         * The TCP/IP port to run ADB on, or -1 for USB
+         * @hide
+         */
+        public static final String ADB_PORT = "adb_port";
 
         /**
          * The hostname for this device
