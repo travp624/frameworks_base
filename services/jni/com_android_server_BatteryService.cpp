@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <linux/ioctl.h>
+#include <math.h>
 #include <cutils/properties.h>
 
 namespace android {
@@ -86,6 +87,7 @@ struct PowerSupplyPaths {
     char* batteryHealthPath;
     char* batteryPresentPath;
     char* batteryCapacityPath;
+    char* batteryChargeCounterPath;
     char* batteryVoltagePath;
     char* batteryTemperaturePath;
     char* batteryTechnologyPath;
@@ -211,6 +213,25 @@ static void setIntField(JNIEnv* env, jobject obj, const char* path, jfieldID fie
     env->SetIntField(obj, fieldID, value);
 }
 
+static void setPercentageField(JNIEnv* env, jobject obj, const char* path, jfieldID fieldID)
+{
+    const int SIZE = 128;
+    char buf[SIZE];
+
+    jint value = 0;
+    if (readFromFile(path, buf, SIZE) > 0) {
+        value = atoi(buf);
+    }
+    /* sanity check for buggy drivers that provide bogus values, e.g. 103% */
+    if (value < 0) {
+        value = 0;
+    } else if (value > 100) {
+        value = 100;
+    }
+
+    env->SetIntField(obj, fieldID, value);
+}
+
 static void setVoltageField(JNIEnv* env, jobject obj, const char* path, jfieldID fieldID)
 {
     const int SIZE = 128;
@@ -234,14 +255,61 @@ static void android_server_BatteryService_update(JNIEnv* env, jobject obj)
 #ifdef HAS_DOCK_BATTERY
     setIntField(env, obj, gPaths.dockbatteryCapacityPath, gFieldIds.mDockBatteryLevel);
 #endif
+    
 
-    setIntField(env, obj, gPaths.batteryCapacityPath, gFieldIds.mBatteryLevel);
+    /* For some weird, unknown reason Motorola phones provide
+     * capacity information only in 10% steps in the 'capacity' file.
+     * The 'charge_counter' file provides the 1% steps on those phones.
+     * Since using charge_counter has issues on some devices,
+     * we'll use 'ro.product.use_charge_counter' in build.prop to
+     * decide which capacity file to use.
+     */
+    int counter = 0;
+    int capacity = 0;
+    int absolute = 0;
+    char value[4];
+    char valueChargeCounter[PROPERTY_VALUE_MAX];
+    if (property_get("ro.product.use_charge_counter", valueChargeCounter, NULL) &&
+        (!strcmp(valueChargeCounter, "1"))) {
+
+        if (readFromFile(gPaths.batteryChargeCounterPath, value, 4)) {
+            counter = atoi(value);
+        }
+
+        if (counter <= 10) {
+            /* Battery is less than 10%, use 1% increment */
+            capacity = counter;
+        } else {
+            if (readFromFile(gPaths.batteryCapacityPath, value, 4)) {
+                capacity = atoi(value);
+            }
+
+            /* Smooth out Motorola charge_counter erratas */
+            absolute = labs(capacity - counter);
+            if (absolute >= 10) {
+                capacity = ceil((counter + capacity) / 2);
+            } else {
+                capacity = counter;
+            }
+
+            /*
+             * Sanity check for buggy drivers that
+             * provide bogus values, e.g. 103%
+             */
+            if (capacity >= 100) {
+                capacity = 100;
+            }
+        }
+        env->SetIntField(obj, gFieldIds.mBatteryLevel, capacity);
+    } else {
+        setPercentageField(env, obj, gPaths.batteryCapacityPath, gFieldIds.mBatteryLevel);
+    }
+
     setVoltageField(env, obj, gPaths.batteryVoltagePath, gFieldIds.mBatteryVoltage);
     setIntField(env, obj, gPaths.batteryTemperaturePath, gFieldIds.mBatteryTemperature);
-    
     const int SIZE = 128;
     char buf[SIZE];
-    
+
     if (readFromFile(gPaths.batteryStatusPath, buf, SIZE) > 0)
         env->SetIntField(obj, gFieldIds.mBatteryStatus, getBatteryStatus(buf));
     else
@@ -314,29 +382,11 @@ int register_android_server_BatteryService(JNIEnv* env)
                 snprintf(path, sizeof(path), "%s/%s/present", POWER_SUPPLY_PATH, name);
                 if (access(path, R_OK) == 0)
                     gPaths.batteryPresentPath = strdup(path);
+                snprintf(path, sizeof(path), "%s/%s/capacity", POWER_SUPPLY_PATH, name);
+                if (access(path, R_OK) == 0)
+                    gPaths.batteryCapacityPath = strdup(path);
                 snprintf(path, sizeof(path), "%s/%s/charge_counter", POWER_SUPPLY_PATH, name);
-
-                /* For some weird, unknown reason Motorola phones provide
-                 * gPaths.batteryCapacityPath = strdup(path);
-                 * capacity information only in 10% steps in the 'capacity'
-                 * file. The 'charge_counter' file provides the 1% steps
-                 * on those phones. Since using charge_counter has issues
-                 * on some devices, we'll use ro.product.use_charge_counter
-                 * in build.prop to decide which capacity file to use.
-                 */
-                char valueChargeCounter[PROPERTY_VALUE_MAX];
-
-                if (property_get("ro.product.use_charge_counter", valueChargeCounter, NULL)
-                        && (!strcmp(valueChargeCounter, "1"))) {
-                    snprintf(path, sizeof(path), "%s/%s/charge_counter", POWER_SUPPLY_PATH, name);
-                    if (access(path, R_OK) == 0)
-                        gPaths.batteryCapacityPath = strdup(path);
-                }else{
-                    snprintf(path, sizeof(path), "%s/%s/capacity", POWER_SUPPLY_PATH, name);
-                    if (access(path, R_OK) == 0)
-                        gPaths.batteryCapacityPath = strdup(path);
-                }
-
+                    gPaths.batteryChargeCounterPath = strdup(path);
                 snprintf(path, sizeof(path), "%s/%s/voltage_now", POWER_SUPPLY_PATH, name);
                 if (access(path, R_OK) == 0) {
                     gPaths.batteryVoltagePath = strdup(path);
