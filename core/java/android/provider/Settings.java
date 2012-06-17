@@ -2559,6 +2559,12 @@ public final class Settings {
         public static final String STATUS_BAR_TRANSPARENCY = "status_bar_transparency";
 
         /**
+        * AutoHide CombinedBar on tablets.
+        * @hide
+        */
+        public static final String COMBINED_BAR_AUTO_HIDE = "combined_bar_auto_hide";
+
+        /**
          * @hide
          */
         public static final String POWER_DIALOG_SHOW_POWER_SAVER = "power_dialog_show_power_saver";
@@ -2979,6 +2985,10 @@ public final class Settings {
 
         /** 
          * the type of recent switcher
+         *
+         * 0 = Stock
+         * 1 = WebAOKP
+         * 2 = Sense 4
          * 
          * @hide
          */
@@ -3473,6 +3483,18 @@ public final class Settings {
          * @hide
          */
         public static final String LED_SCREEN_ON = "led_screen_on";
+
+        /**
+         * The TCP/IP port to run ADB on, or -1 for USB
+         * @hide
+         */
+        public static final String ADB_PORT = "adb_port";
+
+        /**
+         * The hostname for this device
+         * @hide
+         */
+        public static final String DEVICE_HOSTNAME = "device_hostname";
 
         /**
          * Setting to allow mock locations and location provider status to be injected into the
