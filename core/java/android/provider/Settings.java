@@ -2985,7 +2985,7 @@ public final class Settings {
 
         /** 
          * the type of recent switcher
-         *
+         * 
          * 0 = Stock
          * 1 = WebAOKP
          * 2 = Sense 4
