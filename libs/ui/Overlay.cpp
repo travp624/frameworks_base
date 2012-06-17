@@ -61,6 +61,7 @@ Overlay::Format Overlay::getFormatFromString(const char* name)
         return FORMAT_RGBA8888;
     }
 
+    LOGW("%s: unhandled color format %s", __FUNCTION__, name);
     return FORMAT_UNKNOWN;
 }
 
@@ -114,9 +115,6 @@ Overlay::Overlay(uint32_t width, uint32_t height, Format format, QueueBufferHook
 }
 
 Overlay::~Overlay() {
-    if (mBuffers != NULL) {
-        LOGW("%s: Destructor called without freeing buffers...", __FUNCTION__);
-    }
 }
 
 status_t Overlay::dequeueBuffer(overlay_buffer_t* buffer)
@@ -241,19 +239,30 @@ void Overlay::destroy()
 {
     int fd = 0;
 
-    LOGV("%s", __FUNCTION__);
+    pthread_mutex_lock(&mQueueMutex);
+
+    LOGD("%s", __FUNCTION__);
 
     for (uint32_t i = 0; i < NUM_BUFFERS; i++) {
         if (mBuffers[i].ptr != NULL && munmap(mBuffers[i].ptr, mBuffers[i].length) < 0) {
             LOGW("%s: unmap of buffer %d failed", __FUNCTION__, i);
+        } else {
+            mBuffers[i].ptr = NULL;
         }
         if (mBuffers[i].fd > 0) {
+            if (fd > 0 && fd != mBuffers[i].fd) {
+                LOGD("%s: multiple fd detected, closing fd %d...", __FUNCTION__, fd);
+                close(fd);
+            }
             fd = mBuffers[i].fd;
+            mBuffers[i].fd = 0;
         }
     }
     if (fd > 0) {
         close(fd);
     }
+
+    pthread_mutex_unlock(&mQueueMutex);
 
     pthread_mutex_destroy(&mQueueMutex);
 }

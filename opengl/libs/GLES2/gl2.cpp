@@ -149,7 +149,7 @@ const GLubyte* glGetString(GLenum name)
         extensions = new char[850];
         strcpy(extensions, exts);
         strcat(extensions, "GL_OES_EGL_image_external ");
-        LOGW("glGetString(GL_EXTENSIONS): GL_OES_EGL_image_external added");
+        //LOGD("glGetString(GL_EXTENSIONS): GL_OES_EGL_image_external added");
         return (GLubyte*)extensions;
     }
     return __glGetString(name);
@@ -158,9 +158,15 @@ const GLubyte* glGetString(GLenum name)
 
 void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length)
 {
-    LOGW("Shader source dump:");
+    bool needRewrite = false;
+
+    //LOGD("Shader source dump:");
     for (GLsizei i = 0; i < count; i++) {
-        LOGW("%s", string[i]);
+        //LOGD("%s", string[i]);
+        if (strstr(string[i], "GL_OES_EGL_image_external")) {
+            needRewrite = true;
+            break;
+        }
     }
 
 /* TODO
@@ -171,45 +177,59 @@ is currently very dumb:
   (the first line is then replaced with an empty one)
 - it assumes only one appearence of "samplerExternalOES" in the shader code
   (and replaces this first appearence with "sampler2D")
-- it's actually valid only for count equal to 1
 
 Despite the mentioned limitations, it seems to capture
 all real cases encountered so far.
 */
 
-    if (strstr(string[0], "GL_OES_EGL_image_external")) {
-        LOGW("Shader source rewrite:");
-        GLchar **shaderstr;
-        shaderstr = new GLchar*[count];
-        GLchar *p;
-        GLchar *n;
-        for (GLsizei i = 0; i < count; i++) {
-            n = strstr(string[i], "\n");
-            shaderstr[i] = new GLchar[strlen(n)+1];
-            if (p = strstr(n, "samplerExternalOES")) {
-                strncpy(shaderstr[i], n, p-n);
-                shaderstr[i][p-n] = '\0';
-                sprintf(shaderstr[i]+(p-n), "%s%s", "sampler2D", p+strlen("samplerExternalOES"));
-            } else {
-                strcpy(shaderstr[i],string[i]);
-            }
-            LOGW("%s", shaderstr[i]);
-        }
-        __glShaderSource(shader, count, const_cast<const GLchar **>(shaderstr), length);
-        for (GLsizei i = 0; i < count; i++) {
-            delete [] shaderstr[i];
-        }
-        delete [] shaderstr;
-    } else {
+    if (!needRewrite) {
         __glShaderSource(shader, count, string, length);
+        return;
     }
+
+    //LOGD("Shader source rewrite:");
+
+    GLchar **newStrings = new GLchar*[count];
+    const GLchar *start, *pos;
+    size_t blen = 0;
+
+    for (GLsizei i = 0; i < count; i++) {
+        start = strchr(string[i], '\n');
+        if (!start) {
+            start = string[i];
+        } else {
+            start++; /* skip '\n' */
+        }
+
+        /* Substring replacement of 'samplerExternalOES'
+         * to 'sampler2D' */
+        newStrings[i] = new GLchar[strlen(start) + 1];
+        pos = strstr(start, "samplerExternalOES");
+        if (pos) {
+            blen = (pos - start);
+            strncpy(newStrings[i], start, blen);
+            newStrings[i][blen] = '\0';
+            strcat(newStrings[i], "sampler2D");
+            strcat(newStrings[i], pos + 18);
+        } else {
+            strcpy(newStrings[i], start);
+        }
+        //LOGD("%s", newStrings[i]);
+    }
+
+    __glShaderSource(shader, count, const_cast<const GLchar **>(newStrings), length);
+
+    for (GLsizei i = 0; i < count; i++) {
+        delete [] newStrings[i];
+    }
+    delete [] newStrings;
 }
 
 void glTexParameterf(GLenum target, GLenum pname, GLfloat param)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-//        LOGW("glTexParameterf: EXTERNAL_OES > 2D");
+        //LOGD("glTexParameterf: EXTERNAL_OES -> 2D");
     }
     __glTexParameterf(target, pname, param);
 }
@@ -218,7 +238,7 @@ void glTexParameterfv(GLenum target, GLenum pname, const GLfloat* params)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-//        LOGW("glTexParameterfv: EXTERNAL_OES > 2D");
+        //LOGD("glTexParameterfv: EXTERNAL_OES -> 2D");
     }
     __glTexParameterfv(target, pname, params);
 }
@@ -227,7 +247,7 @@ void glTexParameteri(GLenum target, GLenum pname, GLint param)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-//        LOGW("glTexParameteri: EXTERNAL_OES > 2D");
+        //LOGD("glTexParameteri: EXTERNAL_OES -> 2D");
     }
     __glTexParameteri(target, pname, param);
 }
@@ -236,7 +256,7 @@ void glTexParameteriv(GLenum target, GLenum pname, const GLint* params)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-//        LOGW("glTexParameteriv: EXTERNAL_OES > 2D");
+        //LOGD("glTexParameteriv: EXTERNAL_OES -> 2D");
     }
     __glTexParameteriv(target, pname, params);
 }
@@ -245,7 +265,7 @@ void glEnable(GLenum cap)
 {
     if (cap == GL_TEXTURE_EXTERNAL_OES) {
         cap = GL_TEXTURE_2D;
-//        LOGW("glEnable: EXTERNAL_OES > 2D");
+        //LOGD("glEnable: EXTERNAL_OES -> 2D");
     }
     __glEnable(cap);
 }
@@ -254,7 +274,7 @@ void glDisable(GLenum cap)
 {
     if (cap == GL_TEXTURE_EXTERNAL_OES) {
         cap = GL_TEXTURE_2D;
-//        LOGW("glDisable: EXTERNAL_OES > 2D");
+        //LOGD("glDisable: EXTERNAL_OES -> 2D");
     }
     __glDisable(cap);
 }
@@ -263,7 +283,7 @@ void glBindTexture(GLenum target, GLuint texture)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-//        LOGW("glBindTexture: EXTERNAL_OES > 2D");
+        //LOGD("glBindTexture: EXTERNAL_OES -> 2D");
     }
     __glBindTexture(target, texture);
 }
@@ -274,7 +294,7 @@ void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)
 #ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-//        LOGW("glEGLImageTargetTexture2DOES: EXTERNAL_OES > 2D");
+        //LOGD("glEGLImageTargetTexture2DOES: EXTERNAL_OES -> 2D");
     }
 #endif
     GLeglImageOES implImage = 
