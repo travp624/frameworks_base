@@ -158,7 +158,7 @@ public:
     // Example value: "(10500,26623),(15000,26623),(30000,30000)"
     static const char KEY_SUPPORTED_PREVIEW_FPS_RANGE[];
     // The image format for preview frames. See CAMERA_MSG_PREVIEW_FRAME in
-    // system/core/include/system/camera.h.
+    // frameworks/base/include/camera/Camera.h.
     // Example value: "yuv420sp" or PIXEL_FORMAT_XXX constants. Read/write.
     static const char KEY_PREVIEW_FORMAT[];
     // Supported image formats for preview frames.
@@ -197,7 +197,7 @@ public:
     // Example value: "2048x1536,1024x768". Read only.
     static const char KEY_SUPPORTED_PICTURE_SIZES[];
     // The image format for captured pictures. See CAMERA_MSG_COMPRESSED_IMAGE
-    // in system/core/include/system/camera.h.
+    // in frameworks/base/include/camera/Camera.h.
     // Example value: "jpeg" or PIXEL_FORMAT_XXX constants. Read/write.
     static const char KEY_PICTURE_FORMAT[];
     // Supported image formats for captured pictures.
@@ -481,7 +481,7 @@ public:
     // value is "true". It is not supported if the value is not "true" or the
     // key does not exist.
     // See CAMERA_CMD_START_SMOOTH_ZOOM, CAMERA_CMD_STOP_SMOOTH_ZOOM, and
-    // CAMERA_MSG_ZOOM in system/core/include/system/camera.h.
+    // CAMERA_MSG_ZOOM in frameworks/base/include/camera/Camera.h.
     // Example value: "true". Read only.
     static const char KEY_SMOOTH_ZOOM_SUPPORTED[];
 
@@ -515,7 +515,7 @@ public:
     static const char KEY_VIDEO_SIZE[];
     // A list of the supported dimensions in pixels (width x height)
     // for video frames. See CAMERA_MSG_VIDEO_FRAME for details in
-    // system/core/include/system/camera.h.
+    // frameworks/base/include/camera/Camera.h.
     // Example: "176x144,1280x720". Read only.
     static const char KEY_SUPPORTED_VIDEO_SIZES[];
 
@@ -544,7 +544,7 @@ public:
     static const char KEY_PREFERRED_PREVIEW_SIZE_FOR_VIDEO[];
 
     // The image format for video frames. See CAMERA_MSG_VIDEO_FRAME in
-    // system/core/include/system/camera.h.
+    // frameworks/base/include/camera/Camera.h.
     // Example value: "yuv420sp" or PIXEL_FORMAT_XXX constants. Read only.
     static const char KEY_VIDEO_FRAME_FORMAT[];
 

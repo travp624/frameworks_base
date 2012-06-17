@@ -60,12 +60,6 @@ struct OMXCodec : public MediaSource,
         // Secure decoding mode
         kUseSecureInputBuffers = 256,
 
-        kPreferThumbnailMode               = 0x8,
-        kPreferInterlacedOutputContent     = 0x10,
-        MAX_RESOLUTION = 414720, // video resolution for TI Vid Dec
-        MAX_RESOLUTION_WIDTH = 864, // video width for TI Vid Dec
-        MAX_RESOLUTION_HEIGHT = 864, // video height for TI Vid Dec
-
 #ifdef QCOM_HARDWARE
         kEnableThumbnailMode = 512,
         kUseMinBufferCount = 32768,
@@ -184,7 +178,7 @@ private:
         void *mData;
         MediaBuffer *mMediaBuffer;
         OMX_U8 *mAllocatedBuffer;
-        size_t mAllocatedSize;
+        OMX_U32 mAllocatedSize;
     };
 
     struct CodecSpecificData {

@@ -61,7 +61,6 @@ Overlay::Format Overlay::getFormatFromString(const char* name)
         return FORMAT_RGBA8888;
     }
 
-    LOGW("%s: unhandled color format %s", __FUNCTION__, name);
     return FORMAT_UNKNOWN;
 }
 
