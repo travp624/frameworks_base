@@ -2,13 +2,8 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
-ifeq ($(BOARD_USES_AUDIO_LEGACY),true)
-LOCAL_SRC_FILES:= \
-    LibMedia_Helper_Dummy.cpp
-else
 LOCAL_SRC_FILES:= \
     AudioParameter.cpp
-endif
 
 LOCAL_MODULE:= libmedia_helper
 LOCAL_MODULE_TAGS := optional
@@ -52,11 +47,6 @@ LOCAL_SRC_FILES:= \
     Visualizer.cpp \
     MemoryLeakTrackUtil.cpp \
     fixedfft.cpp.arm
-
-ifeq ($(BOARD_USES_LIBMEDIA_WITH_AUDIOPARAMETER),true)
-    LOCAL_SRC_FILES+= \
-        AudioParameter.cpp
-endif
 
 ifeq ($(BOARD_USES_AUDIO_LEGACY),true)
     LOCAL_SRC_FILES+= \

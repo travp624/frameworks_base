@@ -57,9 +57,9 @@ import android.graphics.Canvas;
 import android.net.IConnectivityManager;
 import android.net.Proxy;
 import android.net.ProxyProperties;
-import android.net.Uri;
 import android.opengl.GLUtils;
 import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
@@ -92,14 +92,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
@@ -181,14 +176,12 @@ public final class ActivityThread {
     // set of instantiated backup agents, keyed by package name
     final HashMap<String, BackupAgent> mBackupAgents = new HashMap<String, BackupAgent>();
     static final ThreadLocal<ActivityThread> sThreadLocal = new ThreadLocal<ActivityThread>();
-    ArrayList<String> ApplicationHwuiWhitelist = null;
     Instrumentation mInstrumentation;
     String mInstrumentationAppDir = null;
     String mInstrumentationAppPackage = null;
     String mInstrumentedAppDir = null;
     boolean mSystemThread = false;
     boolean mJitEnabled = false;
-    boolean mReadWhiteList = false;
 
     // These can be accessed by multiple threads; mPackages is the lock.
     // XXX For now we keep around information about all packages we have
@@ -3892,48 +3885,6 @@ public final class ActivityThread {
             // Ignore
         }
     }    
-
-    private void ReadAppHwuiWhitelist() {
-        if (ApplicationHwuiWhitelist == null) {
-            ApplicationHwuiWhitelist = new ArrayList<String>();
-        }
-
-        mReadWhiteList = true;
-        FileInputStream fstream = null;
-        try {
-            fstream = new FileInputStream("/system/hwui-whitelist.txt");
-            DataInputStream in = new DataInputStream(fstream);
-            BufferedReader file = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = file.readLine()) != null) {
-                line = line.trim();
-
-                // Ignore comments and blank lines
-                if (line.length() == 0 || line.startsWith("#")) {
-                    continue;
-                }
-
-                ApplicationHwuiWhitelist.add(line);
-            }
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
-            Log.e(TAG, "Error reading hardware acceleration whitelist file", e);
-        } finally {
-            if (fstream != null) {
-                try {
-                    fstream.close();
-                } catch (IOException e) {}
-            }
-        }
-    }
-
-    private boolean IsAppHwuiWhitelisted(String runningapp) {
-        if (mReadWhiteList == false) {
-            ReadAppHwuiWhitelist();
-        }
-
-        return ApplicationHwuiWhitelist.contains(runningapp);
-    }
     
     private void handleBindApplication(AppBindData data) {
         mBoundApplication = data;
@@ -3949,6 +3900,10 @@ public final class ActivityThread {
         Process.setArgV0(data.processName);
         android.ddm.DdmHandleAppName.setAppName(data.processName);
 
+        // hwui.blacklist allows to disable the hw renderer usage
+        // for certain processes
+        String hwuiBlacklist = null;
+
         if (data.persistent) {
             // Persistent processes on low-memory devices do not get to
             // use hardware accelerated drawing, since this can add too much
@@ -3959,11 +3914,12 @@ public final class ActivityThread {
             }
         }
 
-        // Hardware accelerated whitelist override
-        if (!HardwareRenderer.sRendererDisabled &&
-            !IsAppHwuiWhitelisted(data.processName))
-        {
-            HardwareRenderer.disable(false);
+        // hwui.blacklist override
+        if (!HardwareRenderer.sRendererDisabled) {
+            hwuiBlacklist = SystemProperties.get("hwui.blacklist", "0");
+            if (hwuiBlacklist.equals("0") || hwuiBlacklist.contains(data.processName)) {
+                HardwareRenderer.disable(false);
+            }
         }
         
         if (mProfiler.profileFd != null) {

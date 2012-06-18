@@ -235,22 +235,6 @@ static const KeycodeLabel KEYCODES[] = {
     { "CALENDAR", 208 },
     { "MUSIC", 209 },
     { "CALCULATOR", 210 },
-    { "HANKAKU_ZENKAKU", 211 },
-    { "EISU", 212 },
-    { "MUHENKAN", 213 },
-    { "HENKAN", 214 },
-    { "HIRAGANA_KATAKANA", 215 },
-    { "YEN", 216 },
-    { "EUROPE_1", 217 },
-    { "EUROPE_2", 218 },
-    { "SLEEP", 219 },
-    { "WIRELESS", 220 },
-    { "BLUETOOTH", 221 },
-    { "TOUCHPAD", 222 },
-    { "BRIGHTNESS_UP", 223 },
-    { "BRIGHTNESS_DOWN", 224 },
-    { "BRIGHTNESS_AUTO", 225 },
-    { "CAPTURE", 226 },
     { "ALT_LOCK", 211 },
     { "VOICE", 212 },
 
@@ -272,7 +256,6 @@ static const KeycodeLabel FLAGS[] = {
     { "LAUNCHER", 0x00000080 },
     { "VIRTUAL", 0x00000100 },
     { "FUNCTION", 0x00000200 },
-    { "UNLOCK", 0x00000400 },
     { NULL, 0 }
 };
 

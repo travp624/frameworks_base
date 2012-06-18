@@ -1388,7 +1388,7 @@ public final class Settings {
          */
         public static final int SCREEN_BRIGHTNESS_MODE_AUTOMATIC = 1;
 
-        /**
+	/**
          * Indicates that custom light sensor settings has changed.
          * The value is random and changes reloads light settings.
          *
@@ -1989,6 +1989,13 @@ public final class Settings {
         public static final String SHOW_TOUCHES = "show_touches";
 
         /**
+         * The keylayout that will be used by EventHub instead of the default
+         * one.
+	 * @hide
+         */
+        public static final String KEYLAYOUT_OVERRIDES = "keylayout";
+
+        /**
          * Log raw orientation data from {@link WindowOrientationListener} for use with the
          * orientationplot.py tool.
          * 0 = no
@@ -2003,6 +2010,12 @@ public final class Settings {
          * @hide
          */
         public static final String POWER_SOUNDS_ENABLED = "power_sounds_enabled";
+
+        /**
+         * Whether to route USB Audio when docked.
+         * @hide
+         */
+        public static final String DOCK_USB_AUDIO_ENABLED = "dock_usb_audio_enabled";
 
         /**
          * Whether to play a sound for dock events.
@@ -2175,6 +2188,7 @@ public final class Settings {
             SIP_CALL_OPTIONS,
             SIP_RECEIVE_CALLS,
             POINTER_SPEED,
+            KEYLAYOUT_OVERRIDES,
         };
 
         // Settings moved to Settings.Secure

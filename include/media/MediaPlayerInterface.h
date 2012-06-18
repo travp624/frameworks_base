@@ -108,7 +108,6 @@ public:
         virtual void        close() = 0;
 #ifdef WITH_QCOM_LPA
         virtual void        closeSession() {return;};
-        virtual int         getAudioStreamType() {return 0;};
 #endif
     };
 

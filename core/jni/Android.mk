@@ -15,6 +15,10 @@ ifeq ($(WITH_JIT),true)
 	LOCAL_CFLAGS += -DWITH_JIT
 endif
 
+ifneq ($(USE_CUSTOM_RUNTIME_HEAP_MAX),)
+  LOCAL_CFLAGS += -DCUSTOM_RUNTIME_HEAP_MAX=$(USE_CUSTOM_RUNTIME_HEAP_MAX)
+endif
+
 ifeq ($(USE_OPENGL_RENDERER),true)
 	LOCAL_CFLAGS += -DUSE_OPENGL_RENDERER
 endif
@@ -79,10 +83,10 @@ LOCAL_SRC_FILES:= \
 	android_util_EventLog.cpp \
 	android_util_Log.cpp \
 	android_util_FloatMath.cpp \
-	android_util_PackageRedirectionMap.cpp \
 	android_util_Process.cpp \
 	android_util_StringBlock.cpp \
 	android_util_XmlBlock.cpp \
+	android_util_PackageRedirectionMap.cpp \
 	android/graphics/AutoDecodeCancel.cpp \
 	android/graphics/Bitmap.cpp \
 	android/graphics/BitmapFactory.cpp \
@@ -155,7 +159,6 @@ LOCAL_SRC_FILES:= \
         android_animation_PropertyValuesHolder.cpp
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-        LOCAL_CFLAGS += -DQCOM_HARDWARE
 	LOCAL_SRC_FILES += org_codeaurora_Performance.cpp
 endif
 

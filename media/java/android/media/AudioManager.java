@@ -168,8 +168,6 @@ public class AudioManager {
     public static final int STREAM_DTMF = AudioSystem.STREAM_DTMF;
     /** @hide The audio stream for text to speech (TTS) */
     public static final int STREAM_TTS = AudioSystem.STREAM_TTS;
-    /** @hide The audio stream for FM Radio */
-    public static final int STREAM_FM = AudioSystem.STREAM_FM;
     /** Number of audio streams */
     /**
      * @deprecated Use AudioSystem.getNumStreamTypes() instead
@@ -188,8 +186,7 @@ public class AudioManager {
         7,  // STREAM_BLUETOOTH_SCO
         7,  // STREAM_SYSTEM_ENFORCED
         11, // STREAM_DTMF
-        11, // STREAM_TTS
-        7   // STREAM_FM
+        11  // STREAM_TTS
     };
 
     /**
@@ -424,7 +421,7 @@ public class AudioManager {
                         flags);
                 break;
             case KeyEvent.KEYCODE_VOLUME_MUTE:
-                toggleMute(stream);
+                // TODO: Actually handle MUTE.
                 break;
         }
     }
@@ -453,31 +450,9 @@ public class AudioManager {
                 mVolumeKeyUpTime = SystemClock.uptimeMillis();
                 break;
             case KeyEvent.KEYCODE_VOLUME_MUTE:
+                // TODO: Actually handle MUTE.
                 break;
         }
-    }
-
-    /**
-     * Toggles global mute state via ringer mode.
-     * @param stream The stream for which the volume panel will be shown.
-     * @hide
-     */
-    public void toggleMute(int stream) {
-        boolean vibrate = getVibrateSetting(
-                AudioManager.VIBRATE_TYPE_RINGER)
-                        == AudioManager.VIBRATE_SETTING_ON;
-
-        int currentMode = getRingerMode();
-
-        if ((vibrate && currentMode == AudioManager.RINGER_MODE_VIBRATE)
-                || (currentMode == AudioManager.RINGER_MODE_SILENT)) {
-            setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-        } else {
-            setRingerMode(vibrate ? AudioManager.RINGER_MODE_VIBRATE
-                    : AudioManager.RINGER_MODE_SILENT);
-        }
-
-        adjustSuggestedStreamVolume(ADJUST_SAME, stream, FLAG_SHOW_UI | FLAG_VIBRATE);
     }
 
     /**

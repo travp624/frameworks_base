@@ -213,10 +213,10 @@ public class ActivityManager {
     /**
      * Used by persistent processes to determine if they are running on a
      * higher-end device so should be okay using hardware drawing acceleration
-     * (which tends to consume a lot more RAM).
+     * (which tends to consume a lot more RAM). Alternatively, setting
      * ro.config.disable_hw_accel=true disables hardware acceleration even if the
      * device meets the other criteria since not all devices currently have
-	 * the ability to support it.
+     * the ability to support it.
      * @hide
      */
     static public boolean isHighEndGfx(Display display) {
@@ -241,7 +241,6 @@ public class ActivityManager {
             return false;
         }
     }
-
 
     /**
      * Use to decide whether the running device can be considered a "large
