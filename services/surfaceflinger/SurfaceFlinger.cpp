@@ -1402,7 +1402,7 @@ void SurfaceFlinger::updateHwcExternalDisplay(int externaltype)
     const DisplayHardware& hw(graphicPlane(0).displayHardware());
     mDirtyRegion.set(hw.bounds());
     HWComposer& hwc(hw.getHwComposer());
-    hwc.enableHDMIOutput(externaltype);
+    hwc.perform(EVENT_EXTERNAL_DISPLAY, externaltype);
 }
 
 /*
@@ -1421,16 +1421,6 @@ void SurfaceFlinger::enableExternalDisplay(int disp_type, int value)
         updateHwcExternalDisplay(mExtDispOutput);
         signalEvent();
     }
-}
-
-void SurfaceFlinger::setActionSafeWidthRatio(float asWidthRatio){
-    const DisplayHardware& hw(graphicPlane(0).displayHardware());
-    hw.setActionSafeWidthRatio(asWidthRatio);
-}
-
-void SurfaceFlinger::setActionSafeHeightRatio(float asHeightRatio){
-    const DisplayHardware& hw(graphicPlane(0).displayHardware());
-    hw.setActionSafeHeightRatio(asHeightRatio);
 }
 #endif
 
@@ -2776,12 +2766,7 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
         return 0;
     }
     Mutex::Autolock _l(mLock);
-    if (-1 != mFreedIndex) {
-        mBuffers.insertAt(graphicBuffer, mFreedIndex);
-        mFreedIndex = -1;
-    } else {
-        mBuffers.add(graphicBuffer);
-    }
+    mBuffers.add(graphicBuffer);
 #endif
     return graphicBuffer;
 }
@@ -2859,8 +2844,16 @@ void GraphicPlane::setDisplayHardware(DisplayHardware *hw)
         }
     }
 
+#ifdef OVERRIDE_FB0_WIDTH
+    const float w = OVERRIDE_FB0_WIDTH;
+#else
     const float w = hw->getWidth();
+#endif
+#ifdef OVERRIDE_FB0_HEIGHT
+    const float h = OVERRIDE_FB0_HEIGHT;
+#else
     const float h = hw->getHeight();
+#endif
     GraphicPlane::orientationToTransfrom(displayOrientation, w, h,
             &mDisplayTransform);
     if (displayOrientation & ISurfaceComposer::eOrientationSwapMask) {

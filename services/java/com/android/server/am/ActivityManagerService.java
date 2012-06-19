@@ -1771,7 +1771,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 if (cr.binding != null && cr.binding.service != null
                         && cr.binding.service.app != null
                         && cr.binding.service.app.lruSeq != mLruSeq) {
-                    updateLruProcessInternalLocked(cr.binding.service.app, false,
+                    updateLruProcessInternalLocked(cr.binding.service.app, oomAdj,
                             updateActivityTime, i+1);
                 }
             }
@@ -1779,7 +1779,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         if (app.conProviders.size() > 0) {
             for (ContentProviderRecord cpr : app.conProviders.keySet()) {
                 if (cpr.proc != null && cpr.proc.lruSeq != mLruSeq) {
-                    updateLruProcessInternalLocked(cpr.proc, false,
+                    updateLruProcessInternalLocked(cpr.proc, oomAdj,
                             updateActivityTime, i+1);
                 }
             }
@@ -3004,7 +3004,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
     }
 
-    final void logAppTooSlow(int pid, long startTime, String msg) {
+    final void logAppTooSlow(ProcessRecord app, long startTime, String msg) {
         if (IS_USER_BUILD) {
             return;
         }
@@ -3037,7 +3037,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 sb.append(msg);
                 FileOutputStream fos = new FileOutputStream(tracesFile);
                 fos.write(sb.toString().getBytes());
-                if (pid <= 0) {
+                if (app == null) {
                     fos.write("\n*** No application process!".getBytes());
                 }
                 fos.close();
@@ -3047,9 +3047,9 @@ public final class ActivityManagerService extends ActivityManagerNative
                 return;
             }
 
-            if (pid > 0) {
+            if (app != null) {
                 ArrayList<Integer> firstPids = new ArrayList<Integer>();
-                firstPids.add(pid);
+                firstPids.add(app.pid);
                 dumpStackTraces(tracesPath, firstPids, null, null);
             }
 

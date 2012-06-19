@@ -1029,7 +1029,21 @@ status_t AudioFlinger::setParameters(int ioHandle, const String8& keyValuePairs)
                 mBtNrecIsOff = btNrecIsOff;
             }
         }
+
+#ifdef MOTO_DOCK_HACK
+        String8 key = String8("DockState");
+        int device;
+        if (NO_ERROR != param.getInt(key, device)) {
+            LOGD("setParameters(): DockState not present");
+            return final_result;
+        } else {
+            /* We also need to pass routing=int */
+            ioHandle = 1;
+            LOGD("setParameters(): DockState %d trick done!", device);
+        }
+#else
         return final_result;
+#endif
     }
 
 #ifdef WITH_QCOM_LPA
@@ -1817,10 +1831,13 @@ sp<AudioFlinger::PlaybackThread::Track>  AudioFlinger::PlaybackThread::createTra
 
     if (mType == DIRECT) {
         if ((format & AUDIO_FORMAT_MAIN_MASK) == AUDIO_FORMAT_PCM) {
+#ifdef BOARD_USES_AUDIO_LEGACY
+            if (sampleRate != mSampleRate || format != mFormat || (channelMask & mChannelMask) != channelMask) {
+#else
             if (sampleRate != mSampleRate || format != mFormat || channelMask != mChannelMask) {
-                LOGE("createTrack_l() Bad parameter: sampleRate %d format %d, channelMask 0x%08x \""
-                        "for output %p with format %d",
-                        sampleRate, format, channelMask, mOutput, mFormat);
+#endif
+                LOGE("createTrack_l() Bad parameter: sampleRate %d/%d format %d/%d, channelMask 0x%08x/0x%08x [MASKED=0x%08x] for output %p with format %d",
+                        sampleRate, mSampleRate, format, mFormat, channelMask, mChannelMask, (channelMask & mChannelMask), mOutput, mFormat);
                 lStatus = BAD_VALUE;
                 goto Exit;
             }
@@ -2057,6 +2074,8 @@ void AudioFlinger::PlaybackThread::readOutputParameters()
     mFormat = mOutput->stream->common.get_format(&mOutput->stream->common);
     mFrameSize = (uint16_t)audio_stream_frame_size(&mOutput->stream->common);
     mFrameCount = mOutput->stream->common.get_buffer_size(&mOutput->stream->common) / mFrameSize;
+
+    LOGE("PlaybackThread::readOutputParameters, mSampleRate %d, mChannelMask 0x%08x, mChannelCount %d, mFormat %d, mFrameSize, %d, mFrameCount %d", mSampleRate, mChannelMask, mChannelCount, mFormat, mFrameSize, mFrameCount);
 
     // FIXME - Current mixer implementation only supports stereo output: Always
     // Allocate a stereo buffer even if HW output is mono.
@@ -5649,12 +5668,6 @@ status_t AudioFlinger::setStreamOutput(uint32_t stream, int output)
             srcThread->invalidateTracks(stream);
         }
     }
-#ifdef WITH_QCOM_LPA
-    if ( mA2DPHandle == output ) {
-        LOGV("A2DP Activated and hence notifying the client");
-        dstThread->sendConfigEvent(AudioSystem::A2DP_OUTPUT_STATE, mA2DPHandle);
-    }
-#endif
     return NO_ERROR;
 }
 

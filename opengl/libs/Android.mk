@@ -29,9 +29,6 @@ ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
     LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
 endif
 # we need to access the private Bionic header <bionic_tls.h>
-ifeq ($(TARGET_HAVE_TEGRA_ERRATA_657451),true)
-    LOCAL_CFLAGS += -DHAVE_TEGRA_ERRATA_657451
-endif
 LOCAL_C_INCLUDES += bionic/libc/private
 
 LOCAL_CFLAGS += -DLOG_TAG=\"libEGL\"
@@ -87,9 +84,6 @@ LOCAL_SHARED_LIBRARIES += libdl
 ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
     LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
 endif
-ifeq ($(TARGET_HAVE_TEGRA_ERRATA_657451),true)
-    LOCAL_CFLAGS += -DHAVE_TEGRA_ERRATA_657451
-endif
 LOCAL_C_INCLUDES += bionic/libc/private
 
 LOCAL_CFLAGS += -DLOG_TAG=\"libGLESv1\"
@@ -119,9 +113,6 @@ LOCAL_SHARED_LIBRARIES += libdl
 # we need to access the private Bionic header <bionic_tls.h>
 ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
     LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
-endif
-ifeq ($(TARGET_HAVE_TEGRA_ERRATA_657451),true)
-    LOCAL_CFLAGS += -DHAVE_TEGRA_ERRATA_657451
 endif
 LOCAL_C_INCLUDES += bionic/libc/private
 

@@ -41,7 +41,7 @@ using namespace android;
 
 #define DEBUG_CALL_GL_API 0
 
-#if USE_FAST_TLS_KEY && defined(HAVE_ARM_TLS_REGISTER)
+#if USE_FAST_TLS_KEY
 
     #ifdef HAVE_TEGRA_ERRATA_657451
         #define MUNGE_TLS(_tls) \
@@ -160,7 +160,7 @@ void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const G
 {
     bool needRewrite = false;
 
-    //LOGD("Shader source dump:");
+    LOGD("Shader source dump:");
     for (GLsizei i = 0; i < count; i++) {
         //LOGD("%s", string[i]);
         if (strstr(string[i], "GL_OES_EGL_image_external")) {
@@ -214,7 +214,7 @@ all real cases encountered so far.
         } else {
             strcpy(newStrings[i], start);
         }
-        //LOGD("%s", newStrings[i]);
+        LOGD("%s", newStrings[i]);
     }
 
     __glShaderSource(shader, count, const_cast<const GLchar **>(newStrings), length);

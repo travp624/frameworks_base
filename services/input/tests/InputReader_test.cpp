@@ -623,13 +623,13 @@ private:
     virtual void monitor() {
     }
 
-    virtual void setKeyLayout(const char* deviceName, const char* keyLayout) {
-    }
-
     virtual void requestReopenDevices() {
     }
 
     virtual void wake() {
+    }
+
+    virtual void setKeyLayout(const char* deviceName, const char* keyLayout) {
     }
 };
 

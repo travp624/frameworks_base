@@ -277,6 +277,7 @@ public class CDMAPhone extends PhoneBase {
     }
 
     public ServiceState getServiceState() {
+        if (mSST == null) return null;
         return mSST.ss;
     }
 
@@ -285,6 +286,7 @@ public class CDMAPhone extends PhoneBase {
     }
 
     public Phone.State getState() {
+        if (mCT == null) return null;
         return mCT.state;
     }
 
@@ -306,14 +308,18 @@ public class CDMAPhone extends PhoneBase {
     }
 
     public CdmaCall getRingingCall() {
+        if (mCT == null) return null;
         return mCT.ringingCall;
     }
 
     public void setMute(boolean muted) {
-        mCT.setMute(muted);
+        if (mCT != null) {
+            mCT.setMute(muted);
+        }
     }
 
     public boolean getMute() {
+        if (mCT == null) return false;
         return mCT.getMute();
     }
 
@@ -323,14 +329,17 @@ public class CDMAPhone extends PhoneBase {
     }
 
     public void enableEnhancedVoicePrivacy(boolean enable, Message onComplete) {
+        if (this.mCT == null) return;
         this.mCM.setPreferredVoicePrivacy(enable, onComplete);
     }
 
     public void getEnhancedVoicePrivacy(Message onComplete) {
+        if (this.mCT == null) return;
         this.mCM.getPreferredVoicePrivacy(onComplete);
     }
 
     public void clearDisconnected() {
+        if (mCT == null) return;
         mCT.clearDisconnected();
     }
 
@@ -396,6 +405,7 @@ public class CDMAPhone extends PhoneBase {
     }
 
     public CdmaCall getBackgroundCall() {
+        if (mCT == null) return null;
         return mCT.backgroundCall;
     }
 
@@ -504,6 +514,7 @@ public class CDMAPhone extends PhoneBase {
     }
 
     public CdmaCall getForegroundCall() {
+        if (mCT == null) return null;
         return mCT.foregroundCall;
     }
 
