@@ -33,7 +33,7 @@ public class SyncToggle extends Toggle {
     private SyncStatusObserver mSyncObserver = new SyncStatusObserver() {
         public void onStatusChanged(int which) {
             mHandler.post(onSyncUpdated);
-            // View cannot be updated outside UI thread.  use handler to run
+            // View cannot be updated outside UI thread. use handler to run
             // update
         }
     };
@@ -43,9 +43,10 @@ public class SyncToggle extends Toggle {
             updateState();
         }
     };
-    
+
     public SyncToggle(Context context) {
         super(context);
+        updateState();
         ContentResolver.addStatusChangeListener(
                 ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, mSyncObserver);
         setLabel(R.string.toggle_sync);

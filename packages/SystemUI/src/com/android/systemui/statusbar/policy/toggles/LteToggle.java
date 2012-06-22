@@ -61,8 +61,8 @@ public class LteToggle extends Toggle {
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.Secure.
-                    getUriFor(Settings.Secure.PREFERRED_NETWORK_MODE), false,
+            resolver.registerContentObserver(Settings.Secure
+                    .getUriFor(Settings.Secure.PREFERRED_NETWORK_MODE), false,
                     this);
             updateState();
         }

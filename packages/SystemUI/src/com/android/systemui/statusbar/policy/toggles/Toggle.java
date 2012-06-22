@@ -103,6 +103,8 @@ public abstract class Toggle implements OnCheckedChangeListener {
     /**
      * this method is called when we need to update the state of the toggle due
      * to outside interactions.
+     * 
+     * @return returns the on/off state of the toggle
      */
     protected abstract boolean updateInternalToggleState();
 
@@ -127,7 +129,7 @@ public abstract class Toggle implements OnCheckedChangeListener {
         try {
             IStatusBarService sb = IStatusBarService.Stub
                     .asInterface(ServiceManager
-                    .getService(Context.STATUS_BAR_SERVICE));
+                            .getService(Context.STATUS_BAR_SERVICE));
             sb.collapse();
         } catch (RemoteException e) {
         }
