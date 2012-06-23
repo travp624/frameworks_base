@@ -422,7 +422,7 @@ web_docs_sample_code_flags := \
 		            resources/samples/AccelerometerPlay "Accelerometer Play" \
 		-samplecode $(sample_dir)/ActionBarCompat \
 		            resources/samples/ActionBarCompat "Action Bar Compatibility" \
-                -samplecode $(sample_dir)/AndroidBeamDemo \
+		-samplecode $(sample_dir)/AndroidBeamDemo \
 		            resources/samples/AndroidBeamDemo "Android Beam Demo" \
 		-samplecode $(sample_dir)/ApiDemos \
 		            resources/samples/ApiDemos "API Demos" \
@@ -451,7 +451,7 @@ web_docs_sample_code_flags := \
 		-samplecode $(sample_dir)/LunarLander \
 		            resources/samples/LunarLander "Lunar Lander" \
 		-samplecode $(sample_dir)/training/ads-and-ux \
-		            resources/samples/training/ads-and-ux "Mobile Advertisement Integration" \
+					resources/samples/training/ads-and-ux "Mobile Advertisement Integration" \
 		-samplecode $(sample_dir)/MultiResolution \
 		            resources/samples/MultiResolution "Multiple Resolutions" \
 		-samplecode $(sample_dir)/NFCDemo \
@@ -495,7 +495,7 @@ web_docs_sample_code_flags := \
 		-samplecode $(sample_dir)/WeatherListWidget \
 		            resources/samples/WeatherListWidget "Weather List Widget" \
 		-samplecode $(sample_dir)/WiFiDirectDemo \
-                            resources/samples/WiFiDirectDemo "Wi-Fi Direct Demo" \
+                    resources/samples/WiFiDirectDemo "Wi-Fi Direct Demo" \
 		-samplecode $(sample_dir)/Wiktionary \
 		            resources/samples/Wiktionary "Wiktionary" \
 		-samplecode $(sample_dir)/WiktionarySimple \
@@ -509,7 +509,7 @@ web_docs_sample_code_flags := \
 		-samplecode $(sample_dir)/TtsEngine \
 		            resources/samples/TtsEngine "Text To Speech Engine" \
 		-samplecode $(sample_dir)/training/device-management-policy \
-		            resources/samples/training/device-management-policy "Device Management Policy"
+					resources/samples/training/device-management-policy "Device Management Policy"
 
 
 ## SDK version identifiers used in the published docs
