@@ -1602,5 +1602,4 @@ public class ActivityManager {
         } catch (RemoteException e) {
         }
     }
-
 }
