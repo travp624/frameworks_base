@@ -161,6 +161,14 @@
                 android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
                 android:drawablePadding="4dip" />
 
+            <include
+                layout="@layout/weatherpanel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="4dip"
+                android:drawablePadding="4dip" />
+
             <Space android:layout_gravity="fill"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -195,8 +203,8 @@
                 />
 
             <!-- Column 1 -->
-            <Space 
-                android:layout_width="16dip" 
+            <Space
+                android:layout_width="16dip"
                 android:layout_height="match_parent"
                 android:layout_rowSpan="10" />
 
@@ -218,7 +226,7 @@
                 android:layout_rowSpan="7"
                 android:layout_columnSpan="1"
                 android:layout_gravity="fill"
-                android:layout_width="wrap_content" 
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true" />
@@ -226,5 +234,5 @@
         </RelativeLayout>
 
     </GridLayout>
-    
+
 </RelativeLayout>
