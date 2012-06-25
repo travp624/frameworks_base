@@ -59,6 +59,7 @@ public class TogglesView extends LinearLayout {
     private static final String TOGGLE_MEDIA_PLAY = "MEDIA_PLAY";
     private static final String TOGGLE_MEDIA_PREVIOUS = "MEDIA_PREVIOUS";
     private static final String TOGGLE_TETHER = "TETHER";
+    private static final String TOGGLE_NFC = "NFC";
     private int mWidgetsPerRow = 2;
 
     private boolean useAltButtonLayout = false;
@@ -133,6 +134,8 @@ public class TogglesView extends LinearLayout {
                 newToggle = new MediaPreviousToggle(mContext);
             else if (splitToggle.equals(TOGGLE_TETHER))
                 newToggle = new USBTetherToggle(mContext);
+            else if (splitToggle.equals(TOGGLE_NFC))
+                newToggle = new NFCToggle(mContext);
 
             if (newToggle != null)
                 toggles.add(newToggle);
