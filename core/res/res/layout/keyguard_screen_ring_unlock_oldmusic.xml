@@ -152,8 +152,9 @@
                 layout="@layout/weatherpanel"
                 android:gravity="center"
                 android:layout_below="@id/status1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:drawablePadding="4dip" />
 
             <Space
