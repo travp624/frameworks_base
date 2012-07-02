@@ -350,26 +350,20 @@ public final class CallManager {
      * @return the phone associated with the foreground call
      */
     public Phone getFgPhone() {
-        Call response = getActiveFgCall();
-        if (response == null) return null;
-        return response.getPhone();
+        return getActiveFgCall().getPhone();
     }
 
     /**
      * @return the phone associated with the background call
      */
     public Phone getBgPhone() {
-        Call response = getFirstActiveBgCall();
-        if (response == null) return null;
-        return response.getPhone();
+        return getFirstActiveBgCall().getPhone();
     }
 
     /**
      * @return the phone associated with the ringing call
      */
     public Phone getRingingPhone() {
-        Call response = getFirstActiveRingingCall();
-        if (response == null) return null;
         return getFirstActiveRingingCall().getPhone();
     }
 
@@ -401,6 +395,31 @@ public final class CallManager {
                 }
                 break;
         }
+
+        // Set additional audio parameters needed for incall audio
+        String[] audioParams = context.getResources().getStringArray(com.android.internal.R.array.config_telephony_set_audioparameters);
+        String[] aPValues;
+
+        for (String parameter : audioParams) {
+            aPValues = parameter.split("=");
+
+            if(aPValues[1] == null || aPValues[1].length() == 0) {
+                aPValues[1] = "on";
+            }
+
+            if(aPValues[2] == null || aPValues[2].length() == 0) {
+                aPValues[2] = "off";
+            }
+
+            if (mode == AudioManager.MODE_IN_CALL) {
+                Log.d(LOG_TAG, "setAudioMode(): " + aPValues[0] + "=" + aPValues[1]);
+                audioManager.setParameters(aPValues[0] + "=" + aPValues[1]);
+            } else if (mode == AudioManager.MODE_NORMAL) {
+                Log.d(LOG_TAG, "setAudioMode(): " + aPValues[0] + "=" + aPValues[2]);
+                audioManager.setParameters(aPValues[0] + "=" + aPValues[2]);
+            }
+        }
+
         // calling audioManager.setMode() multiple times in a short period of
         // time seems to break the audio recorder in in-call mode
         if (audioManager.getMode() != mode) audioManager.setMode(mode);
