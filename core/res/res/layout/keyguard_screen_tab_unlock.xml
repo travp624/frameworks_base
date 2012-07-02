@@ -112,16 +112,16 @@
             android:drawablePadding="4dip" />
 
         <ViewFlipper
-                android:id="@+id/calendar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/weather"
-                android:layout_centerHorizontal="true"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
-                android:inAnimation="@anim/calendar_fadein"
-                android:outAnimation="@anim/calendar_fadeout"
-                android:drawablePadding="4dip" />
+            android:id="@+id/calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/weather"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:inAnimation="@anim/calendar_fadein"
+            android:outAnimation="@anim/calendar_fadeout"
+            android:drawablePadding="4dip" />
 
         <TextView
             android:id="@+id/status1"
@@ -133,17 +133,15 @@
             android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
             android:drawablePadding="4dip" />
 
-        <TextView
-            android:id="@+id/status2"
-            android:layout_gravity="center"
-            android:layout_marginRight="0dip"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-            android:drawablePadding="4dip" />    
+        <include
+            layout="@layout/weatherpanel"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:drawablePadding="4dip" />
 
-        <Space 
+        <Space
             android:layout_gravity="fill" />
 
         <!-- emergency call button shown when sim is PUKd and tab_selector is hidden -->
