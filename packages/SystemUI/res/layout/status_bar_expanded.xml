@@ -60,7 +60,7 @@
 
                     <TextView
                         android:id="@+id/high_temp"
-                        android:textSize="14.0sp"
+                        android:textSize="10.0sp"
                         android:textStyle="normal"
                         android:textAppearance="@style/Text"
                         android:layout_width="wrap_content"
@@ -68,7 +68,7 @@
 
                     <TextView
                         android:text="@string/weatherpanel_slash"
-                        android:textSize="14.0sp"
+                        android:textSize="10.0sp"
                         android:paddingLeft="1dp"
                         android:paddingRight="1dp"
                         android:textStyle="normal"
@@ -78,7 +78,7 @@
 
                     <TextView
                         android:id="@+id/low_temp"
-                        android:textSize="14.0sp"
+                        android:textSize="10.0sp"
                         android:textStyle="normal"
                         android:textAppearance="@style/Text"
                         android:layout_width="wrap_content"
@@ -106,7 +106,8 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
                 android:singleLine="true"
-                android:gravity="center" />
+                android:gravity="center"
+                android:visibility="gone" />
 
             <com.android.systemui.statusbar.policy.WeatherPanel
                 android:id="@+id/wp2"
@@ -123,6 +124,26 @@
                     android:layout_height="wrap_content">
 
                     <LinearLayout
+                        android:id="@+id/last_update"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/datestamp"
+                            android:textAppearance="@style/TextAppearance.StatusBar.Date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
+                            android:singleLine="true"
+                            android:gravity="center"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:id="@+id/cityandtemp"
                         android:orientation="horizontal"
                         android:gravity="center"
@@ -131,8 +152,8 @@
 
                         <TextView
                             android:id="@+id/city"
-                            android:textSize="14.0sp"
-                            android:textAppearance="@style/Text"
+                            android:textAppearance="@style/TextAppearance.StatusBar.Date"
+                            android:textColor="@android:color/holo_blue_light"
                             android:paddingRight="3dip"
                             android:singleLine="true"
                             android:layout_width="wrap_content"
@@ -140,8 +161,8 @@
 
                         <TextView
                             android:id="@+id/current_temp"
-                            android:textSize="14.0sp"
-                            android:textAppearance="@style/Text"
+                            android:textAppearance="@style/TextAppearance.StatusBar.Date"
+                            android:textColor="@android:color/holo_blue_light"
                             android:paddingLeft="3dip"
                             android:singleLine="true"
                             android:layout_width="wrap_content"
@@ -153,13 +174,13 @@
                         android:id="@+id/condition"
                         android:textSize="14.0sp"
                         android:textStyle="normal"
-                        android:textAppearance="@style/Text"
                         android:singleLine="true"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="1dp"
                         android:gravity="center"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/Text" />
 
                 </LinearLayout>
 
@@ -202,7 +223,7 @@
     <View
         android:id="@+id/drawer_header_hr"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:background="@drawable/status_bar_hr" />
 
     <include
