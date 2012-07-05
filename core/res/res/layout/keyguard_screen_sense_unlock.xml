@@ -149,7 +149,9 @@
                 android:drawablePadding="4dip" />
 
             <include
+                android:id="@+id/weatherpanel_lockscreen"
                 layout="@layout/weatherpanel"
+                android:layout_below="@id/status1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -188,7 +190,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_below="@id/status2"
+                android:layout_below="@id/weatherpanel_lockscreen"
                 android:gravity="center_horizontal"
                 android:singleLine="true"
                 android:ellipsize="marquee"
@@ -204,7 +206,8 @@
                 android:gravity="center"
                 android:weightSum="2">
 
-                <Button android:id="@+id/emergencyCallButton"
+                <Button
+                    android:id="@+id/emergencyCallButton"
                     android:layout_gravity="center_horizontal"
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
