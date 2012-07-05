@@ -82,7 +82,7 @@ public class WeatherPanel extends FrameLayout {
             }
         }
     }
-
+    
     public void setTextColor(int color)
     {
         if (mCurrentTemp != null)
@@ -107,14 +107,14 @@ public class WeatherPanel extends FrameLayout {
 
         @Override
         public void onClick(View v) {
-            Intent weatherintent = new Intent("com.blackice.control.INTENT_WEATHER_REQUEST");
+            Intent weatherintent = new Intent("com.aokp.romcontrol.INTENT_WEATHER_REQUEST");
 
             if (v.getId() == com.android.internal.R.id.condition_image) {
-                weatherintent.putExtra("com.blackice.control.INTENT_EXTRA_TYPE", "startapp");
-                weatherintent.putExtra("com.blackice.control.INTENT_EXTRA_ISMANUAL", true);
+                weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_TYPE", "startapp");
+                weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_ISMANUAL", true);
             } else {
-                weatherintent.putExtra("com.blackice.control.INTENT_EXTRA_TYPE", "updateweather");
-                weatherintent.putExtra("com.blackice.control.INTENT_EXTRA_ISMANUAL", true);
+                weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_TYPE", "updateweather");
+                weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_ISMANUAL", true);
             }
 
             v.getContext().sendBroadcast(weatherintent);
@@ -147,7 +147,7 @@ public class WeatherPanel extends FrameLayout {
 
         if (!mAttached) {
             mAttached = true;
-            IntentFilter filter = new IntentFilter("com.blackice.control.INTENT_WEATHER_UPDATE");
+            IntentFilter filter = new IntentFilter("com.aokp.romcontrol.INTENT_WEATHER_UPDATE");
             getContext().registerReceiver(weatherReceiver, filter, null, getHandler());
         }
     }
