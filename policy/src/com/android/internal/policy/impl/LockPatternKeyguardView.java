@@ -171,7 +171,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
 
     /**
      * The different types screens available for {@link Mode#UnlockScreen}.
-     * 
+     *
      * @see com.android.internal.policy.impl.LockPatternKeyguardView#getUnlockMode()
      */
     enum UnlockMode {
@@ -265,10 +265,8 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
             // If there's not a bg protection view containing the transport,
             // then show a black
             // background. Otherwise, allow the normal background to show.
-            final boolean mUseOldMusic = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.MUSIC_WIDGET_TYPE, 0) == 1;
 
-            if ((findViewById(R.id.transport_bg_protect) == null) && !mUseOldMusic) {
+            if (findViewById(R.id.transport_bg_protect) == null) {
                 // TODO: We should disable the wallpaper instead
                 setBackgroundColor(0xff000000);
             } else {
@@ -1087,7 +1085,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
         } else {
             mUpdateMonitor.reportClockVisible(true);
             // hide until it requests being shown.
-            mTransportControlView.setVisibility(View.GONE); 
+            mTransportControlView.setVisibility(View.GONE);
             mTransportControlView.setCallback(mWidgetCallback);
         }
     }
