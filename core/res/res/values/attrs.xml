@@ -1497,13 +1497,15 @@
         <enum name="KEYCODE_CALENDAR" value="208" />
         <enum name="KEYCODE_MUSIC" value="209" />
         <enum name="KEYCODE_CALCULATOR" value="210" />
-        <enum name="KEYCODE_TOGGLE_WIFI" value="211" />
-        <enum name="KEYCODE_TOGGLE_BT" value="212" />
-        <enum name="KEYCODE_TOGGLE_TOUCHPAD" value="213" />
-        <enum name="KEYCODE_BRIGHTNESS_DOWN" value="214" />
-        <enum name="KEYCODE_BRIGHTNESS_UP" value="215" />
-        <enum name="KEYCODE_BRIGHTNESS_AUTO" value="216" />
-        <enum name="KEYCODE_SCREENSHOT" value="217" />
+        <enum name="KEYCODE_ALT_LOCK" value="211" />
+        <enum name="KEYCODE_VOICE" value="212" />
+        <enum name="KEYCODE_TOGGLE_WIFI" value="213" />
+        <enum name="KEYCODE_TOGGLE_BT" value="214" />
+        <enum name="KEYCODE_TOGGLE_TOUCHPAD" value="215" />
+        <enum name="KEYCODE_BRIGHTNESS_DOWN" value="216" />
+        <enum name="KEYCODE_BRIGHTNESS_UP" value="217" />
+        <enum name="KEYCODE_BRIGHTNESS_AUTO" value="218" />
+        <enum name="KEYCODE_SCREENSHOT" value="219" />
     </attr>
 
     <!-- ***************************************************************** -->
@@ -3030,7 +3032,7 @@
         <attr name="singleLine" format="boolean" />
         <!-- Specifies whether the widget is enabled. The interpretation of the enabled state varies by subclass.
              For example, a non-enabled EditText prevents the user from editing the contained text, and
-             a non-enabled Button prevents the user from tapping the button. 
+             a non-enabled Button prevents the user from tapping the button.
              The appearance of enabled and non-enabled widgets may differ, if the drawables referenced
              from evaluating state_enabled differ. -->
         <attr name="enabled" format="boolean" />
