@@ -1712,6 +1712,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         final boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
         final boolean canceled = event.isCanceled();
 
+        Log.d(TAG, "KeyHandler: Got key event " + keyCode);
+
         if (false) {
             Log.d(TAG, "interceptKeyTi keyCode=" + keyCode + " down=" + down + " repeatCount="
                     + repeatCount + " keyguardOn=" + keyguardOn + " mHomePressed=" + mHomePressed);
@@ -3133,12 +3135,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         mVolumeUpKeyTriggered = false;
                         cancelPendingScreenshotChordAction();
                     }
-                } else if (keyCode == KeyEvent.KEYCODE_VOLUME_MUTE) {
-                    if (!down || keyguardActive)
-                        return 0;
-                    handleFunctionKey(event);
-                    result &= ~ACTION_PASS_TO_USER;
-                    break;
                 }
                 if (down) {
                     ITelephony telephonyService = getTelephonyService();
@@ -3328,39 +3324,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         }
                     }
                 }
-                break;
-            }
-            case KeyEvent.KEYCODE_EXPLORER:
-            case KeyEvent.KEYCODE_SETTINGS:
-            case KeyEvent.KEYCODE_WIRELESS:
-            case KeyEvent.KEYCODE_BLUETOOTH:
-            case KeyEvent.KEYCODE_TOUCHPAD: {
-                if (!isDeviceProvisioned())
-                    return 0;
-                handleFunctionKey(event);
-                result &= ~ACTION_PASS_TO_USER;
-                break;
-            }
-            case KeyEvent.KEYCODE_BRIGHTNESS_UP:
-            case KeyEvent.KEYCODE_BRIGHTNESS_DOWN:
-            case KeyEvent.KEYCODE_BRIGHTNESS_AUTO: {
-                if (!down || keyguardActive)
-                    return 0;
-                handleFunctionKey(event);
-                result &= ~ACTION_PASS_TO_USER;
-                break;
-            }
-            case KeyEvent.KEYCODE_CAPTURE: {
-                if (!down)
-                    return 0;
-                mHandler.post(mScreenshotChordLongPress);
-                result &= ~ACTION_PASS_TO_USER;
-                break;
-            }
-            case KeyEvent.KEYCODE_SLEEP: {
-                if (isScreenOn && down && (!keyguardActive || isKeyguardSecure()))
-                    result = (result & ~ACTION_POKE_USER_ACTIVITY) | ACTION_GO_TO_SLEEP;
-                result &= ~ACTION_PASS_TO_USER;
                 break;
             }
         }
