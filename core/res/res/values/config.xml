@@ -830,4 +830,6 @@
     <!-- Always show the mobile signal drawables -->
     <bool name="config_hideMobileSignalOnWifi">false</bool>
 
+    <!-- Whether to prevent preloading of ap firmware, some devices need to disable this -->
+    <bool name="config_wifi_ap_firmware_reload">true</bool>
 </resources>
