@@ -117,11 +117,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private UnlockWidgetCommonMethods mUnlockWidgetMethods;
     private UnlockWidgetCommonMethods mUnlockWidgetMethods2;
     private View mUnlockWidget;
-	private View mUnlockWidget2;
-
-    private boolean mUseOldMusic = Settings.System.getInt(
-            mContext.getContentResolver(),
-            Settings.System.MUSIC_WIDGET_TYPE, 0) == 1;
+    private View mUnlockWidget2;
 
     private TextView mCarrier;
     private DigitalClock mDigitalClock;
@@ -222,7 +218,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void ping() {
         }
     }
-    
+
     class SlidingTabMethods2 implements SlidingTab.OnTriggerListener, UnlockWidgetCommonMethods {
         private final SlidingTab mSlidingTab2;
 
@@ -234,14 +230,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
 
         /** {@inheritDoc} */
-		public void onTrigger(View v, int whichHandle) {
-			if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
-				Intent callIntent = new Intent(Intent.ACTION_DIAL);
-				callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				getContext().startActivity(callIntent);
-				mCallback.goToUnlockScreen();
-			} else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
-				Intent intent = new Intent(Intent.ACTION_MAIN);
+        public void onTrigger(View v, int whichHandle) {
+            if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(callIntent);
+                mCallback.goToUnlockScreen();
+            } else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_LAUNCHER);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
@@ -249,15 +245,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 mContext.startActivity(intent);
                 mCallback.goToUnlockScreen();
                 if (mCustomAppActivity != null) {
-					runActivity(mCustomAppActivity);
-				}
-			}
-		}
+                    runActivity(mCustomAppActivity);
+                }
+            }
+        }
 
         /** {@inheritDoc} */
-		public void onGrabbedStateChange(View v, int grabbedState) {
-			mCallback.pokeWakelock();
-		}
+        public void onGrabbedStateChange(View v, int grabbedState) {
+            mCallback.pokeWakelock();
+        }
 
         public View getView() {
             return mSlidingTab2;
@@ -443,21 +439,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
-	class SenseLikeLockMethods implements SenseLikeLock.OnSenseLikeSelectorTriggerListener,
+    class SenseLikeLockMethods implements SenseLikeLock.OnSenseLikeSelectorTriggerListener,
             UnlockWidgetCommonMethods {
 
         private final SenseLikeLock mSenseLikeLock;
 
-		SenseLikeLockMethods(SenseLikeLock senseLikeLock) {
-			mSenseLikeLock = senseLikeLock;
-		}
+        SenseLikeLockMethods(SenseLikeLock senseLikeLock) {
+            mSenseLikeLock = senseLikeLock;
+        }
 
-		public void updateResources() {
-		}
+        public void updateResources() {
+        }
 
-		/** {@inheritDoc} */
-		public void onSenseLikeSelectorTrigger(View v, int Trigger) {
-			mCallback.goToUnlockScreen();
+        /** {@inheritDoc} */
+        public void onSenseLikeSelectorTrigger(View v, int Trigger) {
+            mCallback.goToUnlockScreen();
 
             switch (Trigger) {
                 case SenseLikeLock.OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_ONE_TRIGGERED: {
@@ -487,22 +483,22 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             }
         }
 
-		/** {@inheritDoc} */
-		public void OnSenseLikeSelectorGrabbedStateChanged(View v,
-				int grabbedState) {
-			mCallback.pokeWakelock();
-		}
+        /** {@inheritDoc} */
+        public void OnSenseLikeSelectorGrabbedStateChanged(View v,
+                int grabbedState) {
+            mCallback.pokeWakelock();
+        }
 
-		public View getView() {
-			return mSenseLikeLock;
-		}
+        public View getView() {
+            return mSenseLikeLock;
+        }
 
-		public void reset(boolean animate) {
-		}
+        public void reset(boolean animate) {
+        }
 
-		public void ping() {
-		}
-	}
+        public void ping() {
+        }
+    }
 
     private void requestUnlockScreen() {
         // Delay hiding lock screen long enough for animation to finish
@@ -533,7 +529,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
      * In general, we enable unlocking the insecure key guard with the menu key. However, there are
      * some cases where we wish to disable it, notably when the menu button placement or technology
      * is prone to false positives.
-     * 
+     *
      * @return true if the menu key should be enabled
      */
     private boolean shouldEnableMenuKey() {
@@ -587,7 +583,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
             numTargets = 4;
 
-        } else 
+        } else
             for (int i = 0; i < numTargets; i++) {
                 Log.d(TAG, "Setting custom intent #" + i);
                 try {
@@ -609,7 +605,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 shortcutsicons[i] = scaledDrawable(shortcutsicons[i], context,
                         iconScale);
             } catch (ArrayIndexOutOfBoundsException ex) {
-                Log.w(TAG, "Missing shortcut_icons array item #" 
+                Log.w(TAG, "Missing shortcut_icons array item #"
                         + i + mCustomRingAppActivities[i]);
                 shortcutsicons[i] = null;
             } catch (PackageManager.NameNotFoundException e) {
@@ -978,112 +974,57 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         boolean landscape = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
 
-        if (mUseOldMusic) {
-            switch (mLockscreenTargets) {
-                default:
-                case LAYOUT_STOCK:
-                case LAYOUT_QUAD:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_tab_unlock_land_oldmusic, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_tab_unlock_oldmusic, this,
-                                true);
-                    break;
-                case LAYOUT_OCTO:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_tab_octounlock_land_oldmusic, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_tab_octounlock_oldmusic, this,
-                                true);
-                    break;
-                case LAYOUT_HONEY:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land_oldmusic, this,
+        switch (mLockscreenTargets) {
+            default:
+            case LAYOUT_STOCK:
+            case LAYOUT_QUAD:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this,
                             true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_oldmusic, this,
+                else
+                    inflater.inflate(R.layout.keyguard_screen_tab_unlock, this,
                             true);
-                    break;
-                case LAYOUT_AOSP:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land_oldmusic, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_oldmusic, this,
-                                true);
-                    break;
-                case LAYOUT_RINGSLOCK:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_ring_unlock_land_oldmusic, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_ring_unlock_oldmusic, this,
-                                true);
-                    break;
-                case LAYOUT_SENSELIKE:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_sense_unlock_land_oldmusic, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_sense_unlock_oldmusic, this,
-                                true);
-                    break;
-            }
-        } else {
-            switch (mLockscreenTargets) {
-                default:
-                case LAYOUT_STOCK:
-                case LAYOUT_QUAD:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_tab_unlock, this,
-                                true);
-                    break;
-                case LAYOUT_OCTO:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_tab_octounlock_land, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
-                                true);
-                    break;
-                case LAYOUT_HONEY:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this,
+                break;
+            case LAYOUT_OCTO:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock_land, this,
                             true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
+                else
+                    inflater.inflate(R.layout.keyguard_screen_tab_octounlock, this,
                             true);
-                    break;
-                case LAYOUT_AOSP:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock, this,
-                                true);
-                    break;
-                case LAYOUT_RINGSLOCK:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_ring_unlock_land, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_ring_unlock, this,
-                                true);
-                    break;
-                case LAYOUT_SENSELIKE:
-                    if (landscape)
-                        inflater.inflate(R.layout.keyguard_screen_sense_unlock_land, this,
-                                true);
-                    else
-                        inflater.inflate(R.layout.keyguard_screen_sense_unlock, this,
-                                true);
-                    break;
-            }
+                break;
+            case LAYOUT_HONEY:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this,
+                        true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this,
+                        true);
+                break;
+            case LAYOUT_AOSP:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock_land, this,
+                            true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_slidingtab_unlock, this,
+                            true);
+                break;
+            case LAYOUT_RINGSLOCK:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_ring_unlock_land, this,
+                            true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_ring_unlock, this,
+                            true);
+                break;
+            case LAYOUT_SENSELIKE:
+                if (landscape)
+                    inflater.inflate(R.layout.keyguard_screen_sense_unlock_land, this,
+                            true);
+                else
+                    inflater.inflate(R.layout.keyguard_screen_sense_unlock, this,
+                            true);
+                break;
         }
 
         mStatusViewManager = new KeyguardStatusViewManager(this, mUpdateMonitor, mLockPatternUtils,
@@ -1198,7 +1139,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         if (DBG)
             Log.v(TAG, "*** LockScreen accel is "
                     + (mUnlockWidget.isHardwareAccelerated() ? "on" : "off"));
-        }
+    }
 
     private boolean isSilentMode() {
         return mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
@@ -1206,7 +1147,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     /**
      * Displays a message in a text view and then restores the previous text.
-     * 
+     *
      * @param textView The text view.
      * @param text The text.
      * @param color The color to apply to the text, or 0 if the existing color should be used.
@@ -1249,7 +1190,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     private Runnable mPendingR1;
     private Runnable mPendingR2;
-    
+
     void updateConfiguration() {
         Configuration newConfig = getResources().getConfiguration();
         if (newConfig.orientation != mCreationOrientation) {
@@ -1391,15 +1332,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
-	private void runActivity(String uri) {
-		try {
-			Intent i = Intent.parseUri(uri, 0);
-			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-					| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-			mContext.startActivity(i);
-			mCallback.goToUnlockScreen();
-		} catch (URISyntaxException e) {
-		} catch (ActivityNotFoundException e) {
-		}
-	}
+        private void runActivity(String uri) {
+                try {
+                        Intent i = Intent.parseUri(uri, 0);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                        mContext.startActivity(i);
+                        mCallback.goToUnlockScreen();
+                } catch (URISyntaxException e) {
+                } catch (ActivityNotFoundException e) {
+                }
+        }
 }
