@@ -265,7 +265,6 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
             // allow the normal background to show.
 
             resetBackground();
-            }
         }
 
         public void requestHide(View view) {
