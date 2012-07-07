@@ -785,7 +785,13 @@
     <!-- Whether to even allow system settings for crt animations
     		setting this to false will completely disable them -->
     <bool name="config_enableCrtAnimations">true</bool>
+   
+    <!-- Path to the library that contains the device specifiy key handler -->
+    <string name="config_deviceKeyHandlerLib"></string>
     
+    <!-- Name of that key handler class -->
+    <string name="config_deviceKeyHandlerClass"></string>
+
     <!-- LUN file to be used by legacy USB manager.
           The existence of this file will be used to determine in the
           legacy USB manager should be started. -->
@@ -800,6 +806,9 @@
     <!-- If this value is true, we handle Samsung CDMA's message ID method -->
     <bool name="config_smsSamsungCdmaAlternateMessageIDEncoding">false</bool>
 
+    <!--Boolean to enable stk functionality on Samsung phones-->
+    <bool name="config_samsung_stk">false</bool>
+    
     <!-- Configure ring lockscreen threshold radius -->
     <integer name="config_ringThresholdDIP">160</integer>
 
