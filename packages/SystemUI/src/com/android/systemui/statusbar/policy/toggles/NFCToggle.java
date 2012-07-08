@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.provider.Settings;
+import android.util.Log;
 
 import com.android.systemui.R;
 
@@ -20,7 +21,6 @@ public class NFCToggle extends Toggle {
 
     public NFCToggle(Context context) {
         super(context);
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
         IntentFilter filter = new IntentFilter();
         filter.addAction(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
         context.registerReceiver(mBroadcastReceiver, filter);
@@ -32,32 +32,41 @@ public class NFCToggle extends Toggle {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
             if (NfcAdapter.ACTION_ADAPTER_STATE_CHANGED.equals(intent.getAction())) {
                 final boolean enabled = (intent.getIntExtra(NfcAdapter.EXTRA_ADAPTER_STATE,
                         NfcAdapter.STATE_OFF) == NfcAdapter.STATE_ON);
-                if (enabled != mNfcEnabled) {
-                    mNfcEnabled = enabled;
-                }
+                mNfcEnabled = enabled;
                 updateState();
             }
         }
     };
     
     private boolean getNfcState() {
-        return mNfcAdapter.isEnabled();
+        if (mNfcAdapter == null) {
+            Log.d(TAG, "NFC service not running.");
+            return false;
+        }
+        else {
+            return mNfcAdapter.isEnabled();
+        }
     }
     
     private void setNfcState(final boolean desiredState) {
-        AsyncTask.execute(new Runnable() {
-            public void run() {
-                if (desiredState) {
-                    mNfcAdapter.enable();
-                } else {
-                    mNfcAdapter.disable();
+        if (mNfcAdapter == null) {
+            Log.d(TAG, "NFC service not running.");
+        } else {
+            AsyncTask.execute(new Runnable() {
+                public void run() {
+                    if (desiredState) {
+                        mNfcAdapter.enable();
+                    } else {
+                        mNfcAdapter.disable();
+                    }
+                    return;
                 }
-                return;
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -83,10 +92,12 @@ public class NFCToggle extends Toggle {
 
     @Override
     protected boolean onLongPress() {
-        Intent intent = new Intent(
-                android.provider.Settings.ACTION_WIRELESS_SETTINGS);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(intent);
+        if (mContext != null) {
+            Intent intent = new Intent(
+                    android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+        }
         return true;
     }
 }

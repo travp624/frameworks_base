@@ -806,6 +806,9 @@
     <!-- If this value is true, we handle Samsung CDMA's message ID method -->
     <bool name="config_smsSamsungCdmaAlternateMessageIDEncoding">false</bool>
 
+    <!--Boolean to enable stk functionality on Samsung phones-->
+    <bool name="config_samsung_stk">false</bool>
+    
     <!-- Configure ring lockscreen threshold radius -->
     <integer name="config_ringThresholdDIP">160</integer>
 
@@ -827,4 +830,6 @@
     <!-- Always show the mobile signal drawables -->
     <bool name="config_hideMobileSignalOnWifi">false</bool>
 
+    <!-- Whether to prevent preloading of ap firmware, some devices need to disable this -->
+    <bool name="config_wifi_ap_firmware_reload">true</bool>
 </resources>
