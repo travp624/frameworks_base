@@ -276,5 +276,4 @@
             android:scaleType="fitXY" />
 
     </FrameLayout>
-    
 </com.android.systemui.statusbar.phone.ExpandedView>

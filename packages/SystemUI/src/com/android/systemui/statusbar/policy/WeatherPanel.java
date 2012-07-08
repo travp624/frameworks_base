@@ -99,11 +99,11 @@ public class WeatherPanel extends FrameLayout {
             Intent weatherintent = new Intent("com.blackice.control.INTENT_WEATHER_REQUEST");
 
             if (v.getId() == R.id.condition_image) {
-                weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_TYPE", "startapp");
-                weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_ISMANUAL", true);
+                weatherintent.putExtra("com.blackice.control.INTENT_EXTRA_TYPE", "startapp");
+                weatherintent.putExtra("com.blackice.control.INTENT_EXTRA_ISMANUAL", true);
             } else {
-                weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_TYPE", "updateweather");
-                weatherintent.putExtra("com.aokp.romcontrol.INTENT_EXTRA_ISMANUAL", true);
+                weatherintent.putExtra("com.blackice.control.INTENT_EXTRA_TYPE", "updateweather");
+                weatherintent.putExtra("com.blackice.control.INTENT_EXTRA_ISMANUAL", true);
             }
 
             v.getContext().sendBroadcast(weatherintent);

@@ -164,8 +164,11 @@
             <include
                 layout="@layout/weatherpanel"
                 android:layout_below="@id/status1"
-                android:layout_width="wrap_content"
+                android:layout_width="240dip"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="20dip"
+                android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
                 android:drawablePadding="4dip" />
 

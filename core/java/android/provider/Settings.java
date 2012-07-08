@@ -1388,7 +1388,7 @@ public final class Settings {
          */
         public static final int SCREEN_BRIGHTNESS_MODE_AUTOMATIC = 1;
 
-	/**
+        /**
          * Indicates that custom light sensor settings has changed.
          * The value is random and changes reloads light settings.
          *
@@ -3006,11 +3006,11 @@ public final class Settings {
 
         /**
          * the type of recent switcher
-         * 
+         *
          * 0 = Stock
          * 1 = WebAOKP
          * 2 = Sense 4
-         * 
+         *
          * @hide
          */
         public static final String RECENT_APP_SWITCHER = "recent_app_switcher";

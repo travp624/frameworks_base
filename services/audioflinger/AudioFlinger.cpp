@@ -1836,8 +1836,9 @@ sp<AudioFlinger::PlaybackThread::Track>  AudioFlinger::PlaybackThread::createTra
 #else
             if (sampleRate != mSampleRate || format != mFormat || channelMask != mChannelMask) {
 #endif
-                LOGE("createTrack_l() Bad parameter: sampleRate %d/%d format %d/%d, channelMask 0x%08x/0x%08x [MASKED=0x%08x] for output %p with format %d",
-                        sampleRate, mSampleRate, format, mFormat, channelMask, mChannelMask, (channelMask & mChannelMask), mOutput, mFormat);
+                LOGE("createTrack_l() Bad parameter: sampleRate %d format %d, channelMask 0x%08x \""
+                        "for output %p with format %d",
+                        sampleRate, format, channelMask, mOutput, mFormat);
                 lStatus = BAD_VALUE;
                 goto Exit;
             }
@@ -5668,6 +5669,12 @@ status_t AudioFlinger::setStreamOutput(uint32_t stream, int output)
             srcThread->invalidateTracks(stream);
         }
     }
+#ifdef WITH_QCOM_LPA
+    if ( mA2DPHandle == output ) {
+        LOGV("A2DP Activated and hence notifying the client");
+        dstThread->sendConfigEvent(AudioSystem::A2DP_OUTPUT_STATE, mA2DPHandle);
+    }
+#endif
     return NO_ERROR;
 }
 

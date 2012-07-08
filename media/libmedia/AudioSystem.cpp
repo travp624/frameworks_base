@@ -1038,5 +1038,25 @@ extern "C" bool _ZN7android11AudioSystem17isSeparatedStreamE19audio_stream_type_
 }
 #endif // USE_SAMSUNG_SEPARATEDSTREAM
 
+#ifdef USE_SAMSUNG_SEPARATEDSTREAM
+extern "C" bool _ZN7android11AudioSystem17isSeparatedStreamE19audio_stream_type_t(audio_stream_type_t stream)
+{
+    LOGD("android::AudioSystem::isSeparatedStream(audio_stream_type_t) called!");
+    LOGD("audio_stream_type_t: %d", stream);
+
+/* this is the correct implementation, but breaks headset volume rocker.
+    if (stream == 3  || stream == 9  || stream == 10
+     || stream == 12 || stream == 13 || stream == 14)
+    {
+        LOGD("isSeparatedStream: true");
+        return true;
+    }
+*/
+
+    LOGD("isSeparatedStream: false");
+    return false;
+}
+#endif // USE_SAMSUNG_SEPARATEDSTREAM
+
 }; // namespace android
 
